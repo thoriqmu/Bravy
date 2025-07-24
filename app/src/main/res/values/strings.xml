@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Bravy</string>
+    <string name="title_home">Home</string>
+    <string name="title_chat">Chat</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_profile">Profile</string>
+    <string name="greeting_user_name">Hi, John Doe!</string>
+    <string name="user_name">Jane Doe</string>
+    <string name="user_email">jane.doe@example.com</string>
+    <string name="user_desc">Learning English is not difficult as long as you try</string>
+    <string name="start_learning">Let\'s start learning!</string>
+    <string name="progress">My Progress</string>
+    <string name="percent_progress">27%</string>
+    <string name="task_progress">3/11 Task Complete</string>
+    <string name="title_shortcut_card">What do you want to do today?</string>
+    <string name="speaking_learning">Speaking\nLearning</string>
+    <string name="community_chat">Community\nChat</string>
+    <string name="private_chat">Private\nChat</string>
+    <string name="btn_click_here">Click here</string>
+    <string name="btn_add_friend">Add Friend</string>
+    <string name="title_last_speaking">My last speaking test</string>
+    <string name="last_speaking_place">I\'m now in</string>
+    <string name="speaking_result">Very Relaxing</string>
+    <string name="title_mission">My mission today</string>
+</resources>

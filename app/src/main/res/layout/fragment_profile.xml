@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.profile.ProfileFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/primary"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/title_profile"
+        android:textColor="@color/onPrimary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/shapeableImageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile"
+        android:background="@color/surface"
+        android:layout_marginTop="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView7"
+        app:shapeAppearanceOverlay="@style/image_rounded"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/user_name"
+        android:textColor="@color/onBackground"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/shapeableImageView" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/user_email"
+        android:textColor="@color/onBackground"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView8" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginTop="60dp"
+        android:layout_marginHorizontal="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView9">
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:drawableLeft="@drawable/ic_profile"
+            android:drawableRight="@drawable/ic_right"
+            android:text="Setting"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            android:outlineSpotShadowColor="@color/transparent"
+            android:outlineAmbientShadowColor="@color/transparent"
+            app:cornerRadius="0dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:drawableLeft="@drawable/ic_friends"
+            android:drawableRight="@drawable/ic_right"
+            android:text="Friend List"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            android:outlineSpotShadowColor="@color/transparent"
+            android:outlineAmbientShadowColor="@color/transparent"
+            app:cornerRadius="0dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:drawableLeft="@drawable/ic_setting"
+            android:drawableRight="@drawable/ic_right"
+            android:text="Setting"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            android:outlineSpotShadowColor="@color/transparent"
+            android:outlineAmbientShadowColor="@color/transparent"
+            app:cornerRadius="0dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:drawableLeft="@drawable/ic_log_out"
+            android:drawableRight="@drawable/ic_right"
+            android:text="Log out"
+            android:textAlignment="textStart"
+            android:textAllCaps="false"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            android:outlineSpotShadowColor="@color/transparent"
+            android:outlineAmbientShadowColor="@color/transparent"
+            app:cornerRadius="0dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

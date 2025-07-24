@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.chat.ChatFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/primary"
+            android:layout_marginBottom="60dp"
+            app:layout_constraintBottom_toBottomOf="@+id/horizontal_scroll"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_profile_photo"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_home"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@color/surface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/image_rounded" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="@string/title_chat"
+            android:textColor="@color/onPrimary"
+            android:textSize="24sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:fontFamily="@font/poppins_bold"
+            android:text="Catch up!"
+            android:textColor="@color/onPrimary"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/materialTextView"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Connect with people like you"
+            android:textColor="@color/onPrimary"
+            android:textSize="12sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginTop="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView3">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="250dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="20dp"
+                    app:cardCornerRadius="15dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/secondary">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="15dp"
+                            android:layout_marginVertical="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_weight="1">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/iv_user_photo_1"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="@color/surface"
+                                    android:scaleType="centerCrop"
+                                    app:shapeAppearanceOverlay="@style/image_rounded" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_user_name_1"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:text="@string/user_name"
+                                    android:textColor="@color/onSecondary"
+                                    android:textSize="16sp"
+                                    android:layout_marginStart="10dp"
+                                    android:maxLines="1"/>
+
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_user_desc_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_desc"
+                                android:textColor="@color/onSecondary"
+                                android:textSize="12sp"
+                                android:maxLines="2"
+                                android:layout_weight="1"/>
+
+                            <Space
+                                android:layout_width="0dp"
+                                android:layout_height="10dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_add_friend_1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:backgroundTint="@color/onPrimaryContainer"
+                                android:fontFamily="@font/poppins_bold"
+                                android:text="@string/btn_add_friend"
+                                android:textAllCaps="false"
+                                android:textColor="@color/onSurface"
+                                android:textSize="12sp"
+                                app:cornerRadius="10dp" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="250dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="20dp"
+                    app:cardCornerRadius="15dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/secondary">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="15dp"
+                            android:layout_marginVertical="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_weight="1">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/iv_user_photo_2"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="@color/surface"
+                                    android:scaleType="centerCrop"
+                                    app:shapeAppearanceOverlay="@style/image_rounded" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_user_name_2"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:text="@string/user_name"
+                                    android:textColor="@color/onSecondary"
+                                    android:textSize="16sp"
+                                    android:layout_marginStart="10dp"
+                                    android:maxLines="1"/>
+
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_user_desc_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_desc"
+                                android:textColor="@color/onSecondary"
+                                android:textSize="12sp"
+                                android:maxLines="2"
+                                android:layout_weight="1"/>
+
+                            <Space
+                                android:layout_width="0dp"
+                                android:layout_height="10dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_add_friend_2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:backgroundTint="@color/onPrimaryContainer"
+                                android:fontFamily="@font/poppins_bold"
+                                android:text="@string/btn_add_friend"
+                                android:textAllCaps="false"
+                                android:textColor="@color/onSurface"
+                                android:textSize="12sp"
+                                app:cornerRadius="10dp" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="250dp"
+                    android:layout_height="150dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    app:cardCornerRadius="15dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@color/secondary">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical"
+                            android:layout_marginHorizontal="15dp"
+                            android:layout_marginVertical="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_weight="1">
+
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:id="@+id/iv_user_photo_3"
+                                    android:layout_width="40dp"
+                                    android:layout_height="40dp"
+                                    android:background="@color/surface"
+                                    android:scaleType="centerCrop"
+                                    app:shapeAppearanceOverlay="@style/image_rounded" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_user_name_3"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/poppins_medium"
+                                    android:text="@string/user_name"
+                                    android:textColor="@color/onSecondary"
+                                    android:textSize="16sp"
+                                    android:layout_marginStart="10dp"
+                                    android:maxLines="1"/>
+
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_user_desc_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_desc"
+                                android:textColor="@color/onSecondary"
+                                android:textSize="12sp"
+                                android:maxLines="2"
+                                android:layout_weight="1"/>
+
+                            <Space
+                                android:layout_width="0dp"
+                                android:layout_height="10dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_add_friend_3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:backgroundTint="@color/onPrimaryContainer"
+                                android:fontFamily="@font/poppins_bold"
+                                android:text="@string/btn_add_friend"
+                                android:textAllCaps="false"
+                                android:textColor="@color/onSurface"
+                                android:textSize="12sp"
+                                app:cornerRadius="10dp" />
+
+                        </LinearLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="15dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Private Chat"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="15dp"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView4">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/primaryContainer"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Write thoughts, or ask for feedback on your progress in a private space."
+                        android:textColor="@color/onPrimaryContainer"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/onPrimaryContainer"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Open Private Chat"
+                        android:textAllCaps="false"
+                        android:textColor="@color/onSecondary"
+                        app:cornerRadius="10dp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView2">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@color/surface"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_home"
+                app:shapeAppearanceOverlay="@style/image_rounded" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_bold"
+                    android:maxLines="1"
+                    android:text="@string/user_name"
+                    android:textColor="@color/onBackground"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="I think I can work this out"
+                    android:textColor="@color/onBackground"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="20:00"
+                android:textColor="@color/onBackground"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="20dp"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Community Chat"
+            android:textColor="@color/onBackground"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginHorizontal="20dp"
+            app:cardCornerRadius="15dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView5">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/primaryContainer"
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tell us about a challenge or something related to your progress."
+                        android:textColor="@color/onPrimaryContainer"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:backgroundTint="@color/onPrimaryContainer"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Open Community Chat"
+                        android:textAllCaps="false"
+                        android:textColor="@color/onSecondary"
+                        app:cornerRadius="10dp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialCardView3">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@color/surface"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_home"
+                    app:shapeAppearanceOverlay="@style/image_rounded" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="5dp"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="@string/user_name"
+                        android:textColor="@color/onBackground"
+                        android:textSize="14sp"/>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="3 days ago"
+                        android:textColor="@color/onBackground"
+                        android:textSize="12sp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Nervous when speaking English"
+                android:textColor="@color/onBackground"
+                android:textSize="14sp"
+                android:maxLines="1"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Hey guys, I’m really nervous about speaking English because I’m scared people will laugh at my pronunciation or grammar mistakes. It’s stopping me from even trying. Have any of you dealt with this fear? How did you overcome it?"
+                android:textColor="@color/onBackground"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:text="Like"
+                    android:textColor="@color/onPrimary"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:layout_weight="1"
+                    app:iconGravity="textStart"
+                    app:icon="@drawable/ic_thumb_up"
+                    app:cornerRadius="10dp"/>
+
+                <Space
+                    android:layout_width="10dp"
+                    android:layout_height="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/primary"
+                    android:text="Comment"
+                    android:textColor="@color/onPrimary"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:layout_weight="1"
+                    app:iconGravity="textStart"
+                    app:icon="@drawable/ic_comment"
+                    app:cornerRadius="10dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

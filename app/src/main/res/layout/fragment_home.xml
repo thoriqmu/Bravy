@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/primary"
+        android:layout_marginBottom="50dp"
+        app:layout_constraintBottom_toBottomOf="@+id/cv_progress"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_profile_photo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_home"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/surface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/image_rounded" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_user_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/greeting_user_name"
+        android:textColor="@color/onPrimary"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_profile_photo" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_start_learning"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="@string/start_learning"
+        android:textColor="@color/onPrimary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_name" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cv_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_start_learning">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/secondary">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_my_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/progress"
+                android:textColor="@color/onSecondary"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_progress_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/poppins_bold"
+                android:text="@string/percent_progress"
+                android:textColor="@color/onSecondary"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="@+id/tv_my_progress"
+                app:layout_constraintStart_toStartOf="@+id/tv_my_progress"
+                app:layout_constraintTop_toBottomOf="@+id/tv_my_progress" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_task_progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:text="@string/task_progress"
+                android:textAlignment="textEnd"
+                android:textColor="@color/onSecondary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_progress_result"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tv_progress_result"
+                app:layout_constraintTop_toTopOf="@+id/tv_progress_result" />
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/indicator_progress_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="25dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="15dp"
+                android:max="100"
+                android:progress="27"
+                app:indicatorColor="@color/primary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_progress_result"
+                app:trackColor="@color/white" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_title_shortcut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/poppins_bold"
+        android:text="@string/title_shortcut_card"
+        android:textColor="@color/onBackground"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cv_progress" />
+
+
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:scrollbars="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_shortcut">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="250dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="20dp"
+                app:cardCornerRadius="15dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/primaryContainer">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="15dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/speaking_learning"
+                            android:textColor="@color/onPrimaryContainer"
+                            android:textSize="16sp" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="10dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_speaking_learning"
+                            android:layout_width="95dp"
+                            android:layout_height="40dp"
+                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:fontFamily="@font/poppins_bold"
+                            android:padding="0dp"
+                            android:text="@string/btn_click_here"
+                            android:textAllCaps="false"
+                            android:textColor="@color/onSurface"
+                            android:textSize="12sp"
+                            app:cornerRadius="10dp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="250dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="10dp"
+                app:cardCornerRadius="15dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/primaryContainer">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="15dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/community_chat"
+                            android:textColor="@color/onPrimaryContainer"
+                            android:textSize="16sp" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="10dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_community_chat"
+                            android:layout_width="95dp"
+                            android:layout_height="40dp"
+                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:fontFamily="@font/poppins_bold"
+                            android:padding="0dp"
+                            android:text="@string/btn_click_here"
+                            android:textAllCaps="false"
+                            android:textColor="@color/onSurface"
+                            android:textSize="12sp"
+                            app:cornerRadius="10dp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="250dp"
+                android:layout_height="120dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                app:cardCornerRadius="15dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/primaryContainer">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginVertical="15dp"
+                        android:layout_marginStart="20dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="@string/private_chat"
+                            android:textColor="@color/onPrimaryContainer"
+                            android:textSize="16sp" />
+
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="10dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_private_chat"
+                            android:layout_width="95dp"
+                            android:layout_height="40dp"
+                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:fontFamily="@font/poppins_bold"
+                            android:padding="0dp"
+                            android:text="@string/btn_click_here"
+                            android:textAllCaps="false"
+                            android:textColor="@color/onSurface"
+                            android:textSize="12sp"
+                            app:cornerRadius="10dp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_title_last_speaking"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="15dp"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/title_last_speaking"
+        android:textColor="@color/onBackground"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/materialCardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="15dp"
+        app:cardCornerRadius="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title_last_speaking">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/secondary">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginVertical="15dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/last_speaking_place"
+                    android:textColor="@color/onSecondary"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tv_last_speaking_result"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="@string/speaking_result"
+                    android:textColor="@color/onSecondary"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
+        android:text="@string/title_mission"
+        android:textColor="@color/onBackground"
+        android:textSize="16sp"
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
