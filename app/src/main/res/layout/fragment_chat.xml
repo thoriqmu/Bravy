@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.chat.ChatFragment">
+    tools:context=".ui.view.chat.ChatFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -388,6 +388,7 @@
                         android:textSize="14sp" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_private_chat"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:backgroundTint="@color/onPrimaryContainer"
@@ -404,7 +405,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
-            android:id="@+id/linearLayout"
+            android:id="@+id/layout_recent_chat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -416,6 +417,7 @@
             app:layout_constraintTop_toBottomOf="@+id/materialCardView2">
 
             <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_recent_chat"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@color/surface"
@@ -431,6 +433,7 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/recent_chat_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/poppins_bold"
@@ -440,6 +443,7 @@
                     android:textSize="12sp" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/recent_chat_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
@@ -450,6 +454,7 @@
             </LinearLayout>
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/recent_chat_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
@@ -470,7 +475,7 @@
             android:textColor="@color/onBackground"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/layout_recent_chat" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView3"
@@ -508,6 +513,7 @@
                         android:textSize="14sp" />
 
                     <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_community_chat"
                         android:layout_width="match_parent"
                         android:layout_height="40dp"
                         android:backgroundTint="@color/onPrimaryContainer"
@@ -524,6 +530,7 @@
         </com.google.android.material.card.MaterialCardView>
 
         <LinearLayout
+            android:id="@+id/layout_community"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"

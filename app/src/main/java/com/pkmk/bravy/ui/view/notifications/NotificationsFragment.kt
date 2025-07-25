@@ -1,17 +1,17 @@
-package com.pkmk.bravy.ui.chat
+package com.pkmk.bravy.ui.view.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.pkmk.bravy.databinding.FragmentChatBinding
+import com.pkmk.bravy.databinding.FragmentNotificationsBinding
+import com.pkmk.bravy.ui.viewmodel.NotificationsViewModel
 
-class ChatFragment : Fragment() {
+class NotificationsFragment : Fragment() {
 
-    private var _binding: FragmentChatBinding? = null
+    private var _binding: FragmentNotificationsBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,10 +22,10 @@ class ChatFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val chatViewModel =
-            ViewModelProvider(this).get(ChatViewModel::class.java)
+        val notificationsViewModel =
+            ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
-        _binding = FragmentChatBinding.inflate(inflater, container, false)
+        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         return root

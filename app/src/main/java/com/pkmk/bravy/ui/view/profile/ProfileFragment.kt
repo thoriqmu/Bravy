@@ -1,4 +1,4 @@
-package com.pkmk.bravy.ui.profile
+package com.pkmk.bravy.ui.view.profile
 
 import androidx.fragment.app.viewModels
 import android.os.Bundle
@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.pkmk.bravy.R
+import com.pkmk.bravy.ui.viewmodel.ProfileViewModel
 
 class ProfileFragment : Fragment() {
 

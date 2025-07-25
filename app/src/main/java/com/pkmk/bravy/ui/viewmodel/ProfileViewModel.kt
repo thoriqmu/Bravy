@@ -1,4 +1,4 @@
-package com.pkmk.bravy.ui.profile
+package com.pkmk.bravy.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 

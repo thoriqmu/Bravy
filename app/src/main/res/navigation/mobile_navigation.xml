@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.pkmk.bravy.ui.home.HomeFragment"
+        android:name="com.pkmk.bravy.ui.view.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_chat"
-        android:name="com.pkmk.bravy.ui.chat.ChatFragment"
+        android:name="com.pkmk.bravy.ui.view.chat.ChatFragment"
         android:label="@string/title_chat"
         tools:layout="@layout/fragment_chat" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.pkmk.bravy.ui.notifications.NotificationsFragment"
+        android:name="com.pkmk.bravy.ui.view.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
 
     <fragment
         android:id="@+id/navigation_profile"
-        android:name="com.pkmk.bravy.ui.profile.ProfileFragment"
+        android:name="com.pkmk.bravy.ui.view.profile.ProfileFragment"
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 </navigation>

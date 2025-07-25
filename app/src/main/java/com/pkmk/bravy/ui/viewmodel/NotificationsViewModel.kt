@@ -1,4 +1,4 @@
-package com.pkmk.bravy.ui.notifications
+package com.pkmk.bravy.ui.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
