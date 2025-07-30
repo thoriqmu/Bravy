@@ -12,5 +12,6 @@ data class User(
     val redeemCode: String? = null,
     val bio: String? = null,
     val image: String? = null,
-    val chats: Map<String, Boolean>? = null
+    val chats: Map<String, Boolean>? = null,
+    val lastAnxietyLevel: String? = null
 )

@@ -1,5 +1,7 @@
 package com.pkmk.bravy.ui.view.home
 
+import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,6 +17,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentHomeBinding
+import com.pkmk.bravy.ui.view.chat.PrivateChatActivity
+import com.pkmk.bravy.ui.view.practice.PracticeActivity
 import com.pkmk.bravy.ui.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,77 +45,64 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.loadUserProfile()
+        setupObservers()
 
-        // Observe user data
+        binding.btnSpeakingLearning.setOnClickListener {
+            val intent = Intent(requireContext(), PracticeActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnPrivateChat.setOnClickListener {
+            val intent = Intent(requireContext(), PrivateChatActivity::class.java)
+            startActivity(intent)
+        }
+    }
+
+    @SuppressLint("StringFormatInvalid")
+    private fun setupObservers() {
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
             result.onSuccess { user ->
+                // Gunakan string resource untuk format yang lebih baik
                 binding.tvUserName.text = "Hi,${user.name.split(" ").firstOrNull() ?: "User"}!"
-
-                // Use viewLifecycleOwner.lifecycleScope for coroutines tied to the view's lifecycle
-                viewLifecycleOwner.lifecycleScope.launch {
-                    try {
-                        val imageName = user.image ?: "default.jpg"
-                        val imageRef = storageRef.child(imageName)
-                        val downloadUrl = imageRef.downloadUrl.await()
-
-                        // Ensure fragment is still added before using Glide
-                        if (!isAdded) return@launch
-
-                        Glide.with(this@HomeFragment)
-                            .load(downloadUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(binding.ivProfilePhoto)
-                    } catch (e: Exception) {
-                        if (!isAdded) return@launch // Check again in case of error before next Glide call
-                        Toast.makeText(requireContext(), "Failed to load profile picture: ${e.message}", Toast.LENGTH_SHORT).show()
-                        // Muat default.jpg jika gagal
-                        try {
-                            val defaultUrl = storageRef.child("default.jpg").downloadUrl.await()
-                            if (!isAdded) return@launch
-
-                            Glide.with(this@HomeFragment)
-                                .load(defaultUrl)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(binding.ivProfilePhoto)
-                        } catch (innerE: Exception) {
-                            if (!isAdded) return@launch
-
-                            Glide.with(this@HomeFragment)
-                                .load(R.drawable.ic_profile) // Load placeholder directly
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(binding.ivProfilePhoto)
-                        }
-                    }
-                }
+                binding.tvLastSpeakingResult.text = user.lastAnxietyLevel
+                loadProfileImage(user.image)
             }.onFailure { exception ->
-                // Ensure fragment is still added before UI updates from LiveData observer
-                if (!isAdded) return@observe
-
                 Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                binding.tvUserName.text = "Hello,\nUser!"
-
-                viewLifecycleOwner.lifecycleScope.launch {
-                    try {
-                        val defaultUrl = storageRef.child("default.jpg").downloadUrl.await()
-                        if (!isAdded) return@launch
-
-                        Glide.with(this@HomeFragment)
-                            .load(defaultUrl)
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(binding.ivProfilePhoto)
-                    } catch (e: Exception) {
-                        if (!isAdded) return@launch
-
-                        Glide.with(this@HomeFragment)
-                            .load(R.drawable.ic_profile) // Load placeholder directly
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .into(binding.ivProfilePhoto)
-                    }
-                }
+                binding.tvUserName.text = getString(R.string.greeting_user_name, "User")
+                binding.tvLastSpeakingResult.text = "None"
+                // Panggil fungsi yang sama untuk memuat gambar default
+                loadProfileImage(null)
             }
         }
     }
 
+    // FUNGSI HELPER BARU UNTUK MENGHINDARI DUPLIKASI
+    private fun loadProfileImage(imageName: String?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            // Coba muat gambar dari nama yang diberikan
+            val imageUrl = getImageUrl(imageName)
+            // Jika gagal, coba muat "default.jpg"
+                ?: getImageUrl("default.jpg")
+
+            if (isAdded) { // Pastikan fragment masih terpasang
+                Glide.with(this@HomeFragment)
+                    .load(imageUrl ?: R.drawable.ic_profile) // Jika semua URL gagal, muat drawable lokal
+                    .circleCrop() // Opsional: Membuat gambar jadi bulat
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivProfilePhoto)
+            }
+        }
+    }
+
+    // Fungsi suspend kecil untuk mendapatkan URL, mengembalikan null jika gagal
+    private suspend fun getImageUrl(imageName: String?): String? {
+        if (imageName == null) return null
+        return try {
+            storageRef.child(imageName).downloadUrl.await().toString()
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

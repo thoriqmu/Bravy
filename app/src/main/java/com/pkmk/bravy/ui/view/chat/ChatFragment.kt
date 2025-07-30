@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.storage.FirebaseStorage
@@ -41,87 +42,56 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-// Observe recent chat users
-        viewModel.recentChatUsers.observe(viewLifecycleOwner) { result ->
-            result.onSuccess { usersWithChatIds ->
-                if (usersWithChatIds.isNotEmpty()) {
-                    val (user, chatId) = usersWithChatIds.first() // Ambil user dan chatId
+        viewModel.userProfile.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { user ->
+                loadUserImage(user.image)
+            }.onFailure { exception ->
+                Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+                loadUserImage(null)
+            }
+        }
+
+        viewModel.recentChats.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { recentChats ->
+                if (recentChats.isNotEmpty()) {
+                    // Ambil chat pertama dari daftar yang sudah diurutkan
+                    val firstChat = recentChats.first()
+                    val user = firstChat.user
+                    val chatId = firstChat.chatId
+                    val lastMessage = firstChat.lastMessage
+
                     binding.recentChatName.text = user.name
 
-                    // AMBIL DAN TAMPILKAN PESAN TERAKHIR
-                    viewModel.getLastMessage(chatId).observe(viewLifecycleOwner) { lastMessage ->
-                        binding.recentChatText.text = when (lastMessage?.type) {
-                            "text" -> lastMessage.content
-                            "image" -> "Image Media"
-                            "audio" -> "Audio Media"
-                            else -> "No messages"
-                        }
+                    // Gunakan data pesan terakhir yang sudah ada, JANGAN observe lagi
+                    binding.recentChatText.text = when (lastMessage?.type) {
+                        "text" -> lastMessage.content
+                        "image" -> "Image"
+                        "audio" -> "Audio"
+                        else -> "No messages yet"
                     }
+                    binding.recentChatTime.text = formatTimestamp(lastMessage?.timestamp)
 
-                    viewModel.getLastTimestamp(chatId).observe(viewLifecycleOwner) { lastTimestamp ->
-                        binding.recentChatTime.text = lastTimestamp?.let {
-                            val currentTime = System.currentTimeMillis()
-                            val timeDifference = currentTime - it
-                            val seconds = timeDifference / 1000
-                            val minutes = seconds / 60
-                            val hours = minutes / 60
-                            val days = hours / 24
-                            when {
-                                days > 0 -> "$days days ago"
-                                hours > 0 -> "$hours hours ago"
-                                minutes > 0 -> "$minutes minutes ago"
-                                else -> "$seconds seconds ago"
-                            }
-                        }.toString()
-                    }
+                    user.image?.let { loadProfileImage(it) }
 
-                    CoroutineScope(Dispatchers.Main).launch {
-                        try {
-                            val imageName = user.image ?: "default.jpg"
-                            val imageRef = storageRef.child(imageName)
-                            val downloadUrl = imageRef.downloadUrl.await()
-                            Glide.with(this@ChatFragment)
-                                .load(downloadUrl)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(binding.ivRecentChat)
-                        } catch (e: Exception) {
-                            Glide.with(this@ChatFragment)
-                                .load(R.drawable.ic_profile)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(binding.ivRecentChat)
-                        }
-                    }
                     binding.layoutRecentChat.setOnClickListener {
-                        val intent = Intent(requireContext(), ChatFragment::class.java).apply {
-                            putExtra("CHAT_ID", chatId) // Gunakan chatId yang benar
-                            putExtra("OTHER_USER_ID", user.uid)
-                            putExtra("OTHER_USER_NAME", user.name)
-                            putExtra("OTHER_USER_IMAGE", user.image)
-                        }
-                        startActivity(intent)
+                        // PERBAIKI NAVIGASI DI SINI: Gunakan Navigation Component
+                        // Contoh: findNavController().navigate(R.id.action_to_chatDetail, bundle)
+                        Toast.makeText(requireContext(), "TODO: Fix navigation", Toast.LENGTH_SHORT).show()
                     }
+
                 } else {
+                    // Handle jika tidak ada recent chat
                     binding.recentChatName.text = "No Recent Chat"
                     binding.recentChatText.text = "Start a new conversation"
-                    Glide.with(this@ChatFragment)
-                        .load(R.drawable.ic_profile)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.ivRecentChat)
                 }
             }.onFailure { exception ->
-                binding.recentChatName.text = "User Name"
-                binding.recentChatText.text = "Failed to load chat"
-                Glide.with(this@ChatFragment)
-                    .load(R.drawable.ic_profile)
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.ivRecentChat)
-                Toast.makeText(requireContext(), "Error loading recent chat: ${exception.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
         // Handle private chat click
         binding.btnPrivateChat.setOnClickListener {
-            val intent = Intent(requireContext(), ChatFragment::class.java)
+            val intent = Intent(requireContext(), PrivateChatActivity::class.java)
             startActivity(intent)
         }
 
@@ -131,7 +101,83 @@ class ChatFragment : Fragment() {
             startActivity(intent)
         }
 
+        viewModel.loadUserProfile()
         viewModel.loadRecentChatUsers()
+    }
+
+    private fun loadUserImage(imageName: String?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                // Coba muat gambar dari nama yang diberikan, jika null, gunakan default.jpg
+                val finalImageName = imageName ?: "default.jpg"
+                val imageUrl = storageRef.child(finalImageName).downloadUrl.await()
+
+                Glide.with(this@ChatFragment)
+                    .load(imageUrl)
+                    .circleCrop() // Membuat gambar jadi lingkaran
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivProfilePhoto)
+
+            } catch (e: Exception) {
+                // Jika semua gagal, muat gambar placeholder dari drawable
+                Glide.with(this@ChatFragment)
+                    .load(R.drawable.ic_profile)
+                    .circleCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivProfilePhoto)
+            }
+        }
+    }
+
+    private fun loadProfileImage(imageUrl: String?) {
+        if (imageUrl.isNullOrEmpty()) {
+            binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
+            return
+        }
+
+        val imageLoader = Glide.with(this)
+
+        if (imageUrl.startsWith("https://") || imageUrl.startsWith("http://")) {
+            imageLoader.load(imageUrl)
+                .circleCrop()
+                .placeholder(R.drawable.ic_profile)
+                .error(R.drawable.ic_profile)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(binding.ivRecentChat)
+        } else {
+            // Jika hanya nama file, ambil URL dari Firebase Storage
+            viewLifecycleOwner.lifecycleScope.launch {
+                try {
+                    val storageRef = FirebaseStorage.getInstance().getReference("picture").child(imageUrl)
+                    val downloadUrl = storageRef.downloadUrl.await()
+                    imageLoader.load(downloadUrl)
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_profile)
+                        .error(R.drawable.ic_profile)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .into(binding.ivRecentChat)
+                } catch (e: Exception) {
+                    // Jika gagal mengambil dari storage, muat gambar default
+                    binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
+                }
+            }
+        }
+    }
+
+    private fun formatTimestamp(timestamp: Long?): String {
+        if (timestamp == null) return "Unknown"
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - timestamp
+        val seconds = elapsedTime / 1000
+        val minutes = seconds / 60
+        val hours = minutes / 60
+        val days = hours / 24
+        return when {
+            days > 0 -> "$days days ago"
+            hours > 0 -> "$hours hours ago"
+            minutes > 0 -> "$minutes minutes ago"
+            else -> "$seconds seconds ago"
+        }
     }
 
     override fun onDestroyView() {

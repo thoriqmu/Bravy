@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bravy">
         <activity
+            android:name=".ui.view.chat.PrivateChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.view.practice.PracticeActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.auth.SignupActivity"
             android:exported="false" />
         <activity

@@ -180,6 +180,18 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
+    suspend fun getParticipantUids(chatId: String): List<String> {
+        try {
+            val snapshot = privateChatsRef.child(chatId).child("participants").get().await()
+            val participantUids = snapshot.children.mapNotNull { it.key }
+            Log.d(TAG, "Fetched ${participantUids.size} participant UIDs for chat $chatId")
+            return participantUids
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching participant UIDs for chat $chatId: ${e.message}")
+            return emptyList()
+        }
+    }
+
     suspend fun getLastChatMessage(chatId: String): Message? {
         try {
             val snapshot = privateChatsRef.child(chatId).child("messages")

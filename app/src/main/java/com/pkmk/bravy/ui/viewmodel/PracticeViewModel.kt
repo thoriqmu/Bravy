@@ -15,7 +15,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(
+class PracticeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val firebaseAuth: FirebaseAuth,
 ) : ViewModel() {
