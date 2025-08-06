@@ -11,6 +11,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.databinding.ActivityMainBinding
 import com.pkmk.bravy.ui.view.auth.LoginActivity
+import com.pkmk.bravy.ui.view.auth.OnboardingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         if (auth.currentUser == null) {
-            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
             return
         }
