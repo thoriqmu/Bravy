@@ -64,7 +64,7 @@ class ChatViewModel @Inject constructor(
                     val otherUserUid = participantUids.firstOrNull { it != currentUser.uid }
 
                     if (otherUserUid != null) {
-                        val otherUser = firebaseDataSource.getUser(otherUserUid) // Asumsi fungsi ini ada
+                        val otherUser = firebaseDataSource.getUser(otherUserUid)
                         val lastMessage = firebaseDataSource.getLastChatMessage(chatId)
 
                         if (otherUser != null) {

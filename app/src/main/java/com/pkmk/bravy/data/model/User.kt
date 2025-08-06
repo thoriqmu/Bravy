@@ -5,6 +5,7 @@ import com.google.firebase.database.IgnoreExtraProperties
 import kotlinx.parcelize.Parcelize
 
 @IgnoreExtraProperties
+@Parcelize
 data class User(
     val uid: String = "",
     val name: String = "",
@@ -14,4 +15,4 @@ data class User(
     val image: String? = null,
     val chats: Map<String, Boolean>? = null,
     val lastAnxietyLevel: String? = null
-)
+) : Parcelable

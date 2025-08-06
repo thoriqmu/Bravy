@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dp"
+    android:clipToPadding="false">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_current_user_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_reply_content_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chat_bubble_sender"
+            android:paddingVertical="8dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="16dp"
+            android:textColor="@color/onPrimary"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Ini adalah contoh balasan..."
+            tools:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/fl_message_content_current"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/chat_bubble_sender"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_reply_content_current">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_message_content_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="280dp"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="20dp"
+                android:textColor="@color/onPrimary"
+                android:textSize="14sp"
+                tools:text="Ini pesan dari pengguna saat ini. Bisa jadi ini pesan yang sangat panjang sekali." />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_message_image_current"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_audio_container_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btn_play_audio_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_play" />
+
+                <TextView
+                    android:id="@+id/tv_audio_duration_current"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/onPrimary"
+                    tools:text="0:15" />
+
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_timestamp_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="4dp"
+                android:textColor="@color/surface"
+                android:textSize="11sp"
+                tools:text="12:00 PM" />
+
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_other_user_message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="60dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_reply_content_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chat_bubble_receiver"
+            android:paddingVertical="8dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="8dp"
+            android:textColor="@color/onPrimaryContainer"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Ini adalah contoh balasan..."
+            tools:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/fl_message_content_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/chat_bubble_receiver"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_reply_content_other">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_message_content_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="280dp"
+                android:paddingStart="24dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="20dp"
+                android:textColor="@color/onPrimaryContainer"
+                android:textSize="14sp"
+                tools:text="Ini pesan dari pengguna lain." />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/iv_message_image_other"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/ll_audio_container_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btn_play_audio_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/ic_play" />
+
+                <TextView
+                    android:id="@+id/tv_audio_duration_other"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="8dp"
+                    android:textColor="@color/onPrimaryContainer"
+                    tools:text="0:15" />
+            </LinearLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_timestamp_other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                android:textColor="@color/surface"
+                android:textSize="11sp"
+                tools:text="12:01 PM" />
+
+        </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

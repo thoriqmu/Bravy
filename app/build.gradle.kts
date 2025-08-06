@@ -99,4 +99,5 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.jackson.annotations)
     implementation(libs.glide)
+    implementation(libs.androidx.viewpager2)
 }
