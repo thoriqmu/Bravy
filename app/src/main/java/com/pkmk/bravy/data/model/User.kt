@@ -14,5 +14,6 @@ data class User(
     val bio: String? = null,
     val image: String? = null,
     val chats: Map<String, Boolean>? = null,
-    val lastAnxietyLevel: String? = null
+    val lastAnxietyLevel: String? = null,
+    val user_progress: Map<String, UserProgress>? = null
 ) : Parcelable

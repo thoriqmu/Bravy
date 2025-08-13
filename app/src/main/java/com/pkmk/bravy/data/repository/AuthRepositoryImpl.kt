@@ -1,6 +1,7 @@
 package com.pkmk.bravy.data.repository
 
 import android.util.Log
+import com.google.firebase.database.DataSnapshot
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.source.FirebaseDataSource
@@ -125,6 +126,15 @@ class AuthRepositoryImpl @Inject constructor(
             Result.success(imageName)
         } catch (e: Exception) {
             Log.e(TAG, "Error uploading profile picture for $uid: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getLearningLevels(): Result<DataSnapshot> {
+        return try {
+            val snapshot = dataSource.getLearningLevels()
+            Result.success(snapshot)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

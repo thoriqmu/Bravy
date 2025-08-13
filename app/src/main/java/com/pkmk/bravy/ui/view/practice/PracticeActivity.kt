@@ -1,5 +1,6 @@
 package com.pkmk.bravy.ui.view.practice
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -28,6 +29,41 @@ class PracticeActivity : AppCompatActivity() {
             }.onFailure { exception ->
                 binding.tvLastSpeakingResult.text = "None"
             }
+        }
+
+        binding.btnWatch1.setOnClickListener {
+            val intent = Intent(this, LearningActivity::class.java).apply {
+                putExtra("LEVEL_ID", "level_1")
+            }
+            startActivity(intent)
+        }
+
+        binding.btnWatch2.setOnClickListener {
+            val intent = Intent(this, LearningActivity::class.java).apply {
+                putExtra("LEVEL_ID", "level_2")
+            }
+            startActivity(intent)
+        }
+
+        binding.btnWatch3.setOnClickListener {
+            val intent = Intent(this, LearningActivity::class.java).apply {
+                putExtra("LEVEL_ID", "level_3")
+            }
+            startActivity(intent)
+        }
+
+        binding.btnWatch4.setOnClickListener {
+            val intent = Intent(this, LearningActivity::class.java).apply {
+                putExtra("LEVEL_ID", "level_4")
+            }
+            startActivity(intent)
+        }
+
+        binding.btnWatch5.setOnClickListener {
+            val intent = Intent(this, LearningActivity::class.java).apply {
+                putExtra("LEVEL_ID", "level_5")
+            }
+            startActivity(intent)
         }
 
         binding.btnBack.setOnClickListener {

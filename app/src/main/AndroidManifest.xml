@@ -2,6 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -13,15 +21,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bravy">
         <activity
+            android:name=".ui.view.practice.LearningActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.auth.OnboardingActivity"
             android:exported="false" />
         <activity
             android:name=".ui.view.chat.DetailPrivateChatActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.view.chat.DetailChatActivity"
-            android:exported="false"
-            android:theme="@style/Theme.Bravy" />
         <activity
             android:name=".ui.view.chat.PrivateChatActivity"
             android:exported="false" />

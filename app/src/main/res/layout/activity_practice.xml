@@ -173,7 +173,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Very Relaxing"
+                            android:text="Level 1"
                             android:textColor="@color/onPrimaryContainer"
                             android:textSize="14sp"
                             android:layout_weight="1"/>
@@ -227,7 +227,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Relaxing"
+                            android:text="Level 2"
                             android:textColor="@color/onPrimaryContainer"
                             android:textSize="14sp"
                             android:layout_weight="1"/>
@@ -281,7 +281,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Mildly Anxious"
+                            android:text="Level 3"
                             android:textColor="@color/onPrimaryContainer"
                             android:textSize="14sp"
                             android:layout_weight="1"/>
@@ -335,7 +335,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Anxious"
+                            android:text="Level 4"
                             android:textColor="@color/onPrimaryContainer"
                             android:textSize="14sp"
                             android:layout_weight="1"/>
@@ -389,7 +389,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_medium"
-                            android:text="Very Anxious"
+                            android:text="Level 5"
                             android:textColor="@color/onPrimaryContainer"
                             android:textSize="14sp"
                             android:layout_weight="1"/>

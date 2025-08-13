@@ -260,4 +260,13 @@ class FirebaseDataSource @Inject constructor(
     private fun generateChatId(user1Uid: String, user2Uid: String): String {
         return if (user1Uid < user2Uid) "${user1Uid}_$user2Uid" else "${user2Uid}_$user1Uid"
     }
+
+    suspend fun getLearningLevels(): DataSnapshot {
+        return try {
+            database.getReference("learning_levels").get().await()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching learning levels: ${e.message}")
+            throw e
+        }
+    }
 }

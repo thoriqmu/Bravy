@@ -100,4 +100,6 @@ dependencies {
     implementation(libs.jackson.annotations)
     implementation(libs.glide)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 }
