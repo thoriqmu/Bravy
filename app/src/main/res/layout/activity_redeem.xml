@@ -33,6 +33,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
+        app:hintEnabled="false"
+        app:boxStrokeColor="@color/primary"
         app:boxCornerRadiusBottomEnd="15dp"
         app:boxCornerRadiusBottomStart="15dp"
         app:boxCornerRadiusTopEnd="15dp"
