@@ -80,12 +80,13 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_user_email">
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_profile_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"
             android:drawableLeft="@drawable/ic_profile"
             android:drawableRight="@drawable/ic_right"
-            android:text="Setting"
+            android:text="Profile Setting"
             android:textAlignment="textStart"
             android:textAllCaps="false"
             android:textColor="@color/onBackground"
@@ -95,6 +96,7 @@
             app:cornerRadius="0dp"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_friend_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"
@@ -110,6 +112,7 @@
             app:cornerRadius="0dp"/>
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/transparent"

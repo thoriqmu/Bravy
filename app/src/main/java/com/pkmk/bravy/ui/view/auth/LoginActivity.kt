@@ -63,6 +63,7 @@ class LoginActivity : AppCompatActivity() {
     @SuppressLint("GestureBackNavigation")
     override fun onBackPressed() {
         super.onBackPressed()
-        finishAffinity()
+        startActivity(Intent(this, OnboardingActivity::class.java))
+        finish()
     }
 }

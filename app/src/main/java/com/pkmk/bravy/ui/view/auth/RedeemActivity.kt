@@ -1,5 +1,6 @@
 package com.pkmk.bravy.ui.view.auth
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -53,5 +54,12 @@ class RedeemActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    @SuppressLint("GestureBackNavigation")
+    override fun onBackPressed() {
+        super.onBackPressed()
+        startActivity(Intent(this, OnboardingActivity::class.java))
+        finish()
     }
 }
