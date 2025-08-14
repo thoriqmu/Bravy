@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pkmk.bravy.data.model.User // Pastikan model User di-import
 import com.pkmk.bravy.databinding.ActivityPrivateChatBinding
@@ -33,12 +34,12 @@ class PrivateChatActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        chatAdapter = PrivateChatAdapter { recentChat ->
-            // Menangani klik pada item: Navigasi ke DetailPrivateChatActivity
+        // PERBAIKAN: Berikan lifecycleScope ke adapter
+        chatAdapter = PrivateChatAdapter(lifecycleScope) { recentChat ->
             val intent = Intent(this, DetailPrivateChatActivity::class.java).apply {
-                // Mengirim data yang diperlukan ke activity berikutnya
                 putExtra(DetailPrivateChatActivity.EXTRA_CHAT_ID, recentChat.chatId)
-                putExtra(DetailPrivateChatActivity.EXTRA_OTHER_USER, recentChat.user as User)
+                // Pastikan User adalah Parcelable
+                putExtra(DetailPrivateChatActivity.EXTRA_OTHER_USER, recentChat.user)
             }
             startActivity(intent)
         }
