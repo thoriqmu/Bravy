@@ -32,6 +32,12 @@ class ChatViewModel @Inject constructor(
     private val _recentChats = MutableLiveData<Result<List<RecentChat>>>()
     val recentChats: LiveData<Result<List<RecentChat>>> = _recentChats
 
+    private val _suggestedFriends = MutableLiveData<Result<List<User>>>()
+    val suggestedFriends: LiveData<Result<List<User>>> = _suggestedFriends
+
+    private val _friendActionStatus = MutableLiveData<Result<Unit>>()
+    val friendActionStatus: LiveData<Result<Unit>> = _friendActionStatus
+
     private val TAG = "ChatViewModel"
 
     fun loadUserProfile() {
@@ -83,6 +89,30 @@ class ChatViewModel @Inject constructor(
             } finally {
                 _isLoading.value = false
             }
+        }
+    }
+
+    fun loadSuggestedFriends() {
+        viewModelScope.launch {
+            val currentUid = auth.currentUser?.uid ?: return@launch
+            val result = authRepository.getSuggestedFriends(currentUid, 3)
+            _suggestedFriends.postValue(result)
+        }
+    }
+
+    fun sendFriendRequest(toUid: String) {
+        viewModelScope.launch {
+            val fromUid = auth.currentUser?.uid ?: return@launch
+            val result = authRepository.sendFriendRequest(fromUid, toUid)
+            _friendActionStatus.postValue(result)
+        }
+    }
+
+    fun cancelFriendRequest(toUid: String) {
+        viewModelScope.launch {
+            val fromUid = auth.currentUser?.uid ?: return@launch
+            val result = authRepository.cancelFriendRequest(fromUid, toUid)
+            _friendActionStatus.postValue(result)
         }
     }
 }

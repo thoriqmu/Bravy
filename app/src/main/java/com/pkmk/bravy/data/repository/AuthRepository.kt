@@ -15,4 +15,7 @@ interface AuthRepository {
     suspend fun updateUser(user: User): Result<Unit>
     suspend fun uploadProfilePicture(uid: String, imageFile: File): Result<String>
     suspend fun getLearningLevels(): Result<DataSnapshot>
+    suspend fun getSuggestedFriends(currentUid: String, limit: Int): Result<List<User>>
+    suspend fun sendFriendRequest(fromUid: String, toUid: String): Result<Unit>
+    suspend fun cancelFriendRequest(fromUid: String, toUid: String): Result<Unit>
 }

@@ -2,6 +2,7 @@ package com.pkmk.bravy.ui.view.chat
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentChatBinding
+import com.pkmk.bravy.ui.adapter.SuggestedFriendAdapter
 import com.pkmk.bravy.ui.viewmodel.ChatViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +31,7 @@ class ChatFragment : Fragment() {
     private val binding get() = _binding!!
     private val viewModel: ChatViewModel by viewModels()
     private val storageRef = FirebaseStorage.getInstance().getReference("picture")
+    private lateinit var suggestedFriendAdapter: SuggestedFriendAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,12 +45,30 @@ class ChatFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupSuggestedFriendsAdapter()
+
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
             result.onSuccess { user ->
                 loadUserImage(user.image)
             }.onFailure { exception ->
                 Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
                 loadUserImage(null)
+            }
+        }
+
+        viewModel.suggestedFriends.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { users ->
+                // TAMBAHKAN LOG INI untuk verifikasi
+                Log.d("ChatFragment", "Successfully loaded ${users.size} suggested friends. Updating adapter.")
+                suggestedFriendAdapter.updateUsers(users)
+            }.onFailure {
+                Toast.makeText(requireContext(), "Failed to load suggestions", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        viewModel.friendActionStatus.observe(viewLifecycleOwner) { result ->
+            result.onFailure {
+                Toast.makeText(requireContext(), "Action failed: ${it.message}", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -103,6 +124,7 @@ class ChatFragment : Fragment() {
 
         viewModel.loadUserProfile()
         viewModel.loadRecentChatUsers()
+        viewModel.loadSuggestedFriends()
     }
 
     private fun loadUserImage(imageName: String?) {
@@ -162,6 +184,17 @@ class ChatFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setupSuggestedFriendsAdapter() {
+        // PERUBAHAN: Berikan viewLifecycleOwner.lifecycleScope ke adapter
+        suggestedFriendAdapter = SuggestedFriendAdapter(
+            emptyList(),
+            viewLifecycleOwner.lifecycleScope, // <-- Pinjamkan scope di sini
+            onAddFriend = { user -> viewModel.sendFriendRequest(user.uid) },
+            onCancelRequest = { user -> viewModel.cancelFriendRequest(user.uid) }
+        )
+        binding.rvSuggestedFriends.adapter = suggestedFriendAdapter
     }
 
     private fun formatTimestamp(timestamp: Long?): String {

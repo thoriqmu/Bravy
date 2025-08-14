@@ -138,4 +138,47 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getSuggestedFriends(currentUid: String, limit: Int): Result<List<User>> {
+        return try {
+            val allUsersSnapshot = dataSource.getAllUsers()
+            val allUsers = allUsersSnapshot.children.mapNotNull { it.getValue(User::class.java) }
+
+            // Dapatkan data user saat ini
+            val currentUser = allUsers.firstOrNull { it.uid == currentUid }
+
+            // --- PERBAIKAN DI SINI ---
+            // Cek apakah 'friends' null. Jika ya, gunakan set kosong.
+            // Ini mencegah NullPointerException pada pengguna baru.
+            val existingFriendIds = currentUser?.friends?.keys ?: emptySet()
+
+            // Filter: bukan diri sendiri, dan belum ada di daftar teman (termasuk yang sudah dikirim permintaan)
+            val suggested = allUsers.filter { user ->
+                user.uid != currentUid && !existingFriendIds.contains(user.uid)
+            }.shuffled().take(limit) // Ambil 3 secara acak
+
+            Result.success(suggested)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error getting suggested friends: ${e.message}", e) // Tambahkan Log.e untuk debug
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendFriendRequest(fromUid: String, toUid: String): Result<Unit> {
+        return try {
+            dataSource.sendFriendRequest(fromUid, toUid)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun cancelFriendRequest(fromUid: String, toUid: String): Result<Unit> {
+        return try {
+            dataSource.removeFriendship(fromUid, toUid) // Menggunakan fungsi yang sama untuk cancel/reject
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

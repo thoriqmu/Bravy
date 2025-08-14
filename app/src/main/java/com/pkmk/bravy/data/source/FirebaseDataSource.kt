@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
+import com.pkmk.bravy.data.model.Friend
 import com.pkmk.bravy.data.model.Message
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
@@ -268,5 +269,31 @@ class FirebaseDataSource @Inject constructor(
             Log.e(TAG, "Error fetching learning levels: ${e.message}")
             throw e
         }
+    }
+
+    // Fungsi untuk mendapatkan semua pengguna (untuk sugesti)
+    suspend fun getAllUsers(): DataSnapshot {
+        return usersRef.get().await()
+    }
+
+    // Fungsi untuk mengirim permintaan pertemanan
+    suspend fun sendFriendRequest(fromUid: String, toUid: String) {
+        // Set status 'sent' untuk pengirim
+        usersRef.child(fromUid).child("friends").child(toUid).setValue(Friend(status = "sent")).await()
+        // Set status 'received' untuk penerima
+        usersRef.child(toUid).child("friends").child(fromUid).setValue(Friend(status = "received")).await()
+    }
+
+    // Fungsi untuk membatalkan/menolak permintaan
+    suspend fun removeFriendship(uid1: String, uid2: String) {
+        usersRef.child(uid1).child("friends").child(uid2).removeValue().await()
+        usersRef.child(uid2).child("friends").child(uid1).removeValue().await()
+    }
+
+    // Fungsi untuk menerima permintaan pertemanan
+    suspend fun acceptFriendRequest(accepterUid: String, senderUid: String) {
+        // Set status 'friend' untuk keduanya
+        usersRef.child(accepterUid).child("friends").child(senderUid).setValue(Friend(status = "friend")).await()
+        usersRef.child(senderUid).child("friends").child(accepterUid).setValue(Friend(status = "friend")).await()
     }
 }

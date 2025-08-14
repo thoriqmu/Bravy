@@ -44,6 +44,7 @@ android {
     buildFeatures {
         viewBinding = true
         mlModelBinding = true
+        buildConfig = true
     }
 }
 
@@ -67,6 +68,11 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.storage)
     implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.appcheck.debug)
+    implementation(libs.google.firebase.appcheck.debug)
+    implementation(libs.google.firebase.appcheck.playintegrity)
+    implementation(libs.firebase.ui.storage)
 
     //Tensorflow Lite
     implementation(libs.tensorflow.lite)
@@ -99,6 +105,7 @@ dependencies {
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.jackson.annotations)
     implementation(libs.glide)
+    ksp(libs.compiler)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)

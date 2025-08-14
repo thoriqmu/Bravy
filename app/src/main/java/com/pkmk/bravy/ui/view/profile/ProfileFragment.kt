@@ -14,11 +14,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentProfileBinding
-import com.pkmk.bravy.ui.view.auth.LoginActivity
+import com.pkmk.bravy.ui.view.auth.OnboardingActivity
 import com.pkmk.bravy.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -66,8 +64,8 @@ class ProfileFragment : Fragment() {
 
         viewModel.logoutResult.observe(viewLifecycleOwner) { success ->
             if (success) {
-                // Navigasi ke LoginActivity setelah logout berhasil
-                val intent = Intent(requireContext(), LoginActivity::class.java).apply {
+                // Navigasi ke OnboardingActivity setelah logout berhasil
+                val intent = Intent(requireContext(), OnboardingActivity::class.java).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 }
                 startActivity(intent)

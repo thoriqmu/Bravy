@@ -16,7 +16,7 @@
             android:layout_height="0dp"
             android:background="@color/primary"
             android:layout_marginBottom="60dp"
-            app:layout_constraintBottom_toBottomOf="@+id/horizontal_scroll"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_suggested_friends"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -71,273 +71,18 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
 
-        <HorizontalScrollView
-            android:id="@+id/horizontal_scroll"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_suggested_friends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scrollbars="none"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_suggested_friend"
             android:layout_marginTop="15dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView3">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="250dp"
-                    android:layout_height="150dp"
-                    android:layout_marginStart="20dp"
-                    app:cardCornerRadius="15dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/secondary">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:orientation="vertical"
-                            android:layout_marginHorizontal="15dp"
-                            android:layout_marginVertical="10dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_weight="1">
-
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:id="@+id/iv_user_photo_1"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:background="@color/surface"
-                                    android:scaleType="centerCrop"
-                                    app:shapeAppearanceOverlay="@style/image_rounded" />
-
-                                <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/tv_user_name_1"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/poppins_medium"
-                                    android:text="@string/user_name"
-                                    android:textColor="@color/onSecondary"
-                                    android:textSize="16sp"
-                                    android:layout_marginStart="10dp"
-                                    android:maxLines="1"/>
-
-                            </LinearLayout>
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_user_desc_1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/user_desc"
-                                android:textColor="@color/onSecondary"
-                                android:textSize="12sp"
-                                android:maxLines="2"
-                                android:layout_weight="1"/>
-
-                            <Space
-                                android:layout_width="0dp"
-                                android:layout_height="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_add_friend_1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:backgroundTint="@color/onPrimaryContainer"
-                                android:fontFamily="@font/poppins_bold"
-                                android:text="@string/btn_add_friend"
-                                android:textAllCaps="false"
-                                android:textColor="@color/onSurface"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                        </LinearLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="250dp"
-                    android:layout_height="150dp"
-                    android:layout_marginStart="20dp"
-                    app:cardCornerRadius="15dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/secondary">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:orientation="vertical"
-                            android:layout_marginHorizontal="15dp"
-                            android:layout_marginVertical="10dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_weight="1">
-
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:id="@+id/iv_user_photo_2"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:background="@color/surface"
-                                    android:scaleType="centerCrop"
-                                    app:shapeAppearanceOverlay="@style/image_rounded" />
-
-                                <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/tv_user_name_2"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/poppins_medium"
-                                    android:text="@string/user_name"
-                                    android:textColor="@color/onSecondary"
-                                    android:textSize="16sp"
-                                    android:layout_marginStart="10dp"
-                                    android:maxLines="1"/>
-
-                            </LinearLayout>
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_user_desc_2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/user_desc"
-                                android:textColor="@color/onSecondary"
-                                android:textSize="12sp"
-                                android:maxLines="2"
-                                android:layout_weight="1"/>
-
-                            <Space
-                                android:layout_width="0dp"
-                                android:layout_height="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_add_friend_2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:backgroundTint="@color/onPrimaryContainer"
-                                android:fontFamily="@font/poppins_bold"
-                                android:text="@string/btn_add_friend"
-                                android:textAllCaps="false"
-                                android:textColor="@color/onSurface"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                        </LinearLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="250dp"
-                    android:layout_height="150dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    app:cardCornerRadius="15dp">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/secondary">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:orientation="vertical"
-                            android:layout_marginHorizontal="15dp"
-                            android:layout_marginVertical="10dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_weight="1">
-
-                                <com.google.android.material.imageview.ShapeableImageView
-                                    android:id="@+id/iv_user_photo_3"
-                                    android:layout_width="40dp"
-                                    android:layout_height="40dp"
-                                    android:background="@color/surface"
-                                    android:scaleType="centerCrop"
-                                    app:shapeAppearanceOverlay="@style/image_rounded" />
-
-                                <com.google.android.material.textview.MaterialTextView
-                                    android:id="@+id/tv_user_name_3"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/poppins_medium"
-                                    android:text="@string/user_name"
-                                    android:textColor="@color/onSecondary"
-                                    android:textSize="16sp"
-                                    android:layout_marginStart="10dp"
-                                    android:maxLines="1"/>
-
-                            </LinearLayout>
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_user_desc_3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/user_desc"
-                                android:textColor="@color/onSecondary"
-                                android:textSize="12sp"
-                                android:maxLines="2"
-                                android:layout_weight="1"/>
-
-                            <Space
-                                android:layout_width="0dp"
-                                android:layout_height="10dp" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_add_friend_3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:backgroundTint="@color/onPrimaryContainer"
-                                android:fontFamily="@font/poppins_bold"
-                                android:text="@string/btn_add_friend"
-                                android:textAllCaps="false"
-                                android:textColor="@color/onSurface"
-                                android:textSize="12sp"
-                                app:cornerRadius="10dp" />
-
-                        </LinearLayout>
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-            </LinearLayout>
-
-        </HorizontalScrollView>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/materialTextView4"
@@ -350,7 +95,7 @@
             android:textColor="@color/onBackground"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontal_scroll" />
+            app:layout_constraintTop_toBottomOf="@+id/rv_suggested_friends" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView2"
