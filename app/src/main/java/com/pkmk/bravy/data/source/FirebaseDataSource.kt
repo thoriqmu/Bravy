@@ -296,4 +296,8 @@ class FirebaseDataSource @Inject constructor(
         usersRef.child(accepterUid).child("friends").child(senderUid).setValue(Friend(status = "friend")).await()
         usersRef.child(senderUid).child("friends").child(accepterUid).setValue(Friend(status = "friend")).await()
     }
+
+    suspend fun getUserFriends(uid: String): DataSnapshot {
+        return usersRef.child(uid).child("friends").get().await()
+    }
 }

@@ -1,6 +1,7 @@
 package com.pkmk.bravy.data.repository
 
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
 import java.io.File
@@ -18,4 +19,7 @@ interface AuthRepository {
     suspend fun getSuggestedFriends(currentUid: String, limit: Int): Result<List<User>>
     suspend fun sendFriendRequest(fromUid: String, toUid: String): Result<Unit>
     suspend fun cancelFriendRequest(fromUid: String, toUid: String): Result<Unit>
+    suspend fun getFriendsData(currentUid: String): Result<List<FriendInfo>>
+    suspend fun acceptFriendRequest(accepterUid: String, senderUid: String): Result<Unit>
+    suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit>
 }

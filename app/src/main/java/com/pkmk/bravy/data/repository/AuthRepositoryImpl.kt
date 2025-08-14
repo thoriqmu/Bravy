@@ -2,6 +2,7 @@ package com.pkmk.bravy.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.source.FirebaseDataSource
@@ -176,6 +177,46 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun cancelFriendRequest(fromUid: String, toUid: String): Result<Unit> {
         return try {
             dataSource.removeFriendship(fromUid, toUid) // Menggunakan fungsi yang sama untuk cancel/reject
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getFriendsData(currentUid: String): Result<List<FriendInfo>> {
+        return try {
+            // 1. Ambil daftar ID teman dan statusnya dari pengguna saat ini
+            val friendsSnapshot = dataSource.getUserFriends(currentUid)
+            val friendIdStatusMap = friendsSnapshot.children.associate {
+                it.key!! to (it.child("status").getValue(String::class.java) ?: "")
+            }
+
+            // 2. Ambil data lengkap untuk setiap teman berdasarkan ID
+            val friendInfoList = mutableListOf<FriendInfo>()
+            for ((friendId, status) in friendIdStatusMap) {
+                val userResult = getUser(friendId) // Menggunakan kembali fungsi getUser yang sudah ada
+                userResult.onSuccess { user ->
+                    friendInfoList.add(FriendInfo(user, status))
+                }
+            }
+            Result.success(friendInfoList)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun acceptFriendRequest(accepterUid: String, senderUid: String): Result<Unit> {
+        return try {
+            dataSource.acceptFriendRequest(accepterUid, senderUid)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit> {
+        return try {
+            dataSource.removeFriendship(uid1, uid2)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -15,6 +15,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentProfileBinding
 import com.pkmk.bravy.ui.view.auth.OnboardingActivity
+import com.pkmk.bravy.ui.view.friend.FriendActivity
 import com.pkmk.bravy.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -72,6 +73,11 @@ class ProfileFragment : Fragment() {
             } else {
                 Toast.makeText(requireContext(), "Logout failed", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.btnFriendList.setOnClickListener {
+            val intent = Intent(requireContext(), FriendActivity::class.java)
+            startActivity(intent)
         }
     }
 
