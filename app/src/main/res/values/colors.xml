@@ -28,4 +28,7 @@
 
     <color name="outline">#e9b201</color>
     <color name="transparent">#00000000</color>
+
+    <color name="error">#B00020</color>
+    <color name="onError">#FFFFFF</color>
 </resources>

@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bravy">
         <activity
+            android:name=".ui.view.friend.FriendActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.practice.LearningActivity"
             android:exported="false" />
         <activity
