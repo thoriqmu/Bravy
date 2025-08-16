@@ -122,6 +122,36 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
+    suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User) {
+        val chatRef = privateChatsRef.child(chatId)
+        val snapshot = chatRef.get().await()
+
+        if (!snapshot.exists()) {
+            // Jika chat room belum ada, buat sekarang dengan multi-path update
+            try {
+                // 1. Siapkan data yang akan ditulis
+                val participants = mapOf(
+                    currentUser.uid to mapOf("joined" to true, "name" to currentUser.name, "image" to currentUser.image),
+                    otherUser.uid to mapOf("joined" to true, "name" to otherUser.name, "image" to otherUser.image)
+                )
+
+                // 2. Siapkan semua path yang akan diupdate dalam satu Map
+                val updates = mutableMapOf<String, Any>()
+                updates["/private_chats/$chatId/participants"] = participants
+                updates["/users/${currentUser.uid}/chats/$chatId"] = true
+                updates["/users/${otherUser.uid}/chats/$chatId"] = true
+
+                // 3. Jalankan satu operasi updateChildren dari root reference
+                database.reference.updateChildren(updates).await()
+                Log.d(TAG, "Successfully created chat room atomically for chatId: $chatId")
+
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating chat room atomically: ${e.message}")
+                throw e // Lemparkan lagi error agar ViewModel tahu ada masalah
+            }
+        }
+    }
+
     suspend fun startPrivateChat(user1Uid: String, user2Uid: String): String {
         try {
             val chatId = generateChatId(user1Uid, user2Uid)

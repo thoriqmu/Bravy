@@ -1,11 +1,14 @@
 package com.pkmk.bravy.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.RecentChat
+import com.pkmk.bravy.data.model.User
+import com.pkmk.bravy.data.repository.AuthRepository
 import com.pkmk.bravy.data.source.FirebaseDataSource // Asumsi Anda memiliki data source ini
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -14,6 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class PrivateChatViewModel @Inject constructor(
     private val dataSource: FirebaseDataSource,
+    private val authRepository: AuthRepository,
     private val auth: FirebaseAuth
 ) : ViewModel() {
 
@@ -22,6 +26,37 @@ class PrivateChatViewModel @Inject constructor(
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _friends = MutableLiveData<Result<List<User>>>()
+    val friends: LiveData<Result<List<User>>> = _friends
+
+    private val _navigateToChat = MutableLiveData<Pair<String, User>?>()
+    val navigateToChat: LiveData<Pair<String, User>?> = _navigateToChat
+
+    fun loadInitialData() {
+        loadRecentChats()
+        loadFriends()
+    }
+
+    private fun loadFriends() {
+        viewModelScope.launch {
+            val currentUid = auth.currentUser?.uid ?: return@launch
+            val result = authRepository.getFriendsData(currentUid)
+            result.onSuccess { friendInfoList ->
+                // Filter hanya yang statusnya "friend" dan ambil data User-nya
+                val friendUsers = friendInfoList
+                    .filter { it.status == "friend" }
+                    .map { it.user }
+                _friends.postValue(Result.success(friendUsers))
+            }.onFailure {
+                _friends.postValue(Result.failure(it))
+            }
+        }
+    }
+
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
 
     /**
      * Memuat semua percakapan terakhir untuk pengguna yang sedang login.
@@ -67,5 +102,51 @@ class PrivateChatViewModel @Inject constructor(
                 _isLoading.value = false
             }
         }
+    }
+
+    fun onFriendClicked(friend: User) {
+        viewModelScope.launch {
+            val currentUserId = auth.currentUser?.uid
+            if (currentUserId == null) {
+                Log.e("PrivateChatViewModel", "Current user UID is null, cannot start chat.")
+                // Mungkin tampilkan pesan ke user di sini jika perlu
+                return@launch
+            }
+
+            val currentUserResult = authRepository.getUser(currentUserId)
+            currentUserResult.onSuccess { currentUser ->
+                // Pastikan currentUser.uid dan friend.uid tidak kosong/null sebelum membuat chatId
+                if (currentUser.uid.isBlank() || friend.uid.isBlank()) {
+                    Log.e("PrivateChatViewModel", "UID for currentUser or friend is blank. CurrentUserUID: ${currentUser.uid}, FriendUID: ${friend.uid}")
+                    // Tampilkan pesan error ke pengguna
+                    return@onSuccess
+                }
+
+                val chatId = generateChatId(currentUser.uid, friend.uid)
+                val createResult = authRepository.createChatRoomIfNeeded(chatId, currentUser, friend)
+
+                createResult.onSuccess {
+                    // Jika sukses, trigger navigasi
+                    Log.d("PrivateChatViewModel", "Chat room created/verified for chatId: $chatId. Navigating...")
+                    _navigateToChat.postValue(chatId to friend)
+                }.onFailure { exception ->
+                    // Handle error jika gagal membuat chat room
+                    Log.e("PrivateChatViewModel", "Failed to create or find chat room for chatId: $chatId", exception)
+                    // TODO: Tampilkan pesan error kepada pengguna, misalnya menggunakan LiveData event untuk Toast
+                    // _errorEvent.postValue("Gagal memulai chat. Coba lagi nanti.")
+                }
+            }.onFailure { exception ->
+                Log.e("PrivateChatViewModel", "Failed to get current user details", exception)
+                // TODO: Tampilkan pesan error kepada pengguna
+            }
+        }
+    }
+
+    private fun generateChatId(uid1: String, uid2: String): String {
+        return if (uid1 < uid2) "${uid1}_${uid2}" else "${uid2}_${uid1}"
+    }
+
+    fun onNavigationDone() {
+        _navigateToChat.value = null
     }
 }

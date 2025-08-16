@@ -28,6 +28,7 @@ class DetailPrivateChatActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_CHAT_ID = "extra_chat_id"
+        // GANTI NAMA EXTRA INI AGAR LEBIH JELAS
         const val EXTRA_OTHER_USER = "extra_other_user"
     }
 
@@ -37,53 +38,28 @@ class DetailPrivateChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val chatId = intent.getStringExtra(EXTRA_CHAT_ID)
+
+        // TERIMA OBJEK 'User' DENGAN getParcelableExtra
         val otherUser = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent.getParcelableExtra(EXTRA_OTHER_USER, User::class.java)
         } else {
             @Suppress("DEPRECATION")
-            intent.getParcelableExtra(EXTRA_OTHER_USER)
+            intent.getParcelableExtra<User>(EXTRA_OTHER_USER)
         }
 
-        if (chatId == null || otherUser == null) {
+        if (chatId == null || otherUser == null) { // <-- Periksa otherUser juga
             Toast.makeText(this, "Chat data is missing.", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
-        setupUI(otherUser)
         setupRecyclerView()
         setupObservers()
         setupListeners(chatId)
 
+        // Langsung berikan objek 'otherUser' ke ViewModel, tidak perlu load lagi
+        viewModel.setOtherUser(otherUser)
         viewModel.listenForMessages(chatId)
-    }
-
-    private fun setupUI(otherUser: User) {
-        binding.tvUserName.text = otherUser.name
-
-        // --- PERBAIKAN DI SINI ---
-        val imageName = otherUser.image
-        if (imageName.isNullOrEmpty()) {
-            // Jika tidak ada nama gambar, gunakan placeholder
-            binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
-        } else {
-            // Jika ada nama gambar, ambil URL dari Firebase Storage
-            lifecycleScope.launch {
-                try {
-                    val storageRef = FirebaseStorage.getInstance().getReference("picture").child(imageName)
-                    val downloadUrl = storageRef.downloadUrl.await()
-                    Glide.with(this@DetailPrivateChatActivity)
-                        .load(downloadUrl)
-                        .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .into(binding.ivUserPhoto)
-                } catch (e: Exception) {
-                    // Jika gagal mengambil URL (misal: file tidak ada di storage), gunakan placeholder
-                    binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
-                }
-            }
-        }
     }
 
     private fun setupRecyclerView() {
@@ -97,12 +73,21 @@ class DetailPrivateChatActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.messages.observe(this) { messages ->
-            messageAdapter.submitList(messages)
-            // Scroll ke posisi paling bawah saat ada pesan baru
-            if (messages.isNotEmpty()) {
+        // Observer BARU untuk data pengguna lain
+        viewModel.otherUser.observe(this) { user ->
+            user?.let {
+                binding.tvUserName.text = it.name
+                loadProfileImage(it.image) // Panggil fungsi helper untuk memuat gambar
+            }
+        }
+
+        // Ganti viewModel.messages menjadi viewModel.chatItems
+        viewModel.chatItems.observe(this) { items ->
+            messageAdapter.submitList(items)
+            // Scroll ke posisi paling bawah saat ada data baru
+            if (items.isNotEmpty()) {
                 binding.recyclerView.post {
-                    binding.recyclerView.scrollToPosition(messages.size - 1)
+                    binding.recyclerView.scrollToPosition(items.size - 1)
                 }
             }
         }
@@ -129,6 +114,30 @@ class DetailPrivateChatActivity : AppCompatActivity() {
                 View.GONE
             } else {
                 View.VISIBLE
+            }
+        }
+    }
+
+    private fun loadProfileImage(imageUrl: String?) {
+        val imageName = imageUrl
+        if (imageName.isNullOrEmpty()) {
+            binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
+        } else {
+            // Jika ada nama gambar, ambil URL dari Firebase Storage
+            lifecycleScope.launch {
+                try {
+                    val storageRef = FirebaseStorage.getInstance().getReference("picture").child(imageName)
+                    val downloadUrl = storageRef.downloadUrl.await()
+                    Glide.with(this@DetailPrivateChatActivity)
+                        .load(downloadUrl)
+                        .circleCrop()
+                        .placeholder(R.drawable.ic_profile)
+                        .error(R.drawable.ic_profile)
+                        .into(binding.ivUserPhoto)
+                } catch (e: Exception) {
+                    // Jika gagal mengambil URL (misal: file tidak ada di storage), gunakan placeholder
+                    binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
+                }
             }
         }
     }

@@ -222,4 +222,22 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun startPrivateChat(user1Uid: String, user2Uid: String): Result<String> {
+        return try {
+            val chatId = dataSource.startPrivateChat(user1Uid, user2Uid)
+            Result.success(chatId)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit> {
+        return try {
+            dataSource.createChatRoomIfNeeded(chatId, currentUser, otherUser)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

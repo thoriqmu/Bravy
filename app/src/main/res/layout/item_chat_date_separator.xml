@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/tv_date_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chat_date"
+        android:paddingVertical="4dp"
+        android:paddingHorizontal="12dp"
+        android:fontFamily="@font/poppins_medium"
+        android:textColor="@color/onSecondary"
+        android:textSize="12sp"
+        tools:text="Yesterday" />
+
+</LinearLayout>

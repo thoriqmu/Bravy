@@ -22,4 +22,6 @@ interface AuthRepository {
     suspend fun getFriendsData(currentUid: String): Result<List<FriendInfo>>
     suspend fun acceptFriendRequest(accepterUid: String, senderUid: String): Result<Unit>
     suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit>
+    suspend fun startPrivateChat(user1Uid: String, user2Uid: String): Result<String>
+    suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit>
 }
