@@ -17,6 +17,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentChatBinding
 import com.pkmk.bravy.ui.adapter.SuggestedFriendAdapter
+import com.pkmk.bravy.ui.view.friend.FriendActivity
 import com.pkmk.bravy.ui.viewmodel.ChatViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -60,9 +61,20 @@ class ChatFragment : Fragment() {
             result.onSuccess { users ->
                 // TAMBAHKAN LOG INI untuk verifikasi
                 Log.d("ChatFragment", "Successfully loaded ${users.size} suggested friends. Updating adapter.")
-                suggestedFriendAdapter.updateUsers(users)
+                if (users.isEmpty()) {
+                    // Jika tidak ada rekomendasi, sembunyikan RecyclerView dan tampilkan Card
+                    binding.rvSuggestedFriends.visibility = View.GONE
+                    binding.cardFindFriends.visibility = View.VISIBLE
+                } else {
+                    // Jika ada rekomendasi, tampilkan RecyclerView dan sembunyikan Card
+                    binding.rvSuggestedFriends.visibility = View.VISIBLE
+                    binding.cardFindFriends.visibility = View.GONE
+                    suggestedFriendAdapter.updateUsers(users)
+                }
             }.onFailure {
                 Toast.makeText(requireContext(), "Failed to load suggestions", Toast.LENGTH_SHORT).show()
+                binding.rvSuggestedFriends.visibility = View.GONE
+                binding.cardFindFriends.visibility = View.VISIBLE
             }
         }
 
@@ -112,6 +124,11 @@ class ChatFragment : Fragment() {
             }.onFailure { exception ->
                 Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        binding.btnFriendList.setOnClickListener {
+            val intent = Intent(requireContext(), FriendActivity::class.java)
+            startActivity(intent)
         }
 
         // Handle private chat click

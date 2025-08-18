@@ -16,7 +16,7 @@
             android:layout_height="0dp"
             android:background="@color/primary"
             android:layout_marginBottom="60dp"
-            app:layout_constraintBottom_toBottomOf="@+id/rv_suggested_friends"
+            app:layout_constraintBottom_toBottomOf="@+id/layout_suggested_friends"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,7 +55,7 @@
             android:fontFamily="@font/poppins_bold"
             android:text="Catch up!"
             android:textColor="@color/onPrimary"
-            android:textSize="14sp"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="@+id/materialTextView"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
 
@@ -71,18 +71,92 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView2" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_suggested_friends"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_suggested_friends"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:clipToPadding="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_suggested_friend"
-            android:layout_marginTop="15dp"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_suggested_friends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/item_suggested_friend"
+                android:layout_marginTop="15dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_find_friends"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="15dp"
+                app:cardCornerRadius="15dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/secondary">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="15dp"
+                        android:layout_marginVertical="10dp"
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/poppins_medium"
+                            android:text="No friend suggestions"
+                            android:textColor="@color/onSecondary"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="You've seen all your friend suggestions. Check out your friends list to see all your friends' statuses!"
+                            android:textColor="@color/onSecondary"
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_friend_list"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="@font/poppins_bold"
+                            android:text="View Friend List"
+                            android:textAllCaps="false"
+                            android:textColor="@color/onSurface"
+                            android:textSize="12sp"
+                            app:cornerRadius="10dp" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/materialTextView4"
@@ -95,7 +169,7 @@
             android:textColor="@color/onBackground"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_suggested_friends" />
+            app:layout_constraintTop_toBottomOf="@+id/layout_suggested_friends" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/materialCardView2"
