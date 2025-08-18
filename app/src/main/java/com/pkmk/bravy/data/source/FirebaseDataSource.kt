@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
+import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.Friend
 import com.pkmk.bravy.data.model.Message
 import com.pkmk.bravy.data.model.RedeemCode
@@ -25,6 +26,8 @@ class FirebaseDataSource @Inject constructor(
     private val privateChatsRef = database.getReference("private_chats")
     private val storageRef = storage.getReference("picture")
     private val chatMediaRef = storage.getReference("chat_media")
+    private val communityChatsRef = database.getReference("community_chats")
+
     private val TAG = "FirebaseDataSource"
 
     suspend fun validateRedeemCode(code: String): RedeemCode? {
@@ -329,5 +332,23 @@ class FirebaseDataSource @Inject constructor(
 
     suspend fun getUserFriends(uid: String): DataSnapshot {
         return usersRef.child(uid).child("friends").get().await()
+    }
+
+    // Fungsi untuk membuat post baru (atomik)
+    suspend fun createCommunityPost(post: CommunityPost) {
+        val postId = post.postId
+        // Multi-path update untuk menambahkan post dan mereferensikannya di data user
+        val updates = mutableMapOf<String, Any>()
+        updates["/community_chats/$postId"] = post
+        updates["/users/${post.authorUid}/communities/$postId"] = true
+
+        database.reference.updateChildren(updates).await()
+    }
+
+    // Fungsi untuk mendapatkan semua community post
+    suspend fun getAllCommunityPosts(): List<CommunityPost> {
+        val snapshot = communityChatsRef.orderByChild("timestamp").get().await()
+        // Ubah urutan agar yang terbaru di atas
+        return snapshot.children.mapNotNull { it.getValue(CommunityPost::class.java) }.reversed()
     }
 }

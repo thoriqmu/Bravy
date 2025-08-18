@@ -139,7 +139,7 @@ class ChatFragment : Fragment() {
 
         // Handle community click
         binding.btnCommunityChat.setOnClickListener {
-            val intent = Intent(requireContext(), ChatFragment::class.java)
+            val intent = Intent(requireContext(), CommunityChatActivity::class.java)
             startActivity(intent)
         }
 

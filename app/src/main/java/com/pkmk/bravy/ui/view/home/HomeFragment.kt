@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentHomeBinding
+import com.pkmk.bravy.ui.view.chat.CommunityChatActivity
 import com.pkmk.bravy.ui.view.chat.PrivateChatActivity
 import com.pkmk.bravy.ui.view.practice.PracticeActivity
 import com.pkmk.bravy.ui.viewmodel.HomeViewModel
@@ -49,6 +50,11 @@ class HomeFragment : Fragment() {
 
         binding.btnSpeakingLearning.setOnClickListener {
             val intent = Intent(requireContext(), PracticeActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnCommunityChat.setOnClickListener {
+            val intent = Intent(requireContext(), CommunityChatActivity::class.java)
             startActivity(intent)
         }
 

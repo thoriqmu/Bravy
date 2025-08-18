@@ -2,6 +2,8 @@ package com.pkmk.bravy.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.CommunityPost
+import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
@@ -236,6 +238,36 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             dataSource.createChatRoomIfNeeded(chatId, currentUser, otherUser)
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun createCommunityPost(post: CommunityPost): Result<Unit> {
+        return try {
+            dataSource.createCommunityPost(post)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>> {
+        return try {
+            // 1. Ambil semua post
+            val posts = dataSource.getAllCommunityPosts()
+            val postDetailsList = mutableListOf<CommunityPostDetails>()
+
+            // 2. Untuk setiap post, ambil data author-nya
+            for (post in posts) {
+                val authorResult = getUser(post.authorUid) // Gunakan fungsi getUser yang sudah ada
+                authorResult.onSuccess { author ->
+                    // 3. Gabungkan menjadi CommunityPostDetails
+                    postDetailsList.add(CommunityPostDetails(post, author))
+                }
+                // Jika getUser gagal, post tersebut tidak akan ditampilkan (bisa disesuaikan)
+            }
+            Result.success(postDetailsList)
         } catch (e: Exception) {
             Result.failure(e)
         }

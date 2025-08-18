@@ -1,6 +1,8 @@
 package com.pkmk.bravy.data.repository
 
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.CommunityPost
+import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
@@ -24,4 +26,6 @@ interface AuthRepository {
     suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit>
     suspend fun startPrivateChat(user1Uid: String, user2Uid: String): Result<String>
     suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit>
+    suspend fun createCommunityPost(post: CommunityPost): Result<Unit>
+    suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>>
 }
