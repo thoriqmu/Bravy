@@ -14,7 +14,8 @@
         android:layout_height="80dp"
         android:background="@color/surface"
         android:scaleType="centerCrop"
-        android:src="@drawable/ic_home" />
+        android:src="@drawable/ic_home"
+        app:shapeAppearanceOverlay="@style/image_rounded"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_friend_name"

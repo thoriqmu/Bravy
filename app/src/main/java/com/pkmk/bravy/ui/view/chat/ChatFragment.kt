@@ -92,12 +92,16 @@ class ChatFragment : Fragment() {
                     }
                     binding.recentChatTime.text = formatTimestamp(lastMessage?.timestamp)
 
-                    user.image?.let { loadProfileImage(it) }
+                    loadProfileImage(user.image)
 
                     binding.layoutRecentChat.setOnClickListener {
-                        // PERBAIKI NAVIGASI DI SINI: Gunakan Navigation Component
-                        // Contoh: findNavController().navigate(R.id.action_to_chatDetail, bundle)
-                        Toast.makeText(requireContext(), "TODO: Fix navigation", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(requireContext(), DetailPrivateChatActivity::class.java).apply {
+                            // Kirim data yang dibutuhkan oleh DetailPrivateChatActivity
+                            putExtra(DetailPrivateChatActivity.EXTRA_CHAT_ID, chatId)
+                            putExtra(DetailPrivateChatActivity.EXTRA_OTHER_USER, user)
+                        }
+                        // Mulai Activity
+                        startActivity(intent)
                     }
 
                 } else {
@@ -152,36 +156,23 @@ class ChatFragment : Fragment() {
     }
 
     private fun loadProfileImage(imageUrl: String?) {
-        if (imageUrl.isNullOrEmpty()) {
-            binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
-            return
-        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val finalImageName = imageUrl ?: "default.jpg"
 
-        val imageLoader = Glide.with(this)
-
-        if (imageUrl.startsWith("https://") || imageUrl.startsWith("http://")) {
-            imageLoader.load(imageUrl)
-                .circleCrop()
-                .placeholder(R.drawable.ic_profile)
-                .error(R.drawable.ic_profile)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(binding.ivRecentChat)
-        } else {
-            // Jika hanya nama file, ambil URL dari Firebase Storage
-            viewLifecycleOwner.lifecycleScope.launch {
-                try {
-                    val storageRef = FirebaseStorage.getInstance().getReference("picture").child(imageUrl)
-                    val downloadUrl = storageRef.downloadUrl.await()
-                    imageLoader.load(downloadUrl)
-                        .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.ivRecentChat)
-                } catch (e: Exception) {
-                    // Jika gagal mengambil dari storage, muat gambar default
-                    binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
-                }
+                val storageRef = FirebaseStorage.getInstance().getReference("picture").child(finalImageName)
+                val downloadUrl = storageRef.downloadUrl.await()
+                Glide.with(this@ChatFragment)
+                    .load(downloadUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .error(R.drawable.ic_profile)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(binding.ivRecentChat)
+            } catch (e: Exception) {
+                // Jika gagal mengambil dari storage, muat gambar default
+                Log.e("ChatFragment", "Error loading profile image: ${e.message}")
+                binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
             }
         }
     }

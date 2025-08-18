@@ -44,7 +44,7 @@ class PrivateChatActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@PrivateChatActivity)
         }
 
-        friendAdapter = FriendChatAdapter { friend ->
+        friendAdapter = FriendChatAdapter(lifecycleScope) { friend ->
             viewModel.onFriendClicked(friend)
         }
         binding.rvFriendList.apply {
@@ -86,8 +86,7 @@ class PrivateChatActivity : AppCompatActivity() {
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
-            finish() // Menutup activity saat tombol kembali ditekan
+            finish()
         }
-        // Tambahkan listener untuk search dan FloatingActionButton di sini
     }
 }
