@@ -1,6 +1,7 @@
 package com.pkmk.bravy.ui.view.chat
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -40,11 +41,21 @@ class CommunityChatListFragment : Fragment() {
 
         if (postType == "all") {
             viewModel.allPosts.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { posts -> postAdapter.submitList(posts) }
+                // --- TAMBAHKAN LOG ---
+                Log.d("Fragment-$postType", "Observed allPosts LiveData. Result: $result")
+                result.onSuccess { posts ->
+                    Log.d("Fragment-$postType", "Submitting ${posts.size} posts to adapter.")
+                    postAdapter.submitList(posts)
+                }
             }
         } else {
             viewModel.friendPosts.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { posts -> postAdapter.submitList(posts) }
+                // --- TAMBAHKAN LOG ---
+                Log.d("Fragment-$postType", "Observed friendPosts LiveData. Result: $result")
+                result.onSuccess { posts ->
+                    Log.d("Fragment-$postType", "Submitting ${posts.size} posts to adapter.")
+                    postAdapter.submitList(posts)
+                }
             }
         }
     }

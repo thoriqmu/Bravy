@@ -348,7 +348,11 @@ class FirebaseDataSource @Inject constructor(
     // Fungsi untuk mendapatkan semua community post
     suspend fun getAllCommunityPosts(): List<CommunityPost> {
         val snapshot = communityChatsRef.orderByChild("timestamp").get().await()
-        // Ubah urutan agar yang terbaru di atas
-        return snapshot.children.mapNotNull { it.getValue(CommunityPost::class.java) }.reversed()
+        // --- TAMBAHKAN LOG ---
+        Log.d("DataSource", "Found ${snapshot.childrenCount} community posts in total.")
+        val posts = snapshot.children.mapNotNull { it.getValue(CommunityPost::class.java) }
+        Log.d("DataSource", "Successfully deserialized ${posts.size} posts.")
+        return posts.reversed()
     }
+
 }

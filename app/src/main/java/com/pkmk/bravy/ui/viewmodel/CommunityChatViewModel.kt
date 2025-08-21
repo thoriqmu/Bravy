@@ -1,14 +1,20 @@
 package com.pkmk.bravy.ui.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
+import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,8 +29,70 @@ class CommunityChatViewModel @Inject constructor(
     private val _friendPosts = MutableLiveData<Result<List<CommunityPostDetails>>>()
     val friendPosts: LiveData<Result<List<CommunityPostDetails>>> = _friendPosts
 
+    private val _postCreationStatus = MutableLiveData<Result<Unit>>()
+    val postCreationStatus: LiveData<Result<Unit>> = _postCreationStatus
+
+    private val _currentUser = MutableLiveData<Result<User>>()
+    val currentUser: LiveData<Result<User>> = _currentUser
+
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
+
+    fun loadCurrentUser() {
+        val uid = auth.currentUser?.uid
+        if (uid == null) {
+            _currentUser.postValue(Result.failure(Exception("User not logged in")))
+            return
+        }
+        viewModelScope.launch {
+            _currentUser.postValue(authRepository.getUser(uid))
+        }
+    }
+
+
+    // --- TAMBAHKAN FUNGSI BARU ---
+    fun createPost(title: String, description: String, imageUri: Uri?) {
+        _isLoading.value = true
+        val currentUid = auth.currentUser?.uid
+        if (currentUid == null) {
+            _postCreationStatus.postValue(Result.failure(Exception("User not logged in.")))
+            _isLoading.value = false
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                var imageUrl: String? = null
+                // 1. Jika ada gambar, upload dulu ke Firebase Storage
+                if (imageUri != null) {
+                    val storageRef = FirebaseStorage.getInstance()
+                        .getReference("community_images/${UUID.randomUUID()}")
+                    imageUrl = storageRef.putFile(imageUri).await()
+                        .storage.downloadUrl.await().toString()
+                }
+
+                // 2. Buat objek CommunityPost
+                val postId = UUID.randomUUID().toString()
+                val post = CommunityPost(
+                    postId = postId,
+                    authorUid = currentUid,
+                    title = title, // Kita akan gunakan baris pertama deskripsi sebagai judul
+                    description = description,
+                    imageUrl = imageUrl,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                // 3. Simpan post ke database
+                val result = authRepository.createCommunityPost(post)
+                _postCreationStatus.postValue(result)
+
+            } catch (e: Exception) {
+                _postCreationStatus.postValue(Result.failure(e))
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
 
     fun loadCommunityPosts() {
         _isLoading.value = true

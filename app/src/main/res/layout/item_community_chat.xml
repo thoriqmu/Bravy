@@ -61,12 +61,14 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:scaleType="centerCrop"
+        android:layout_marginTop="5dp"
         android:visibility="gone"/>
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tv_post_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:fontFamily="@font/poppins_bold"
         android:text="Nervous when speaking English"
         android:textColor="@color/onBackground"
@@ -87,6 +89,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:orientation="horizontal"
         android:gravity="end">
         

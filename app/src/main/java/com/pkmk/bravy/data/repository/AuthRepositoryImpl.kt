@@ -254,21 +254,25 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>> {
         return try {
-            // 1. Ambil semua post
             val posts = dataSource.getAllCommunityPosts()
+            Log.d("Repository", "getAllCommunityPosts returned ${posts.size} posts.")
             val postDetailsList = mutableListOf<CommunityPostDetails>()
 
-            // 2. Untuk setiap post, ambil data author-nya
             for (post in posts) {
-                val authorResult = getUser(post.authorUid) // Gunakan fungsi getUser yang sudah ada
+                val authorResult = getUser(post.authorUid)
                 authorResult.onSuccess { author ->
-                    // 3. Gabungkan menjadi CommunityPostDetails
                     postDetailsList.add(CommunityPostDetails(post, author))
+                    // --- TAMBAHKAN LOG ---
+                    Log.d("Repository", "Successfully fetched details for author ${author.uid}")
+                }.onFailure { exception ->
+                    // --- TAMBAHKAN LOG ---
+                    Log.e("Repository", "Failed to get user details for author Uid: ${post.authorUid}. Skipping post. Error: ${exception.message}")
                 }
-                // Jika getUser gagal, post tersebut tidak akan ditampilkan (bisa disesuaikan)
             }
+            Log.d("Repository", "Returning ${postDetailsList.size} posts with details.")
             Result.success(postDetailsList)
         } catch (e: Exception) {
+            Log.e("Repository", "Error in getAllCommunityPostsWithDetails: ${e.message}")
             Result.failure(e)
         }
     }

@@ -1,5 +1,6 @@
 package com.pkmk.bravy.ui.view.chat
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,10 +25,13 @@ class CommunityChatActivity : AppCompatActivity() {
 
         binding.btnBack.setOnClickListener { finish() }
         binding.btnAddCommunityChat.setOnClickListener {
-            // TODO: Buka activity/dialog untuk membuat post baru
+            val intent = Intent(this, CreateCommunityChatActivity::class.java)
+            startActivity(intent)
         }
+    }
 
-        // Muat data saat activity dibuat
+    override fun onResume() {
+        super.onResume()
         viewModel.loadCommunityPosts()
     }
 
