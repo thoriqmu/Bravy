@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.view.profile.ProfileSettingActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@color/transparent"
+            android:padding="0dp"
+            android:layout_marginStart="20dp"
+            app:icon="@drawable/ic_left"
+            app:layout_constraintBottom_toBottomOf="@+id/materialTextView8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/materialTextView8" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Profile Settings"
+            android:textAlignment="center"
+            android:textColor="@color/onPrimary"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_profile_photo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@color/surface"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_profile"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        app:shapeAppearanceOverlay="@style/image_rounded" />
+
+    <LinearLayout
+        android:id="@+id/layout_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/iv_profile_photo"
+        app:layout_constraintStart_toStartOf="@+id/iv_profile_photo"
+        app:layout_constraintTop_toBottomOf="@+id/iv_profile_photo">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_change_profile_picture"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="0dp"
+            android:backgroundTint="@color/transparent"
+            android:fontFamily="@font/poppins_medium"
+            android:textAllCaps="false"
+            android:outlineAmbientShadowColor="@color/transparent"
+            android:outlineSpotShadowColor="@color/transparent"
+            app:icon="@drawable/ic_edit"
+            app:iconSize="36dp"
+            app:iconTint="@color/primary"
+            app:cornerRadius="15dp" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_remove_profile_picture"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="0dp"
+            android:backgroundTint="@color/transparent"
+            android:fontFamily="@font/poppins_medium"
+            android:textAllCaps="false"
+            android:outlineAmbientShadowColor="@color/transparent"
+            android:outlineSpotShadowColor="@color/transparent"
+            app:icon="@drawable/ic_delete"
+            app:iconSize="36dp"
+            app:iconTint="@color/primary"
+            app:cornerRadius="15dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layout_btn">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_edit_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="@color/transparent"
+            app:boxStrokeColor="@color/primary"
+            app:hintTextColor="@color/onBackground">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_edit_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="new name"
+                android:inputType="text" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_edit_bio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:boxBackgroundColor="@color/transparent"
+            app:boxStrokeColor="@color/primary"
+            app:hintTextColor="@color/onBackground">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_edit_bio"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="new bio"
+                android:inputType="textMultiLine" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/surface"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/onSurface"
+            app:cornerRadius="15dp"/>
+
+        <Space
+            android:layout_width="20dp"
+            android:layout_height="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/primaryContainer"
+            android:text="Save"
+            android:textAllCaps="false"
+            android:textColor="@color/onPrimaryContainer"
+            app:cornerRadius="15dp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

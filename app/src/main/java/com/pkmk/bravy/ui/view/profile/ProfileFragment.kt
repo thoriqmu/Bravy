@@ -40,11 +40,13 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // PERBAIKAN 1: Panggil fungsi untuk memuat data user
-        viewModel.loadUserProfile()
-
         setupObservers()
         setupClickListeners()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadUserProfile()
     }
 
     private fun setupObservers() {
@@ -75,8 +77,18 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        binding.btnProfileSetting.setOnClickListener {
+            val intent = Intent(requireContext(), ProfileSettingActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnFriendList.setOnClickListener {
             val intent = Intent(requireContext(), FriendActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.btnSetting.setOnClickListener {
+            val intent = Intent(requireContext(), SettingActivity::class.java)
             startActivity(intent)
         }
     }
