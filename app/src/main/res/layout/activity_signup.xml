@@ -150,6 +150,7 @@
         app:cornerRadius="10dp"/>
 
     <LinearLayout
+        android:id="@+id/layout_agreement"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -159,8 +160,10 @@
         android:layout_marginHorizontal="20dp">
 
         <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_agreement"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:clickable="false"
             android:buttonTint="@color/primary" />
 
         <Space

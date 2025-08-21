@@ -4,16 +4,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.model.UserProgress
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    private val auth: FirebaseAuth
 ) : ViewModel() {
     private val _redeemResult = MutableLiveData<Result<String>>()
     val redeemResult: LiveData<Result<String>> get() = _redeemResult
@@ -30,25 +33,25 @@ class AuthViewModel @Inject constructor(
             val createResult = repository.createUserWithEmail(email, password)
 
             createResult.onSuccess { uid ->
-                // 2. Jika sukses, ambil data semua level untuk inisialisasi
-                val levelsResult = repository.getLearningLevels()
+                // Jika pembuatan Auth user berhasil, coba simpan ke database
+                try {
+                    val levelsResult = repository.getLearningLevels()
+                    if (levelsResult.isFailure) {
+                        throw levelsResult.exceptionOrNull() ?: Exception("Failed to get learning levels")
+                    }
 
-                levelsResult.onSuccess { levelsSnapshot ->
-                    // 3. Bangun struktur user_progress awal
+                    val levelsSnapshot = levelsResult.getOrThrow()
                     val initialProgress = mutableMapOf<String, UserProgress>()
-                    // Iterasi setiap level (e.g., "level_1", "level_2")
                     for (levelSnap in levelsSnapshot.children) {
                         val levelId = levelSnap.key ?: continue
                         val sectionsMap = mutableMapOf<String, Boolean>()
-                        // Iterasi setiap section di dalam level
                         levelSnap.child("sections").children.forEach { sectionSnap ->
                             val sectionId = sectionSnap.key ?: return@forEach
-                            sectionsMap[sectionId] = false // Set semua ke false
+                            sectionsMap[sectionId] = false
                         }
                         initialProgress[levelId] = UserProgress(completed_sections = sectionsMap)
                     }
 
-                    // 4. Buat objek User lengkap dengan progress awal
                     val user = User(
                         uid = uid,
                         name = name,
@@ -57,20 +60,25 @@ class AuthViewModel @Inject constructor(
                         user_progress = initialProgress
                     )
 
-                    // 5. Simpan objek User ke database
+                    // Simpan objek User ke database
                     val registerResult = repository.registerUser(user)
-                    _registerResult.postValue(registerResult)
-                    if (registerResult.isSuccess) {
-                        markRedeemCodeAsUsed(redeemCode)
+                    if (registerResult.isFailure) {
+                        throw registerResult.exceptionOrNull() ?: Exception("Failed to save user to database")
                     }
 
-                }.onFailure { exception ->
-                    // Gagal mengambil data level, pendaftaran tidak bisa dilanjutkan
-                    _registerResult.postValue(Result.failure(Exception("Failed to initialize user progress. ${exception.message}")))
+                    // Jika semua berhasil, tandai kode redeem dan kirim sinyal sukses
+                    markRedeemCodeAsUsed(redeemCode)
+                    _registerResult.postValue(Result.success(Unit))
+
+                } catch (dbException: Exception) {
+                    // JIKA GAGAL, hapus user dari Auth untuk rollback
+                    auth.currentUser?.delete()?.await()
+                    _registerResult.postValue(Result.failure(dbException))
                 }
 
-            }.onFailure { exception ->
-                _registerResult.postValue(Result.failure(exception))
+            }.onFailure { authException ->
+                // Jika pembuatan user di Auth gagal dari awal
+                _registerResult.postValue(Result.failure(authException))
             }
         }
     }

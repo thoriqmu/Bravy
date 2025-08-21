@@ -24,4 +24,54 @@
     <string name="title_mission">My mission today</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="terms_and_conditions_full_text">
+        <b>📑 Privacy Policy</b>
+        \nLast updated: August 21, 2025
+        \nBravy (the “Application”) is developed and operated by BRAVY_ID (“we,” “our,” or “us”).
+        \nWe value your privacy. This document explains how we collect, use, and protect your personal data.
+        \n\n<b>1. Information We Collect</b>
+        \nAccount data: name, email, username, password.
+        \nUsage data: in-app activity (chat, community, settings).
+        \nDevice data: device type, operating system, notifications.
+        \nBiometric data (optional): facial expression analysis used only within the app and not shared with third parties.
+        \n\n<b>2. How We Use Your Data</b>
+        \nTo provide login and registration.
+        \nTo enable private and community chat features.
+        \nTo send notifications.
+        \nTo personalize learning experiences.
+        \nTo improve our services (e.g., facial expression analysis).
+        \n\n<b>3. Data Protection</b>
+        \nWe use reasonable technical and organizational measures to protect your data. However, no method of transmission over the Internet is 100% secure.
+        \n\n<b>4. Sharing of Data</b>
+        \nWe do not sell or trade your data. Data may be processed by third-party services (such as hosting providers or notification services) solely to support the Application.
+        \n\n<b>5. Your Rights</b>
+        \nYou have the right to:
+        \n\nAccess or update your account information.
+        \nRequest deletion of your account and data.
+        \nWithdraw consent at any time.
+        \nFor privacy requests, please contact us at: bravyourvoice@gmail.com.
+        \n\n<b>6. Changes</b>
+        \nWe may update this Privacy Policy from time to time. The latest version will be published in the Application or on our official website.
+        \n\n\n<b>📑 Terms and Conditions</b>
+        \nLast updated: August 21, 2025
+        \nBy using Bravy, you agree to the following Terms and Conditions.
+        \n\n<b>1. Use of the Application</b>
+        \nYou must be at least 18 years old, or have parental/guardian consent.
+        \nYou are responsible for all activity under your account.
+        \nYou may not use the Application for spam, abuse, or illegal activities.
+        \n\n<b>2. User Accounts</b>
+        \nYou must provide accurate information during registration.
+        \nKeep your password confidential.
+        \nWe reserve the right to suspend or terminate accounts that violate our rules.
+        \n\n<b>3. Content</b>
+        \nYou are responsible for content you share (chat, community, etc.).
+        \nContent that is unlawful, offensive, pornographic, or harassing will be removed.
+        \n\n<b>4. Limitation of Liability</b>
+        \nThe Application is provided “as is” without warranties of any kind. We are not liable for any damages resulting from the use of the Application.
+        \n\n<b>5. Changes</b>
+        \nWe may update these Terms and Conditions at any time. By continuing to use the Application, you agree to the latest version.
+        \n\n<b>6. Contact Us</b>
+        \nIf you have any questions, please contact us at: bravyourvoice@gmail.com
+    </string>
 </resources>
