@@ -126,6 +126,45 @@ class ChatFragment : Fragment() {
             }
         }
 
+        viewModel.latestCommunityPost.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { postDetails ->
+                if (postDetails != null) {
+                    // Jika ada post, tampilkan layout dan isi datanya
+                    binding.layoutCommunity.visibility = View.VISIBLE
+                    val post = postDetails.post
+                    val author = postDetails.author
+
+                    // Isi data ke view
+                    binding.tvUserName.text = author.name
+                    binding.tvPostTitle.text = post.title
+                    binding.tvPostDescription.text = post.description
+                    binding.tvPostTime.text = formatTimestamp(post.timestamp)
+                    binding.likesCount.text = (post.likes?.size ?: 0).toString()
+                    binding.commentsCount.text = (post.comments?.size ?: 0).toString()
+
+                    // Muat gambar profil author
+                    loadCommunityAuthorProfileImage(author.image)
+
+                    // Muat gambar attachment post jika ada
+                    if (post.imageUrl != null) {
+                        binding.ivCommunityChatAttachment.visibility = View.VISIBLE
+                        Glide.with(this)
+                            .load(post.imageUrl)
+                            .into(binding.ivCommunityChatAttachment)
+                    } else {
+                        binding.ivCommunityChatAttachment.visibility = View.GONE
+                    }
+
+                } else {
+                    // Jika tidak ada post, sembunyikan layout
+                    binding.layoutCommunity.visibility = View.GONE
+                }
+            }.onFailure { exception ->
+                binding.layoutCommunity.visibility = View.GONE
+                Log.e("ChatFragment", "Error loading latest community post: ${exception.message}")
+            }
+        }
+
         binding.btnFriendList.setOnClickListener {
             val intent = Intent(requireContext(), FriendActivity::class.java)
             startActivity(intent)
@@ -146,6 +185,7 @@ class ChatFragment : Fragment() {
         viewModel.loadUserProfile()
         viewModel.loadRecentChatUsers()
         viewModel.loadSuggestedFriends()
+        viewModel.loadLatestCommunityPost()
     }
 
     private fun loadUserImage(imageName: String?) {
@@ -190,6 +230,22 @@ class ChatFragment : Fragment() {
                 // Jika gagal mengambil dari storage, muat gambar default
                 Log.e("ChatFragment", "Error loading profile image: ${e.message}")
                 binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
+            }
+        }
+    }
+
+    private fun loadCommunityAuthorProfileImage(imageName: String?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                val finalImageName = imageName ?: "default.jpg"
+                val downloadUrl = storageRef.child(finalImageName).downloadUrl.await()
+                Glide.with(this@ChatFragment)
+                    .load(downloadUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .into(binding.ivUserProfile) // <-- Target ImageView yang benar
+            } catch (e: Exception) {
+                binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
             }
         }
     }

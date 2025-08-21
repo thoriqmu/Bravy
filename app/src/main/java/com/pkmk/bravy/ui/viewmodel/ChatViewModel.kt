@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.Message
 import com.pkmk.bravy.data.model.RecentChat
 import com.pkmk.bravy.data.model.User
@@ -31,6 +32,9 @@ class ChatViewModel @Inject constructor(
 
     private val _recentChats = MutableLiveData<Result<List<RecentChat>>>()
     val recentChats: LiveData<Result<List<RecentChat>>> = _recentChats
+
+    private val _latestCommunityPost = MutableLiveData<Result<CommunityPostDetails?>>()
+    val latestCommunityPost: LiveData<Result<CommunityPostDetails?>> = _latestCommunityPost
 
     private val _suggestedFriends = MutableLiveData<Result<List<User>>>()
     val suggestedFriends: LiveData<Result<List<User>>> = _suggestedFriends
@@ -88,6 +92,18 @@ class ChatViewModel @Inject constructor(
                 }
             } finally {
                 _isLoading.value = false
+            }
+        }
+    }
+
+    fun loadLatestCommunityPost() {
+        viewModelScope.launch {
+            val result = authRepository.getAllCommunityPostsWithDetails()
+            result.onSuccess { posts ->
+                // Ambil post pertama (yang terbaru), atau null jika tidak ada post
+                _latestCommunityPost.postValue(Result.success(posts.firstOrNull()))
+            }.onFailure {
+                _latestCommunityPost.postValue(Result.failure(it))
             }
         }
     }
