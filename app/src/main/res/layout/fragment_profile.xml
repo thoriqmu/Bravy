@@ -74,7 +74,6 @@
         android:gravity="center"
         android:orientation="vertical"
         android:layout_marginTop="60dp"
-        android:layout_marginHorizontal="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_user_email">
@@ -83,7 +82,7 @@
             android:id="@+id/btn_profile_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:drawableLeft="@drawable/ic_profile"
             android:drawableRight="@drawable/ic_right"
             android:text="Profile Setting"
@@ -91,15 +90,13 @@
             android:textAllCaps="false"
             android:textColor="@color/onBackground"
             android:textSize="16sp"
-            android:outlineSpotShadowColor="@color/transparent"
-            android:outlineAmbientShadowColor="@color/transparent"
             app:cornerRadius="0dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_friend_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:drawableLeft="@drawable/ic_friends"
             android:drawableRight="@drawable/ic_right"
             android:text="Friend List"
@@ -107,15 +104,13 @@
             android:textAllCaps="false"
             android:textColor="@color/onBackground"
             android:textSize="16sp"
-            android:outlineSpotShadowColor="@color/transparent"
-            android:outlineAmbientShadowColor="@color/transparent"
             app:cornerRadius="0dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_setting"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:drawableLeft="@drawable/ic_setting"
             android:drawableRight="@drawable/ic_right"
             android:text="Setting"
@@ -123,15 +118,13 @@
             android:textAllCaps="false"
             android:textColor="@color/onBackground"
             android:textSize="16sp"
-            android:outlineSpotShadowColor="@color/transparent"
-            android:outlineAmbientShadowColor="@color/transparent"
             app:cornerRadius="0dp"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:drawableLeft="@drawable/ic_log_out"
             android:drawableRight="@drawable/ic_right"
             android:text="Log out"
@@ -139,8 +132,6 @@
             android:textAllCaps="false"
             android:textColor="@color/onBackground"
             android:textSize="16sp"
-            android:outlineSpotShadowColor="@color/transparent"
-            android:outlineAmbientShadowColor="@color/transparent"
             app:cornerRadius="0dp"/>
 
     </LinearLayout>

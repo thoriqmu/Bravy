@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="4dp"
+    android:background="?attr/selectableItemBackground"
+    android:paddingHorizontal="10dp"
     android:orientation="horizontal">
 
     <com.google.android.material.imageview.ShapeableImageView
