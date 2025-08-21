@@ -30,8 +30,11 @@ class PrivateChatActivity : AppCompatActivity() {
         setupRecyclerViews() // <-- Ganti nama fungsi
         setupObservers()
         setupListeners()
+    }
 
-        viewModel.loadInitialData() // <-- Panggil fungsi baru
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadInitialData()
     }
 
     private fun setupRecyclerViews() {

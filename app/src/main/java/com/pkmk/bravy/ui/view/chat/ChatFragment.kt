@@ -183,6 +183,10 @@ class ChatFragment : Fragment() {
         }
 
         viewModel.loadUserProfile()
+    }
+
+    override fun onResume() {
+        super.onResume()
         viewModel.loadRecentChatUsers()
         viewModel.loadSuggestedFriends()
         viewModel.loadLatestCommunityPost()

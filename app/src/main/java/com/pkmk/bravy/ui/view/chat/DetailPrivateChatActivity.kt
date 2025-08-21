@@ -119,25 +119,21 @@ class DetailPrivateChatActivity : AppCompatActivity() {
     }
 
     private fun loadProfileImage(imageUrl: String?) {
-        val imageName = imageUrl
-        if (imageName.isNullOrEmpty()) {
-            binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
-        } else {
-            // Jika ada nama gambar, ambil URL dari Firebase Storage
-            lifecycleScope.launch {
-                try {
-                    val storageRef = FirebaseStorage.getInstance().getReference("picture").child(imageName)
-                    val downloadUrl = storageRef.downloadUrl.await()
-                    Glide.with(this@DetailPrivateChatActivity)
-                        .load(downloadUrl)
-                        .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
-                        .into(binding.ivUserPhoto)
-                } catch (e: Exception) {
-                    // Jika gagal mengambil URL (misal: file tidak ada di storage), gunakan placeholder
-                    binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
-                }
+        val finalImageName = imageUrl ?: "default.jpg"
+        lifecycleScope.launch {
+            try {
+                val storageRef =
+                    FirebaseStorage.getInstance().getReference("picture").child(finalImageName)
+                val downloadUrl = storageRef.downloadUrl.await()
+                Glide.with(this@DetailPrivateChatActivity)
+                    .load(downloadUrl)
+                    .circleCrop()
+                    .placeholder(R.drawable.ic_profile)
+                    .error(R.drawable.ic_profile)
+                    .into(binding.ivUserPhoto)
+            } catch (e: Exception) {
+                // Jika gagal mengambil URL (misal: file tidak ada di storage), gunakan placeholder
+                binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
             }
         }
     }
