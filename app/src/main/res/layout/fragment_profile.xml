@@ -68,72 +68,127 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_user_name" />
 
-    <LinearLayout
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/shapeableImageView7"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/bree_peace"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_user_email" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="20dp"
+        android:layout_weight="1"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView7"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/shapeableImageView7"
+        app:layout_constraintTop_toTopOf="@+id/shapeableImageView7">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primaryContainer"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:orientation="vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/linearLayout10"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="You're BREE's friend since"
+                    android:textColor="@color/onPrimaryContainer"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="1 January 2025"
+                    android:textColor="@color/onPrimaryContainer"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="10"
+                    android:textColor="@color/onPrimaryContainer"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="day"
+                    android:textColor="@color/onPrimaryContainer"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_user_email">
+        app:layout_constraintTop_toBottomOf="@+id/shapeableImageView7"
+        app:tabIndicatorColor="@color/primary"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@color/primaryContainer">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_profile_setting"
+        <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_profile"
-            android:drawableRight="@drawable/ic_right"
-            android:text="Profile Setting"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/onBackground"
-            android:textSize="16sp"
-            app:cornerRadius="0dp"/>
+            android:text="Activity" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_friend_list"
+        <com.google.android.material.tabs.TabItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_friends"
-            android:drawableRight="@drawable/ic_right"
-            android:text="Friend List"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/onBackground"
-            android:textSize="16sp"
-            app:cornerRadius="0dp"/>
+            android:text="Setting" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_setting"
-            android:drawableRight="@drawable/ic_right"
-            android:text="Setting"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/onBackground"
-            android:textSize="16sp"
-            app:cornerRadius="0dp"/>
+    </com.google.android.material.tabs.TabLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_logout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/selectableItemBackground"
-            android:drawableLeft="@drawable/ic_log_out"
-            android:drawableRight="@drawable/ic_right"
-            android:text="Log out"
-            android:textAlignment="textStart"
-            android:textAllCaps="false"
-            android:textColor="@color/onBackground"
-            android:textSize="16sp"
-            app:cornerRadius="0dp"/>
-
-    </LinearLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager_profile"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout_profile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,25 +1,25 @@
 package com.pkmk.bravy.ui.view.profile
 
-import android.content.Intent
-import androidx.fragment.app.viewModels
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.FragmentProfileBinding
-import com.pkmk.bravy.ui.view.auth.OnboardingActivity
-import com.pkmk.bravy.ui.view.friend.FriendActivity
+import com.pkmk.bravy.ui.adapter.ProfilePagerAdapter
 import com.pkmk.bravy.ui.viewmodel.ProfileViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -27,7 +27,6 @@ class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ProfileViewModel by viewModels()
-    private val storageRef = FirebaseStorage.getInstance().getReference("picture")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,12 +39,13 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupViewPagerAndTabs()
         setupObservers()
-        setupClickListeners()
     }
 
     override fun onResume() {
         super.onResume()
+        // Muat ulang data setiap kali fragment ini ditampilkan
         viewModel.loadUserProfile()
     }
 
@@ -54,73 +54,39 @@ class ProfileFragment : Fragment() {
             result.onSuccess { user ->
                 binding.tvUserName.text = user.name
                 binding.tvUserEmail.text = user.email
-                // PERBAIKAN 3: Panggil fungsi helper
                 loadProfileImage(user.image)
-            }.onFailure { exception ->
-                Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                binding.tvUserName.text = "User Name"
-                binding.tvUserEmail.text = "email@gmail.com"
-                // PERBAIKAN 3: Panggil fungsi helper
-                loadProfileImage(null)
+            }.onFailure {
+                Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
             }
-        }
-
-        viewModel.logoutResult.observe(viewLifecycleOwner) { success ->
-            if (success) {
-                // Navigasi ke OnboardingActivity setelah logout berhasil
-                val intent = Intent(requireContext(), OnboardingActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                }
-                startActivity(intent)
-            } else {
-                Toast.makeText(requireContext(), "Logout failed", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        binding.btnProfileSetting.setOnClickListener {
-            val intent = Intent(requireContext(), ProfileSettingActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnFriendList.setOnClickListener {
-            val intent = Intent(requireContext(), FriendActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnSetting.setOnClickListener {
-            val intent = Intent(requireContext(), SettingActivity::class.java)
-            startActivity(intent)
         }
     }
 
-    private fun setupClickListeners() {
-        binding.btnLogout.setOnClickListener {
-            viewModel.logout()
-        }
+    private fun setupViewPagerAndTabs() {
+        binding.viewPagerProfile.adapter = ProfilePagerAdapter(this)
+        TabLayoutMediator(binding.tabLayoutProfile, binding.viewPagerProfile) { tab, position ->
+            tab.text = when (position) {
+                0 -> "Activity"
+                1 -> "Setting"
+                else -> null
+            }
+        }.attach()
     }
 
-    // PERBAIKAN 3: Ekstrak logika pemuatan gambar ke fungsi terpisah
     private fun loadProfileImage(imageName: String?) {
-        // PERBAIKAN 2: Gunakan viewLifecycleOwner.lifecycleScope
-        viewLifecycleOwner.lifecycleScope.launch {
+        CoroutineScope(Dispatchers.Main).launch {
             try {
-                // Coba muat gambar dari nama yang diberikan, jika null, gunakan default.jpg
-                val finalImageName = imageName ?: "default.jpg"
-                val imageUrl = storageRef.child(finalImageName).downloadUrl.await()
-
+                val url = if (imageName.isNullOrEmpty()) {
+                    FirebaseStorage.getInstance().getReference("picture/default.jpg").downloadUrl.await()
+                } else {
+                    FirebaseStorage.getInstance().getReference("picture/$imageName").downloadUrl.await()
+                }
                 Glide.with(this@ProfileFragment)
-                    .load(imageUrl)
-                    .circleCrop() // Membuat gambar jadi lingkaran
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(binding.ivProfilePhoto)
-
-            } catch (e: Exception) {
-                // Jika semua gagal, muat gambar placeholder dari drawable
-                Glide.with(this@ProfileFragment)
-                    .load(R.drawable.ic_profile)
+                    .load(url)
                     .circleCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_profile)
                     .into(binding.ivProfilePhoto)
+            } catch (e: Exception) {
+                binding.ivProfilePhoto.setImageResource(R.drawable.ic_profile)
             }
         }
     }
