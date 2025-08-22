@@ -93,6 +93,7 @@
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
+                        android:layout_marginEnd="15dp"
                         android:src="@drawable/vector_xp" />
 
                     <Space
@@ -125,11 +126,8 @@
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_width="36dp"
                         android:layout_height="36dp"
+                        android:layout_marginEnd="15dp"
                         android:src="@drawable/vector_streak" />
-
-                    <Space
-                        android:layout_width="5dp"
-                        android:layout_height="0dp" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tv_streak"

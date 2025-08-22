@@ -60,16 +60,23 @@ class CreateCommunityChatActivity : AppCompatActivity() {
         }
 
         viewModel.postCreationStatus.observe(this) { result ->
+            // Sembunyikan loading saat proses selesai (baik sukses maupun gagal)
+            binding.loadingLayout.root.visibility = View.GONE
+
             result.onSuccess {
                 Toast.makeText(this, "Post created successfully!", Toast.LENGTH_SHORT).show()
-                finish() // Kembali ke halaman sebelumnya setelah berhasil
+                finish()
             }.onFailure {
                 Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_LONG).show()
             }
         }
 
+        // --- PERBARUI OBSERVER INI ---
         viewModel.isLoading.observe(this) { isLoading ->
-            // (Opsional) Tampilkan/sembunyikan progress bar
+            if (isLoading) {
+                binding.loadingLayout.root.visibility = View.VISIBLE
+            }
+            // Penanganan untuk menyembunyikan loading sudah dipindah ke observer `postCreationStatus`
         }
     }
 
@@ -89,21 +96,23 @@ class CreateCommunityChatActivity : AppCompatActivity() {
         }
 
         binding.btnCommunityChatPost.setOnClickListener {
+            val title = binding.postTitle.text.toString().trim()
             val description = binding.postDescription.text.toString().trim()
+
+            if (title.isBlank()) {
+                Toast.makeText(this, "Title cannot be empty", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (description.isBlank()) {
                 Toast.makeText(this, "Post content cannot be empty", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // Mengambil baris pertama sebagai judul, sisanya sebagai deskripsi
-
-            val title = binding.postTitle.text.toString()
-
-            // --- BATASI PANJANG JUDUL ---
             if (title.length > 50) {
                 Toast.makeText(this, "Title cannot be more than 50 characters.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
+            // ViewModel akan mengubah isLoading menjadi true di sini
             viewModel.createPost(title, description, selectedImageUri)
         }
     }
