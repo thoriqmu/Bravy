@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
@@ -273,6 +274,15 @@ class AuthRepositoryImpl @Inject constructor(
             Result.success(postDetailsList)
         } catch (e: Exception) {
             Log.e("Repository", "Error in getAllCommunityPostsWithDetails: ${e.message}")
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit> {
+        return try {
+            dataSource.updateUserStreakAndMood(uid, newStreak, newMood)
+            Result.success(Unit)
+        } catch (e: Exception) {
             Result.failure(e)
         }
     }

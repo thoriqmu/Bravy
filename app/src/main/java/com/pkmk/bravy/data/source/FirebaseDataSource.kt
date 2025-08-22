@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.data.model.CommunityPost
+import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.Friend
 import com.pkmk.bravy.data.model.Message
 import com.pkmk.bravy.data.model.RedeemCode
@@ -353,6 +354,14 @@ class FirebaseDataSource @Inject constructor(
         val posts = snapshot.children.mapNotNull { it.getValue(CommunityPost::class.java) }
         Log.d("DataSource", "Successfully deserialized ${posts.size} posts.")
         return posts.reversed()
+    }
+
+    suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood) {
+        val updates = mapOf(
+            "/users/$uid/streak" to newStreak,
+            "/users/$uid/dailyMood" to newMood
+        )
+        database.reference.updateChildren(updates).await()
     }
 
 }

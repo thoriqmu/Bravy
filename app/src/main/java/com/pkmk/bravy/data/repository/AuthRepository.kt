@@ -3,6 +3,7 @@ package com.pkmk.bravy.data.repository
 import com.google.firebase.database.DataSnapshot
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
@@ -28,4 +29,5 @@ interface AuthRepository {
     suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit>
     suspend fun createCommunityPost(post: CommunityPost): Result<Unit>
     suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>>
+    suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit>
 }

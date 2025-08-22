@@ -37,24 +37,10 @@
             android:textAlignment="center"
             android:textColor="@color/onPrimary"
             android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_community_chat_post"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="20dp"
-            android:backgroundTint="@color/secondary"
-            android:text="Post"
-            android:textAllCaps="false"
-            android:textColor="@color/onSecondary"
-            android:textSize="12sp"
-            app:cornerRadius="10dp"
-            app:layout_constraintBottom_toBottomOf="@+id/materialTextView8"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/materialTextView8" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -96,15 +82,13 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:layout_marginHorizontal="20dp"
-        app:boxStrokeWidth="0dp"
         app:boxCornerRadiusBottomEnd="5dp"
         app:boxCornerRadiusBottomStart="5dp"
         app:boxCornerRadiusTopEnd="5dp"
         app:boxCornerRadiusTopStart="5dp"
         app:boxStrokeColor="@color/primary"
         app:hintTextColor="@color/primary"
-        app:layout_constraintTop_toBottomOf="@+id/iv_user_profile"
-        tools:layout_editor_absoluteX="20dp">
+        app:layout_constraintTop_toBottomOf="@+id/iv_user_profile">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/post_title"
@@ -126,10 +110,9 @@
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginHorizontal="20dp"
         android:layout_weight="1"
-        app:boxStrokeWidth="0dp"
         app:boxCornerRadiusBottomEnd="5dp"
         app:boxCornerRadiusBottomStart="5dp"
         app:boxCornerRadiusTopEnd="5dp"
@@ -162,7 +145,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp">
+        android:layout_marginHorizontal="20dp">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_add_image"
@@ -201,5 +184,18 @@
         android:layout_marginHorizontal="20dp"
         android:scaleType="centerCrop"
         android:visibility="gone"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_community_chat_post"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="20dp"
+        android:backgroundTint="@color/secondary"
+        android:text="Post"
+        android:textAllCaps="false"
+        android:textColor="@color/onSecondary"
+        android:textSize="12sp"
+        app:cornerRadius="10dp" />
 
 </LinearLayout>
