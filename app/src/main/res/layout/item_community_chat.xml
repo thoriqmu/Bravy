@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:layout_marginTop="5dp"
     android:background="@color/background"
+    android:paddingHorizontal="20dp"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@+id/materialCardView3"
@@ -15,66 +16,64 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp"
-        android:background="?attr/selectableItemBackground">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_user_profile"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@color/surface"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_home"
+            app:shapeAppearanceOverlay="@style/image_rounded" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
+            android:layout_marginStart="10dp"
+            android:orientation="vertical"
+            android:layout_weight="1">
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/iv_user_profile"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:background="@color/surface"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_home"
-                app:shapeAppearanceOverlay="@style/image_rounded" />
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:orientation="vertical"
-                android:layout_weight="1">
+                android:fontFamily="@font/poppins_bold"
+                android:text="@string/user_name"
+                android:textColor="@color/onBackground"
+                android:textSize="14sp"/>
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="@string/user_name"
-                    android:textColor="@color/onBackground"
-                    android:textSize="16sp"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_post_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3 days ago"
-                    android:textColor="@color/onBackground"
-                    android:textSize="14sp"/>
-
-            </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_post_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3 days ago"
+                android:textColor="@color/onBackground"
+                android:textSize="12sp"/>
 
         </LinearLayout>
 
+    </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_post_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="5dp"
+        android:background="?attr/selectableItemBackground">
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/tv_post_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:fontFamily="@font/poppins_bold"
             android:text="Nervous when speaking English"
             android:textColor="@color/onBackground"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:maxLines="1"
             android:ellipsize="end"/>
 
@@ -84,7 +83,7 @@
             android:layout_height="wrap_content"
             android:text="Hey guys, I’m really nervous about speaking English because I’m scared people will laugh at my pronunciation or grammar mistakes. It’s stopping me from even trying. Have any of you dealt with this fear? How did you overcome it?"
             android:textColor="@color/onBackground"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:maxLines="8"
             android:ellipsize="end"/>
 
@@ -97,89 +96,89 @@
             android:src="@drawable/level_1"
             android:visibility="gone"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/likes_count"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:gravity="end">
+            android:layout_marginEnd="2dp"
+            android:text="0"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"/>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/likes_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="0"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Likes"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp"/>
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comments_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="0"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp"/>
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Comments"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp"/>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="5dp"
-            android:gravity="center">
+            android:text="Likes"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/primary"
-                android:text="Like"
-                android:textColor="@color/onPrimary"
-                android:textSize="12sp"
-                android:textAllCaps="false"
-                android:layout_weight="1"
-                app:iconGravity="textStart"
-                app:icon="@drawable/ic_thumb_up"
-                app:cornerRadius="10dp"/>
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="0dp" />
 
-            <Space
-                android:layout_width="10dp"
-                android:layout_height="0dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/comments_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:text="0"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/primary"
-                android:text="Comment"
-                android:textColor="@color/onPrimary"
-                android:textSize="12sp"
-                android:textAllCaps="false"
-                android:layout_weight="1"
-                app:iconGravity="textStart"
-                app:icon="@drawable/ic_comment"
-                app:cornerRadius="10dp"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comments"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"/>
 
-        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="5dp"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:text="Like"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            app:iconGravity="textStart"
+            app:icon="@drawable/ic_thumb_up"
+            app:iconTint="@color/onBackground"
+            app:cornerRadius="0dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:text="Comment"
+            android:textColor="@color/onBackground"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:layout_weight="1"
+            app:iconGravity="textStart"
+            app:icon="@drawable/ic_comment"
+            app:iconTint="@color/onBackground"
+            app:cornerRadius="0dp"/>
 
     </LinearLayout>
 

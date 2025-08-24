@@ -81,8 +81,7 @@
                 android:background="@color/primaryContainer"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:paddingVertical="20dp"
-                android:paddingHorizontal="15dp">
+                android:padding="15dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -94,11 +93,7 @@
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:layout_marginEnd="15dp"
-                        android:src="@drawable/vector_xp" />
-
-                    <Space
-                        android:layout_width="5dp"
-                        android:layout_height="0dp"/>
+                        android:src="@drawable/vector_points" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tv_points"
@@ -113,8 +108,7 @@
 
                 <Space
                     android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"/>
+                    android:layout_height="10dp" />
 
                 <LinearLayout
                     android:id="@+id/linearLayout12"

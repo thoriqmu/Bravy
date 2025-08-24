@@ -1,24 +1,34 @@
 package com.pkmk.bravy.ui.adapter
 
+import android.content.Intent
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
 import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.databinding.ItemCommunityChatBinding
+import com.pkmk.bravy.ui.view.chat.DetailCommunityChatActivity
+import com.pkmk.bravy.ui.viewmodel.CommunityChatViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 
-class CommunityChatAdapter(private val onClick: (CommunityPostDetails) -> Unit) :
-    ListAdapter<CommunityPostDetails, CommunityChatAdapter.PostViewHolder>(PostDiffCallback) {
+class CommunityChatAdapter(
+    private val viewModel: CommunityChatViewModel,
+    private val onPostClick: (CommunityPostDetails) -> Unit
+) : ListAdapter<CommunityPostDetails, CommunityChatAdapter.PostViewHolder>(PostDiffCallback) {
+
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val binding = ItemCommunityChatBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -28,7 +38,6 @@ class CommunityChatAdapter(private val onClick: (CommunityPostDetails) -> Unit) 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val item = getItem(position)
         holder.bind(item)
-        holder.itemView.setOnClickListener { onClick(item) }
     }
 
     inner class PostViewHolder(private val binding: ItemCommunityChatBinding) :
@@ -38,25 +47,57 @@ class CommunityChatAdapter(private val onClick: (CommunityPostDetails) -> Unit) 
             val post = details.post
             val author = details.author
 
-            // Set data teks
             binding.tvUserName.text = author.name
             binding.tvPostTitle.text = post.title
             binding.tvPostDescription.text = post.description
             binding.tvPostTime.text = formatTimestamp(post.timestamp)
-            binding.likesCount.text = post.likes.size.toString()
-            binding.commentsCount.text = post.comments.size.toString()
+            binding.likesCount.text = (post.likes?.size ?: 0).toString()
+            binding.commentsCount.text = (post.comments?.size ?: 0).toString()
 
-            // Muat gambar profil author
             loadProfileImage(author.image)
 
-            // Logika untuk menampilkan gambar attachment
             if (post.imageUrl != null) {
                 binding.ivCommunityChatAttachment.visibility = View.VISIBLE
-                Glide.with(itemView.context)
-                    .load(post.imageUrl)
-                    .into(binding.ivCommunityChatAttachment)
+                Glide.with(itemView.context).load(post.imageUrl).into(binding.ivCommunityChatAttachment)
             } else {
                 binding.ivCommunityChatAttachment.visibility = View.GONE
+            }
+
+            // --- TAMBAHKAN LOGIKA LIKE DI SINI ---
+            updateLikeButton(post.likes?.containsKey(currentUserId) == true)
+
+            binding.btnLike.setOnClickListener {
+                viewModel.toggleLikeOnPost(post.postId)
+            }
+
+            binding.layoutCommunity.setOnClickListener {
+                onPostClick(details)
+            }
+
+            val context = itemView.context
+
+            val openDetailIntent = { focusComment: Boolean ->
+                val intent = Intent(context, DetailCommunityChatActivity::class.java).apply {
+                    // --- PERBAIKAN UTAMA: KIRIM ID, BUKAN OBJEK ---
+                    putExtra(DetailCommunityChatActivity.EXTRA_POST_ID, details.post.postId)
+                    putExtra(DetailCommunityChatActivity.EXTRA_AUTHOR_ID, details.author.uid) // Kirim UID author
+                    putExtra(DetailCommunityChatActivity.EXTRA_FOCUS_COMMENT, focusComment)
+                }
+                context.startActivity(intent)
+            }
+
+            binding.layoutPostContent.setOnClickListener { openDetailIntent(false) }
+            binding.btnComment.setOnClickListener { openDetailIntent(true) }
+        }
+
+        private fun updateLikeButton(isLiked: Boolean) {
+            val context = itemView.context
+            if (isLiked) {
+                binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.primary))
+                binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary))
+            } else {
+                binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.onBackground))
+                binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.onBackground))
             }
         }
 

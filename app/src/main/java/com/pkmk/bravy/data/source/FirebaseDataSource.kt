@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
+import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.Friend
@@ -362,6 +363,26 @@ class FirebaseDataSource @Inject constructor(
             "/users/$uid/dailyMood" to newMood
         )
         database.reference.updateChildren(updates).await()
+    }
+
+    suspend fun toggleLikeOnPost(postId: String, uid: String) {
+        val postLikesRef = communityChatsRef.child(postId).child("likes").child(uid)
+
+        // Menggunakan transaksi untuk keamanan data saat ada banyak interaksi
+        postLikesRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+                // Jika sudah ada (user sudah like), hapus likenya
+                postLikesRef.removeValue()
+            } else {
+                // Jika belum ada, tambahkan likenya
+                postLikesRef.setValue(true)
+            }
+        }.await()
+    }
+
+    suspend fun postComment(postId: String, comment: Comment) {
+        val commentId = comment.commentId
+        communityChatsRef.child(postId).child("comments").child(commentId).setValue(comment).await()
     }
 
 }

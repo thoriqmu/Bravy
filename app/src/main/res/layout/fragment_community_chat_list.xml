@@ -9,7 +9,7 @@
         android:id="@+id/rv_community_chat"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#D1D1D1"
+        android:background="#e4e4f4"
         tools:listitem="@layout/item_community_chat"/>
 
 </FrameLayout>

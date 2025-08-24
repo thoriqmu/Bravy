@@ -4,8 +4,7 @@ import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class RecentChat(
-    val user: User,
-    val chatId: String,
-    val lastMessage: Message?
+data class CommentDetails(
+    val comment: Comment,
+    val author: User
 ) : Parcelable

@@ -61,7 +61,8 @@ class CommunityChatListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        postAdapter = CommunityChatAdapter { postDetails ->
+        // --- PERBARUI CARA MEMBUAT ADAPTER ---
+        postAdapter = CommunityChatAdapter(viewModel) { postDetails ->
             // TODO: Handle klik untuk membuka detail post
         }
         binding.rvCommunityChat.apply {

@@ -89,8 +89,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins_medium"
                 android:text="About this material and practice"
                 android:textColor="@color/onSurface"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="This material is designed for Level 1 to help you start at a steady and comfortable pace. Each section will guide you step by step to build confidence and develop your skills gradually. Take your time, repeat any part if needed, and move forward only when you feel ready."
+                android:textColor="@color/onSurface"
+                android:textSize="14sp" />
 
             <View
                 android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.pkmk.bravy.data.repository
 
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.DailyMood
@@ -30,4 +31,6 @@ interface AuthRepository {
     suspend fun createCommunityPost(post: CommunityPost): Result<Unit>
     suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>>
     suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit>
+    suspend fun toggleLikeOnPost(postId: String, uid: String): Result<Unit>
+    suspend fun postComment(postId: String, comment: Comment): Result<Unit>
 }

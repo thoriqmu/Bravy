@@ -125,4 +125,56 @@ class CommunityChatViewModel @Inject constructor(
             _isLoading.postValue(false)
         }
     }
+
+    fun toggleLikeOnPost(postId: String) {
+        val currentUid = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            // Panggil repository untuk mengubah data di Firebase
+            val result = authRepository.toggleLikeOnPost(postId, currentUid)
+
+            // Jika berhasil, perbarui LiveData secara manual untuk umpan balik instan di UI
+            if (result.isSuccess) {
+                updatePostInLiveData(postId, currentUid)
+            }
+        }
+    }
+
+    private fun updatePostInLiveData(postId: String, currentUid: String) {
+        val currentAllPosts = _allPosts.value?.getOrNull()?.toMutableList() ?: return
+
+        // Cari post yang di-like di dalam daftar
+        val postIndex = currentAllPosts.indexOfFirst { it.post.postId == postId }
+        if (postIndex != -1) {
+            val oldDetails = currentAllPosts[postIndex]
+            val oldPost = oldDetails.post
+            val newLikes = oldPost.likes.toMutableMap()
+
+            // Toggle like status
+            if (newLikes.containsKey(currentUid)) {
+                newLikes.remove(currentUid) // Unlike
+            } else {
+                newLikes[currentUid] = true // Like
+            }
+
+            // Buat objek post baru dengan data like yang sudah diperbarui
+            val newPost = oldPost.copy(likes = newLikes)
+            val newDetails = oldDetails.copy(post = newPost)
+
+            // Ganti item lama dengan yang baru di dalam daftar
+            currentAllPosts[postIndex] = newDetails
+
+            // Post daftar yang sudah diperbarui ke LiveData
+            _allPosts.postValue(Result.success(currentAllPosts))
+
+            // Lakukan hal yang sama untuk friendPosts
+            // (Ini memastikan kedua tab disinkronkan)
+            val currentFriendPosts = _friendPosts.value?.getOrNull()?.toMutableList() ?: return
+            val friendPostIndex = currentFriendPosts.indexOfFirst { it.post.postId == postId }
+            if(friendPostIndex != -1){
+                currentFriendPosts[friendPostIndex] = newDetails
+                _friendPosts.postValue(Result.success(currentFriendPosts))
+            }
+        }
+    }
 }

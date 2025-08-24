@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep all data model classes in this package and their members
+-keep class com.pkmk.bravy.data.model.** { *; }
+
+# Keep the CREATOR field for any class that implements Parcelable.
+# This is essential for the Parcelize plugin to work with R8.
+-keepclassmembers class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}

@@ -2,6 +2,7 @@ package com.pkmk.bravy.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.DailyMood
@@ -281,6 +282,24 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit> {
         return try {
             dataSource.updateUserStreakAndMood(uid, newStreak, newMood)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun toggleLikeOnPost(postId: String, uid: String): Result<Unit> {
+        return try {
+            dataSource.toggleLikeOnPost(postId, uid)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun postComment(postId: String, comment: Comment): Result<Unit> {
+        return try {
+            dataSource.postComment(postId, comment)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
