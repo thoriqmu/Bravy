@@ -1,20 +1,24 @@
 package com.pkmk.bravy.ui.view.chat
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.R
+import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.databinding.FragmentChatBinding
 import com.pkmk.bravy.ui.adapter.SuggestedFriendAdapter
 import com.pkmk.bravy.ui.view.friend.FriendActivity
@@ -33,6 +37,7 @@ class ChatFragment : Fragment() {
     private val viewModel: ChatViewModel by viewModels()
     private val storageRef = FirebaseStorage.getInstance().getReference("picture")
     private lateinit var suggestedFriendAdapter: SuggestedFriendAdapter
+    private val currentUserId = FirebaseAuth.getInstance().currentUser?.uid
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,7 +52,33 @@ class ChatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupSuggestedFriendsAdapter()
+        setupListeners()
+        setupObservers()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadUserProfile()
+        viewModel.loadRecentChatUsers()
+        viewModel.loadSuggestedFriends()
+        viewModel.loadLatestCommunityPost()
+    }
+
+    private fun setupListeners() {
+        binding.btnFriendList.setOnClickListener {
+            startActivity(Intent(requireContext(), FriendActivity::class.java))
+        }
+
+        binding.btnPrivateChat.setOnClickListener {
+            startActivity(Intent(requireContext(), PrivateChatActivity::class.java))
+        }
+
+        binding.btnCommunityChat.setOnClickListener {
+            startActivity(Intent(requireContext(), CommunityChatActivity::class.java))
+        }
+    }
+
+    private fun setupObservers() {
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
             result.onSuccess { user ->
                 loadUserImage(user.image)
@@ -129,34 +160,9 @@ class ChatFragment : Fragment() {
         viewModel.latestCommunityPost.observe(viewLifecycleOwner) { result ->
             result.onSuccess { postDetails ->
                 if (postDetails != null) {
-                    // Jika ada post, tampilkan layout dan isi datanya
                     binding.layoutCommunity.visibility = View.VISIBLE
-                    val post = postDetails.post
-                    val author = postDetails.author
-
-                    // Isi data ke view
-                    binding.tvUserName.text = author.name
-                    binding.tvPostTitle.text = post.title
-                    binding.tvPostDescription.text = post.description
-                    binding.tvPostTime.text = formatTimestamp(post.timestamp)
-                    binding.likesCount.text = (post.likes?.size ?: 0).toString()
-                    binding.commentsCount.text = (post.comments?.size ?: 0).toString()
-
-                    // Muat gambar profil author
-                    loadCommunityAuthorProfileImage(author.image)
-
-                    // Muat gambar attachment post jika ada
-                    if (post.imageUrl != null) {
-                        binding.ivCommunityChatAttachment.visibility = View.VISIBLE
-                        Glide.with(this)
-                            .load(post.imageUrl)
-                            .into(binding.ivCommunityChatAttachment)
-                    } else {
-                        binding.ivCommunityChatAttachment.visibility = View.GONE
-                    }
-
+                    bindLatestCommunityPost(postDetails) // Panggil fungsi bind terpisah
                 } else {
-                    // Jika tidak ada post, sembunyikan layout
                     binding.layoutCommunity.visibility = View.GONE
                 }
             }.onFailure { exception ->
@@ -164,32 +170,58 @@ class ChatFragment : Fragment() {
                 Log.e("ChatFragment", "Error loading latest community post: ${exception.message}")
             }
         }
-
-        binding.btnFriendList.setOnClickListener {
-            val intent = Intent(requireContext(), FriendActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Handle private chat click
-        binding.btnPrivateChat.setOnClickListener {
-            val intent = Intent(requireContext(), PrivateChatActivity::class.java)
-            startActivity(intent)
-        }
-
-        // Handle community click
-        binding.btnCommunityChat.setOnClickListener {
-            val intent = Intent(requireContext(), CommunityChatActivity::class.java)
-            startActivity(intent)
-        }
-
-        viewModel.loadUserProfile()
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.loadRecentChatUsers()
-        viewModel.loadSuggestedFriends()
-        viewModel.loadLatestCommunityPost()
+    private fun bindLatestCommunityPost(postDetails: CommunityPostDetails) {
+        val post = postDetails.post
+        val author = postDetails.author
+
+        // Isi data ke view
+        binding.tvUserName.text = author.name
+        binding.tvPostTitle.text = post.title
+        binding.tvPostDescription.text = post.description
+        binding.tvPostTime.text = formatTimestamp(post.timestamp)
+        binding.likesCount.text = (post.likes?.size ?: 0).toString()
+        binding.commentsCount.text = (post.comments?.size ?: 0).toString()
+
+        loadCommunityAuthorProfileImage(author.image)
+
+        if (post.imageUrl != null) {
+            binding.ivCommunityChatAttachment.visibility = View.VISIBLE
+            Glide.with(this).load(post.imageUrl).into(binding.ivCommunityChatAttachment)
+        } else {
+            binding.ivCommunityChatAttachment.visibility = View.GONE
+        }
+
+        // --- LOGIKA INTERAKTIF ---
+        updateLikeButton(post.likes?.containsKey(currentUserId) == true)
+
+        binding.btnLike.setOnClickListener {
+            viewModel.toggleLikeOnLatestPost()
+        }
+
+        val openDetailIntent = { focusComment: Boolean ->
+            val intent = Intent(requireContext(), DetailCommunityChatActivity::class.java).apply {
+                putExtra(DetailCommunityChatActivity.EXTRA_POST_ID, post.postId)
+                putExtra(DetailCommunityChatActivity.EXTRA_AUTHOR_ID, author.uid)
+                putExtra(DetailCommunityChatActivity.EXTRA_FOCUS_COMMENT, focusComment)
+            }
+            startActivity(intent)
+        }
+
+        binding.layoutPostContent.setOnClickListener { openDetailIntent(false) }
+        binding.btnComment.setOnClickListener { openDetailIntent(true) }
+    }
+
+    private fun updateLikeButton(isLiked: Boolean) {
+        val context = requireContext()
+        if (isLiked) {
+            binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.primary))
+            binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary))
+        } else {
+            binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.onBackground))
+            binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.onBackground))
+        }
     }
 
     private fun loadUserImage(imageName: String?) {

@@ -131,4 +131,30 @@ class ChatViewModel @Inject constructor(
             _friendActionStatus.postValue(result)
         }
     }
+
+    fun toggleLikeOnLatestPost() {
+        val currentUid = auth.currentUser?.uid ?: return
+        val postDetails = _latestCommunityPost.value?.getOrNull() ?: return
+        val post = postDetails.post
+
+        viewModelScope.launch {
+            // Panggil repository untuk mengubah data di Firebase
+            val result = authRepository.toggleLikeOnPost(post.postId, currentUid)
+
+            // Jika berhasil, perbarui LiveData secara manual untuk umpan balik instan
+            if (result.isSuccess) {
+                val newLikes = post.likes?.toMutableMap() ?: mutableMapOf()
+
+                if (newLikes.containsKey(currentUid)) {
+                    newLikes.remove(currentUid) // Unlike
+                } else {
+                    newLikes[currentUid] = true // Like
+                }
+
+                val updatedPost = post.copy(likes = newLikes)
+                val updatedDetails = postDetails.copy(post = updatedPost)
+                _latestCommunityPost.postValue(Result.success(updatedDetails))
+            }
+        }
+    }
 }

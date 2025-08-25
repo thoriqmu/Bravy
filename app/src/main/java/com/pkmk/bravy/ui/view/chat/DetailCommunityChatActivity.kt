@@ -16,6 +16,7 @@ import com.pkmk.bravy.R
 import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.databinding.ActivityDetailCommunityChatBinding
+import com.pkmk.bravy.databinding.ItemCommunityChatPostDetailsBinding
 import com.pkmk.bravy.ui.adapter.CommentAdapter
 import com.pkmk.bravy.ui.viewmodel.DetailCommunityChatViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,7 @@ import java.util.Locale
 class DetailCommunityChatActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailCommunityChatBinding
+    private lateinit var postDetailsBinding: ItemCommunityChatPostDetailsBinding
     private val viewModel: DetailCommunityChatViewModel by viewModels()
     private lateinit var commentAdapter: CommentAdapter
     private var selectedMediaUri: Uri? = null
@@ -50,6 +52,7 @@ class DetailCommunityChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailCommunityChatBinding.inflate(layoutInflater)
+        postDetailsBinding = ItemCommunityChatPostDetailsBinding.bind(binding.layoutCommunityChat.root)
         setContentView(binding.root)
 
         // --- UBAH CARA MENGAMBIL DATA DARI INTENT ---
@@ -79,25 +82,31 @@ class DetailCommunityChatActivity : AppCompatActivity() {
         // --- PERBARUI OBSERVER INI ---
         viewModel.post.observe(this) { result ->
             result.onSuccess { post ->
-                // Update UI dengan data post yang selalu terbaru
-                binding.tvPostTitle.text = post.title
-                binding.tvPostDescription.text = post.description
-                binding.tvPostTime.text = formatTimestamp(post.timestamp)
-                binding.likesCount.text = (post.likes?.size ?: 0).toString()
-                binding.commentsCount.text = (post.comments?.size ?: 0).toString()
+                // Update UI yang bisa berubah (seperti like/comment count)
+                postDetailsBinding.tvPostTitle.text = post.title
+                postDetailsBinding.tvPostDescription.text = post.description
+                postDetailsBinding.tvPostTime.text = formatTimestamp(post.timestamp)
+                postDetailsBinding.likesCount.text = (post.likes?.size ?: 0).toString()
+                postDetailsBinding.commentsCount.text = (post.comments?.size ?: 0).toString()
 
                 if (post.imageUrl != null) {
-                    binding.ivCommunityChatAttachment.visibility = View.VISIBLE
-                    Glide.with(this).load(post.imageUrl).into(binding.ivCommunityChatAttachment)
+                    postDetailsBinding.ivCommunityChatAttachment.visibility = View.VISIBLE
+                    Glide.with(this).load(post.imageUrl).into(postDetailsBinding.ivCommunityChatAttachment)
                 } else {
-                    binding.ivCommunityChatAttachment.visibility = View.GONE
+                    postDetailsBinding.ivCommunityChatAttachment.visibility = View.GONE
                 }
             }
-            viewModel.authorDetails.observe(this) { result ->
-                result.onSuccess { author ->
-                    binding.tvUserName.text = author.name
-                    loadProfileImage(author.image)
-                }
+        }
+
+        viewModel.authorDetails.observe(this) { result ->
+            result.onSuccess { author ->
+                // --- UPDATE TOOLBAR TITLE ---
+                val postTitle = viewModel.post.value?.getOrNull()?.title ?: ""
+                binding.materialTextView8.text = "${author.name} - $postTitle"
+
+                // Update UI author di dalam layout post
+                postDetailsBinding.tvUserName.text = author.name
+                loadProfileImage(author.image)
             }
         }
 
@@ -135,11 +144,6 @@ class DetailCommunityChatActivity : AppCompatActivity() {
         }
     }
 
-    private fun populateInitialAuthorData(author: User) {
-        binding.tvUserName.text = author.name
-        loadProfileImage(author.image) // Panggil fungsi untuk memuat gambar
-    }
-
     private fun setupListeners(postId: String) {
         binding.btnSend.setOnClickListener {
             val commentText = binding.commentInput.text.toString().trim()
@@ -153,6 +157,10 @@ class DetailCommunityChatActivity : AppCompatActivity() {
         binding.btnRemoveMedia.setOnClickListener {
             selectedMediaUri = null
             binding.layoutMediaPreview.visibility = View.GONE
+        }
+
+        binding.btnBack.setOnClickListener {
+            finish()
         }
     }
 
@@ -189,11 +197,11 @@ class DetailCommunityChatActivity : AppCompatActivity() {
                         .load(url)
                         .circleCrop()
                         .placeholder(R.drawable.ic_profile)
-                        .into(binding.ivUserProfile)
+                        .into(postDetailsBinding.ivUserProfile)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                    postDetailsBinding.ivUserProfile.setImageResource(R.drawable.ic_profile)
                 }
             }
         }

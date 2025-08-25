@@ -7,164 +7,84 @@
     android:layout_height="match_parent"
     tools:context=".ui.view.chat.DetailCommunityChatActivity">
 
-    <LinearLayout
-        android:id="@+id/layout_community_chat"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
-        android:orientation="vertical"
-        android:paddingHorizontal="20dp"
+        android:orientation="horizontal"
+        android:background="@color/primary"
+        android:paddingVertical="20dp"
+        android:gravity="center_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/iv_user_profile"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:background="@color/surface"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_home"
-                app:shapeAppearanceOverlay="@style/image_rounded" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:orientation="horizontal"
-                android:layout_gravity="center">
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_user_name"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_bold"
-                    android:text="@string/user_name"
-                    android:textColor="@color/onBackground"
-                    android:textSize="16sp"
-                    android:maxLines="1"
-                    android:layout_weight="1"/>
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/tv_post_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="3 days ago"
-                    android:textColor="@color/onBackground"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginStart="20dp"
+            android:padding="0dp"
+            app:icon="@drawable/ic_left"
+            app:layout_constraintBottom_toBottomOf="@+id/materialTextView8"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/materialTextView8" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_post_title"
-            android:layout_width="match_parent"
+            android:id="@+id/materialTextView8"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/poppins_bold"
+            android:fontFamily="@font/poppins_medium"
+            android:text="Jane Doe - Nervous when speaking English"
+            android:textAlignment="center"
+            android:textColor="@color/onPrimary"
+            android:textSize="18sp"
             android:maxLines="1"
-            android:text="Nervous when speaking English"
-            android:textColor="@color/onBackground"
-            android:textSize="14sp" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tv_post_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
             android:ellipsize="end"
-            android:maxLines="8"
-            android:text="Hey guys, I’m really nervous about speaking English because I’m scared people will laugh at my pronunciation or grammar mistakes. It’s stopping me from even trying. Have any of you dealt with this fear? How did you overcome it?"
-            android:textColor="@color/onBackground"
-            android:textSize="12sp" />
+            android:layout_marginHorizontal="60dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/iv_community_chat_attachment"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/level_1"
-            android:visibility="visible" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="end"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/likes_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="0"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Likes"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/comments_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="2dp"
-                android:text="0"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Comments"
-                android:textColor="@color/onBackground"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="12dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layout_community_chat" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_view"
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingTop="12sp"
-        tools:listitem="@layout/item_community_comment"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/view"
-        app:layout_constraintBottom_toTopOf="@id/layout_reply"/>
+        app:layout_constraintBottom_toTopOf="@id/layout_reply"
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include android:id="@+id/layout_community_chat"
+                layout="@layout/item_community_chat_post_details" />
+
+            <View
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="12dp"
+                android:background="@android:color/darker_gray" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="12sp"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_community_comment" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:id="@+id/layout_media_preview"
@@ -172,10 +92,10 @@
         android:layout_height="wrap_content"
         android:background="@color/primary"
         android:orientation="horizontal"
-        android:visibility="gone"
         android:paddingHorizontal="15dp"
         android:paddingVertical="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recycler_view"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/layout_reply"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible">
 
