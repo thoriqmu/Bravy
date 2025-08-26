@@ -19,71 +19,43 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout_notification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
         android:layout_marginTop="15dp"
-        android:gravity="center"
-        android:orientation="horizontal"
+        app:tabIndicatorColor="@color/primary"
+        app:tabSelectedTextColor="@color/primary"
+        app:tabTextColor="@color/primaryContainer"
+        app:layout_constraintTop_toBottomOf="@id/materialTextView6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Progress"/>
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chat"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager_notification"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/materialTextView6">
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/poppins_medium"
-            android:text="All"
-            android:textAllCaps="false"
-            android:textColor="@color/onPrimary"
-            android:textSize="16sp"
-            app:cornerRadius="10dp" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="0dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/poppins_medium"
-            android:text="Chat"
-            android:textAllCaps="false"
-            android:textColor="@color/onPrimary"
-            android:textSize="16sp"
-            app:cornerRadius="10dp" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="0dp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/poppins_medium"
-            android:text="Progress"
-            android:textAllCaps="false"
-            android:textColor="@color/onPrimary"
-            android:textSize="16sp"
-            app:cornerRadius="10dp" />
-
-    </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/tab_layout_notification" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

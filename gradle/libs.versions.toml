@@ -38,6 +38,7 @@ tensorflowLiteTaskVision = "0.4.4"
 viewpager2 = "1.1.0"
 firebaseAppcheckDebug = "19.0.0"
 firebaseAppcheckPlayintegrity = "19.0.0"
+firebaseMessaging = "25.0.0"
 
 [libraries]
 androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraCore" }
@@ -83,6 +84,7 @@ tensorflow-lite-gpu = { group = "org.tensorflow", name = "tensorflow-lite-gpu", 
 tensorflow-lite-task-vision = { module = "org.tensorflow:tensorflow-lite-task-vision", version.ref = "tensorflowLiteTaskVision" }
 google-firebase-appcheck-debug = { group = "com.google.firebase", name = "firebase-appcheck-debug", version.ref = "firebaseAppcheckDebug" }
 google-firebase-appcheck-playintegrity = { group = "com.google.firebase", name = "firebase-appcheck-playintegrity", version.ref = "firebaseAppcheckPlayintegrity" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

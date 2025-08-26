@@ -1,34 +1,47 @@
 package com.pkmk.bravy.ui.view.notifications
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.google.android.material.tabs.TabLayoutMediator
 import com.pkmk.bravy.databinding.FragmentNotificationsBinding
+import com.pkmk.bravy.ui.adapter.NotificationPagerAdapter
 import com.pkmk.bravy.ui.viewmodel.NotificationsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
+    private val viewModel: NotificationsViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
-
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
+        return binding.root
+    }
 
-        return root
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.viewPagerNotification.adapter = NotificationPagerAdapter(this)
+
+        TabLayoutMediator(binding.tabLayoutNotification, binding.viewPagerNotification) { tab, position ->
+            tab.text = when(position) {
+                0 -> "All"
+                1 -> "Progress"
+                2 -> "Chat"
+                else -> null
+            }
+        }.attach()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadNotifications()
     }
 
     override fun onDestroyView() {

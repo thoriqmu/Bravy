@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/background"
+    android:layout_marginBottom="5dp"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="?attr/selectableItemBackground"
+        android:paddingHorizontal="10dp">
+        
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_notification"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_profile"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_notification_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                tools:text="Jane Doe reply your post!"
+                android:textColor="@color/onBackground"
+                android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_notification_desc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Hey guys, I’m really nervous about speaking English because I’m scared people will laugh at my pronunciation or grammar mistakes. It’s stopping me from even trying. Have any of you dealt with this fear? How did you overcome it?"
+                android:textColor="@color/onBackground"
+                android:maxLines="3"
+                android:ellipsize="end"/>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_notification_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="1 hour ago"
+                android:textColor="@color/onBackground"
+                android:textSize="12sp"/>
+
+        </LinearLayout>
+        
+    </LinearLayout>
+
+</LinearLayout>

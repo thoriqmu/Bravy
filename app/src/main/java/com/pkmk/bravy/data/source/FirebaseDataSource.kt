@@ -6,6 +6,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
+import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.DailyMood
@@ -29,6 +30,7 @@ class FirebaseDataSource @Inject constructor(
     private val storageRef = storage.getReference("picture")
     private val chatMediaRef = storage.getReference("chat_media")
     private val communityChatsRef = database.getReference("community_chats")
+    private val notificationsRef = database.getReference("notifications")
 
     private val TAG = "FirebaseDataSource"
 
@@ -383,6 +385,16 @@ class FirebaseDataSource @Inject constructor(
     suspend fun postComment(postId: String, comment: Comment) {
         val commentId = comment.commentId
         communityChatsRef.child(postId).child("comments").child(commentId).setValue(comment).await()
+    }
+
+    suspend fun sendNotification(notification: AppNotification) {
+        // Simpan notifikasi di bawah node UID penerima
+        notificationsRef.child(notification.recipientUid).child(notification.id).setValue(notification).await()
+    }
+
+    suspend fun getUserNotifications(uid: String): List<AppNotification> {
+        val snapshot = notificationsRef.child(uid).orderByChild("timestamp").get().await()
+        return snapshot.children.mapNotNull { it.getValue(AppNotification::class.java) }.reversed()
     }
 
 }

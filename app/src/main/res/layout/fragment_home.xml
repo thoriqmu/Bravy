@@ -168,7 +168,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/primaryContainer">
+                    android:background="@color/tertiary">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -187,7 +187,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_bold"
                             android:text="@string/speaking_learning"
-                            android:textColor="@color/onPrimaryContainer"
+                            android:textColor="@color/onTertiary"
                             android:textSize="16sp" />
 
                         <Space
@@ -198,12 +198,12 @@
                             android:id="@+id/btn_speaking_learning"
                             android:layout_width="95dp"
                             android:layout_height="40dp"
-                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:backgroundTint="@color/onTertiary"
                             android:fontFamily="@font/poppins_bold"
                             android:padding="0dp"
                             android:text="@string/btn_click_here"
                             android:textAllCaps="false"
-                            android:textColor="@color/onSurface"
+                            android:textColor="@color/tertiary"
                             android:textSize="12sp"
                             app:cornerRadius="10dp" />
 
@@ -266,7 +266,7 @@
                             android:padding="0dp"
                             android:text="@string/btn_click_here"
                             android:textAllCaps="false"
-                            android:textColor="@color/onSurface"
+                            android:textColor="@color/primaryContainer"
                             android:textSize="12sp"
                             app:cornerRadius="10dp" />
 
@@ -295,7 +295,7 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/primaryContainer">
+                    android:background="@color/tertiary">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -314,7 +314,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/poppins_bold"
                             android:text="@string/private_chat"
-                            android:textColor="@color/onPrimaryContainer"
+                            android:textColor="@color/onTertiary"
                             android:textSize="16sp" />
 
                         <Space
@@ -325,12 +325,12 @@
                             android:id="@+id/btn_private_chat"
                             android:layout_width="95dp"
                             android:layout_height="40dp"
-                            android:backgroundTint="@color/onPrimaryContainer"
+                            android:backgroundTint="@color/onTertiary"
                             android:fontFamily="@font/poppins_bold"
                             android:padding="0dp"
                             android:text="@string/btn_click_here"
                             android:textAllCaps="false"
-                            android:textColor="@color/onSurface"
+                            android:textColor="@color/tertiary"
                             android:textSize="12sp"
                             app:cornerRadius="10dp" />
 
