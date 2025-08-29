@@ -56,6 +56,22 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun loadAllChatData() {
+        _isLoading.value = true
+        viewModelScope.launch {
+            try {
+                // Panggil semua fungsi load data
+                loadUserProfile()
+                loadRecentChatUsers()
+                loadSuggestedFriends()
+                loadLatestCommunityPost()
+            } finally {
+                kotlinx.coroutines.delay(5000) // Opsional, tapi membantu transisi
+                _isLoading.postValue(false)
+            }
+        }
+    }
+
     fun loadRecentChatUsers() {
         viewModelScope.launch {
             _isLoading.value = true
@@ -91,6 +107,7 @@ class ChatViewModel @Inject constructor(
                     _recentChats.value = Result.failure(e)
                 }
             } finally {
+                kotlinx.coroutines.delay(5000)
                 _isLoading.value = false
             }
         }

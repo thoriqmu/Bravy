@@ -34,8 +34,18 @@ class PrivateChatViewModel @Inject constructor(
     val navigateToChat: LiveData<Pair<String, User>?> = _navigateToChat
 
     fun loadInitialData() {
-        loadRecentChats()
-        loadFriends()
+        _isLoading.value = true // Mulai loading
+        viewModelScope.launch {
+            try {
+                // Panggil kedua fungsi load
+                loadFriends()
+                loadRecentChats()
+            } finally {
+                // Selesaikan loading setelah semua selesai
+                kotlinx.coroutines.delay(5000) // Opsional
+                _isLoading.postValue(false)
+            }
+        }
     }
 
     private fun loadFriends() {
@@ -63,11 +73,9 @@ class PrivateChatViewModel @Inject constructor(
      */
     fun loadRecentChats() {
         viewModelScope.launch {
-            _isLoading.value = true
             val currentUser = auth.currentUser
             if (currentUser == null) {
                 _recentChats.value = Result.failure(Exception("User not logged in."))
-                _isLoading.value = false
                 return@launch
             }
 
@@ -98,8 +106,6 @@ class PrivateChatViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 _recentChats.value = Result.failure(e)
-            } finally {
-                _isLoading.value = false
             }
         }
     }

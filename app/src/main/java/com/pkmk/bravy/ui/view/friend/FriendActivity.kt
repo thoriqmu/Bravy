@@ -25,8 +25,11 @@ class FriendActivity : AppCompatActivity() {
         setupObservers()
 
         binding.btnBack.setOnClickListener { finish() }
+    }
 
-        // Muat data saat activity dibuat
+    // Pindahkan pemanggilan load data ke onResume
+    override fun onResume() {
+        super.onResume()
         viewModel.loadFriends()
     }
 

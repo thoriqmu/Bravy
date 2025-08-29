@@ -19,6 +19,9 @@ class HomeViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth,
 ) : ViewModel() {
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val _userProfile = MutableLiveData<Result<User>>()
     val userProfile: LiveData<Result<User>> get() = _userProfile
 
@@ -26,13 +29,21 @@ class HomeViewModel @Inject constructor(
     val moodUpdateStatus: LiveData<Result<Unit>> = _moodUpdateStatus
 
     fun loadUserProfile() {
+        _isLoading.value = true // Mulai loading
         viewModelScope.launch {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
-                val result = authRepository.getUser(currentUser.uid)
-                _userProfile.postValue(result)
-            } else {
-                _userProfile.postValue(Result.failure(Exception("No user logged in")))
+            try {
+                val currentUser = firebaseAuth.currentUser
+                if (currentUser != null) {
+                    val result = authRepository.getUser(currentUser.uid)
+                    _userProfile.postValue(result)
+                } else {
+                    _userProfile.postValue(Result.failure(Exception("No user logged in")))
+                }
+            } catch (e: Exception) {
+                _userProfile.postValue(Result.failure(e))
+            } finally {
+                kotlinx.coroutines.delay(3000)
+                _isLoading.value = false // Selesaikan loading
             }
         }
     }

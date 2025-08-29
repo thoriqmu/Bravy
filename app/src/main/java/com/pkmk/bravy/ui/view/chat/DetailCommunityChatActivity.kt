@@ -79,7 +79,19 @@ class DetailCommunityChatActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // --- PERBARUI OBSERVER INI ---
+        // --- TAMBAHKAN OBSERVER BARU INI ---
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.contentLayout.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.contentLayout.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.post.observe(this) { result ->
             result.onSuccess { post ->
                 // Update UI yang bisa berubah (seperti like/comment count)

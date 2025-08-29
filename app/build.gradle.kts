@@ -73,6 +73,7 @@ dependencies {
     implementation(libs.google.firebase.appcheck.debug)
     implementation(libs.google.firebase.appcheck.playintegrity)
     implementation(libs.firebase.ui.storage)
+    implementation(libs.firebase.messaging)
 
     //Tensorflow Lite
     implementation(libs.tensorflow.lite)
@@ -87,7 +88,6 @@ dependencies {
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
-    implementation(libs.firebase.messaging)
 
     //Testing
     testImplementation(libs.junit)
@@ -110,4 +110,5 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
+    implementation(libs.shimmer)
 }

@@ -20,6 +20,9 @@ class ProfileViewModel @Inject constructor(
     private val firebaseAuth: FirebaseAuth
 ) : ViewModel() {
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean> = _isLoading
+
     private val _userProfile = MutableLiveData<Result<User>>()
     val userProfile: LiveData<Result<User>> get() = _userProfile
 
@@ -33,6 +36,7 @@ class ProfileViewModel @Inject constructor(
     val uploadPictureResult: LiveData<Result<Unit>> get() = _uploadPictureResult
 
     fun loadUserProfile() {
+        _isLoading.value = true // Mulai loading
         viewModelScope.launch {
             val currentUser = firebaseAuth.currentUser
             if (currentUser != null) {
@@ -41,6 +45,9 @@ class ProfileViewModel @Inject constructor(
             } else {
                 _userProfile.postValue(Result.failure(Exception("No user logged in")))
             }
+            // Selesaikan loading setelah data diproses
+            delay(3000)
+            _isLoading.postValue(false)
         }
     }
 

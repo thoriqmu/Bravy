@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -44,6 +45,7 @@ class FriendViewModel @Inject constructor(
             }.onFailure {
                 _actionStatus.value = Result.failure(it)
             }
+            delay(2000)
             _isLoading.value = false
         }
     }

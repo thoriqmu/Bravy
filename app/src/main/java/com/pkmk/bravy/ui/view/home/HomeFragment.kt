@@ -77,15 +77,29 @@ class HomeFragment : Fragment() {
 
     @SuppressLint("StringFormatInvalid")
     private fun setupObservers() {
+        // Observer untuk isLoading
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.scrollViewContent.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.scrollViewContent.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
+            // Logika onSuccess dan onFailure tetap di sini untuk mengisi data
             result.onSuccess { user ->
                 binding.tvUserName.text = "Hi, ${user.name.split(" ").firstOrNull() ?: "User"}!"
+                // ... isi data lainnya ...
                 loadProfileImage(user.image)
                 updateMoodUI(user)
             }.onFailure { exception ->
                 Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                binding.tvUserName.text = getString(R.string.greeting_user_name, "User")
-                loadProfileImage(null)
+                // ... handle error UI
             }
         }
 

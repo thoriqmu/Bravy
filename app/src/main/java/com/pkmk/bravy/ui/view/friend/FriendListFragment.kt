@@ -37,6 +37,20 @@ class FriendListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
+        // Observer untuk loading state
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.rvFriends.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.rvFriends.visibility = View.VISIBLE
+            }
+        }
+
+        // Observer untuk data
         when (statusType) {
             "friend" -> viewModel.friendList.observe(viewLifecycleOwner) { friendAdapter.submitList(it) }
             "received" -> viewModel.receivedList.observe(viewLifecycleOwner) { friendAdapter.submitList(it) }

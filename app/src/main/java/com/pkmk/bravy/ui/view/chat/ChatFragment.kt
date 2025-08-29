@@ -79,6 +79,19 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupObservers() {
+        // --- TAMBAHKAN OBSERVER BARU UNTUK LOADING ---
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.scrollViewContent.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.scrollViewContent.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
             result.onSuccess { user ->
                 loadUserImage(user.image)

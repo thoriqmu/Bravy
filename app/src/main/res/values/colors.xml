@@ -31,4 +31,6 @@
 
     <color name="error">#B00020</color>
     <color name="onError">#FFFFFF</color>
+
+    <color name="shimmer_placeholder">#E0E0E0</color>
 </resources>

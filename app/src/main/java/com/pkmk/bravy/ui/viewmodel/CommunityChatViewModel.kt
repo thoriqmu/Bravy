@@ -12,6 +12,7 @@ import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -122,6 +123,7 @@ class CommunityChatViewModel @Inject constructor(
                 // Jika gagal mengambil semua post, maka tab teman juga gagal
                 _friendPosts.postValue(Result.failure(it))
             }
+            delay(2000)
             _isLoading.postValue(false)
         }
     }

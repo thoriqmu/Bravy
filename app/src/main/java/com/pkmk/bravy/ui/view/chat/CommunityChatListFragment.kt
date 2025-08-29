@@ -39,21 +39,28 @@ class CommunityChatListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.rvCommunityChat.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.rvCommunityChat.visibility = View.VISIBLE
+            }
+        }
+
+        // Observer untuk data post
         if (postType == "all") {
             viewModel.allPosts.observe(viewLifecycleOwner) { result ->
-                // --- TAMBAHKAN LOG ---
-                Log.d("Fragment-$postType", "Observed allPosts LiveData. Result: $result")
                 result.onSuccess { posts ->
-                    Log.d("Fragment-$postType", "Submitting ${posts.size} posts to adapter.")
                     postAdapter.submitList(posts)
                 }
             }
         } else {
             viewModel.friendPosts.observe(viewLifecycleOwner) { result ->
-                // --- TAMBAHKAN LOG ---
-                Log.d("Fragment-$postType", "Observed friendPosts LiveData. Result: $result")
                 result.onSuccess { posts ->
-                    Log.d("Fragment-$postType", "Submitting ${posts.size} posts to adapter.")
                     postAdapter.submitList(posts)
                 }
             }

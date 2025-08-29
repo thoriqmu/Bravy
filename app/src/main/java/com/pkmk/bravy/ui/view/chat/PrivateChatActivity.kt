@@ -2,6 +2,7 @@ package com.pkmk.bravy.ui.view.chat
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -27,7 +28,7 @@ class PrivateChatActivity : AppCompatActivity() {
         binding = ActivityPrivateChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setupRecyclerViews() // <-- Ganti nama fungsi
+        setupRecyclerViews()
         setupObservers()
         setupListeners()
     }
@@ -57,6 +58,19 @@ class PrivateChatActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
+        // --- TAMBAHKAN OBSERVER BARU INI ---
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.contentLayout.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.contentLayout.visibility = View.VISIBLE
+            }
+        }
+
         viewModel.recentChats.observe(this) { result ->
             result.onSuccess { chats -> chatAdapter.submitList(chats) }
                 .onFailure { Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show() }

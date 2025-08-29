@@ -39,17 +39,32 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Setup UI dulu
         setupViewPagerAndTabs()
         setupObservers()
     }
 
     override fun onResume() {
         super.onResume()
-        // Muat ulang data setiap kali fragment ini ditampilkan
+        // Muat data setiap kali fragment ditampilkan
         viewModel.loadUserProfile()
     }
 
     private fun setupObservers() {
+        // Observer untuk mengontrol visibilitas Shimmer
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.contentLayout.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+                binding.contentLayout.visibility = View.VISIBLE
+            }
+        }
+
+        // Observer untuk mengisi data setelah loading selesai
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
             result.onSuccess { user ->
                 binding.tvUserName.text = user.name

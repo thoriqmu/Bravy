@@ -17,6 +17,7 @@ import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
@@ -54,6 +55,7 @@ class DetailCommunityChatViewModel @Inject constructor(
     }
 
     fun loadAndListenToPost(postId: String) {
+        _isLoading.value = true
         val postRef = database.getReference("community_chats").child(postId)
         postListener?.let { postRef.removeEventListener(it) }
 
@@ -66,9 +68,20 @@ class DetailCommunityChatViewModel @Inject constructor(
                 } else {
                     _post.postValue(Result.failure(Exception("Post not found.")))
                 }
+                // Luncurkan coroutine untuk menangani delay
+                viewModelScope.launch {
+                    delay(2000) // Tambahkan delay 2000 ms
+                    _isLoading.postValue(false)
+                }
             }
+
             override fun onCancelled(error: DatabaseError) {
                 _post.postValue(Result.failure(error.toException()))
+                // Luncurkan coroutine untuk menangani delay
+                viewModelScope.launch {
+                    delay(2000) // Tambahkan delay 2000 ms
+                    _isLoading.postValue(false)
+                }
             }
         }
         postRef.addValueEventListener(postListener!!)
