@@ -7,5 +7,11 @@ import kotlinx.parcelize.Parcelize
 data class LearningLevel(
     val levelId: String = "",
     val title: String = "",
-    val sections: Map<String, LearningSection> = emptyMap()
+    val description: String = "",
+    val minPoints: Int = 0,
+    val status: String = "coming soon",
+    val thumbnail: String = "",
+    val sections: Map<String, LearningSection> = emptyMap(),
+    var isLocked: Boolean = true,
+    var thumbnailUrl: String? = null
 ) : Parcelable

@@ -9,13 +9,16 @@ import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.firebase.storage.StorageReference
 import java.io.InputStream
 
-// Anotasi ini tetap penting
+// Anotasi ini penting untuk proses kompilasi Glide
 @GlideModule
 class MyAppGlideModule : AppGlideModule() {
-    // Override metode ini untuk mendaftarkan komponen secara manual
+    /**
+     * Metode ini akan mendaftarkan komponen kita ke Glide.
+     * Secara spesifik, kita memberitahu Glide cara menangani objek StorageReference
+     * dengan menggunakan FirebaseImageLoader.
+     */
     override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
         // Daftarkan FirebaseImageLoader untuk menangani objek StorageReference
-        // dan mengubahnya menjadi InputStream yang bisa dibaca Glide.
         registry.append(
             StorageReference::class.java,
             InputStream::class.java,
