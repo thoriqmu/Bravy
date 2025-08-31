@@ -253,7 +253,7 @@ class ChatFragment : Fragment() {
             } catch (e: Exception) {
                 // Jika semua gagal, muat gambar placeholder dari drawable
                 Glide.with(this@ChatFragment)
-                    .load(R.drawable.ic_profile)
+                    .load(R.drawable.default_picture)
                     .circleCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivProfilePhoto)
@@ -271,14 +271,14 @@ class ChatFragment : Fragment() {
                 Glide.with(this@ChatFragment)
                     .load(downloadUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
-                    .error(R.drawable.ic_profile)
+                    .placeholder(R.drawable.default_picture)
+                    .error(R.drawable.default_picture)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivRecentChat)
             } catch (e: Exception) {
                 // Jika gagal mengambil dari storage, muat gambar default
                 Log.e("ChatFragment", "Error loading profile image: ${e.message}")
-                binding.ivRecentChat.setImageResource(R.drawable.ic_profile)
+                binding.ivRecentChat.setImageResource(R.drawable.default_picture)
             }
         }
     }
@@ -291,10 +291,10 @@ class ChatFragment : Fragment() {
                 Glide.with(this@ChatFragment)
                     .load(downloadUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
+                    .placeholder(R.drawable.default_picture)
                     .into(binding.ivUserProfile) // <-- Target ImageView yang benar
             } catch (e: Exception) {
-                binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                binding.ivUserProfile.setImageResource(R.drawable.default_picture)
             }
         }
     }

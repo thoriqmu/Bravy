@@ -165,7 +165,7 @@ class HomeFragment : Fragment() {
             val imageUrl = getImageUrl(imageName) ?: getImageUrl("default.jpg")
             if (isAdded) {
                 Glide.with(this@HomeFragment)
-                    .load(imageUrl ?: R.drawable.ic_profile)
+                    .load(imageUrl ?: R.drawable.default_picture)
                     .circleCrop()
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(binding.ivProfilePhoto)

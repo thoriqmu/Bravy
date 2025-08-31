@@ -68,13 +68,13 @@ class FriendAdapter(
                     Glide.with(itemView.context)
                         .load(imageUrl)
                         .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
+                        .placeholder(R.drawable.default_picture)
+                        .error(R.drawable.default_picture)
                         .into(binding.ivFriendPhoto)
 
                 } catch (e: Exception) {
                     Log.e("FriendAdapter", "Error loading image for $imageName: ${e.message}")
-                    binding.ivFriendPhoto.setImageResource(R.drawable.ic_profile)
+                    binding.ivFriendPhoto.setImageResource(R.drawable.default_picture)
                 }
             }
         }

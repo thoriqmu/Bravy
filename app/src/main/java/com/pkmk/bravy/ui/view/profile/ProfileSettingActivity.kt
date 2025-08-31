@@ -132,12 +132,12 @@ class ProfileSettingActivity : AppCompatActivity() {
                     Glide.with(this@ProfileSettingActivity)
                         .load(url)
                         .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
+                        .placeholder(R.drawable.default_picture)
                         .into(binding.ivProfilePhoto)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.ivProfilePhoto.setImageResource(R.drawable.ic_profile)
+                    binding.ivProfilePhoto.setImageResource(R.drawable.default_picture)
                 }
             }
         }

@@ -128,12 +128,12 @@ class DetailPrivateChatActivity : AppCompatActivity() {
                 Glide.with(this@DetailPrivateChatActivity)
                     .load(downloadUrl)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
-                    .error(R.drawable.ic_profile)
+                    .placeholder(R.drawable.default_picture)
+                    .error(R.drawable.default_picture)
                     .into(binding.ivUserPhoto)
             } catch (e: Exception) {
                 // Jika gagal mengambil URL (misal: file tidak ada di storage), gunakan placeholder
-                binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
+                binding.ivUserPhoto.setImageResource(R.drawable.default_picture)
             }
         }
     }

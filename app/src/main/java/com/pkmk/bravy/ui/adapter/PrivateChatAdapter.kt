@@ -80,12 +80,12 @@ class PrivateChatAdapter(
                     Glide.with(itemView.context)
                         .load(imageUrl)
                         .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
+                        .placeholder(R.drawable.default_picture)
+                        .error(R.drawable.default_picture)
                         .into(binding.ivChat)
 
                 } catch (e: Exception) {
-                    binding.ivChat.setImageResource(R.drawable.ic_profile)
+                    binding.ivChat.setImageResource(R.drawable.default_picture)
                 }
             }
         }

@@ -48,7 +48,7 @@ class CommentAdapter : ListAdapter<CommentDetails, CommentAdapter.CommentViewHol
                 binding.ivCommunityChatAttachment.visibility = View.VISIBLE
                 Glide.with(itemView.context)
                     .load(details.comment.mediaUrl)
-                    .placeholder(R.drawable.ic_image)
+                    .placeholder(R.drawable.default_image)
                     .into(binding.ivCommunityChatAttachment)
             } else {
                 binding.ivCommunityChatAttachment.visibility = View.GONE
@@ -67,12 +67,12 @@ class CommentAdapter : ListAdapter<CommentDetails, CommentAdapter.CommentViewHol
                         Glide.with(itemView.context)
                             .load(url)
                             .circleCrop()
-                            .placeholder(R.drawable.ic_profile)
+                            .placeholder(R.drawable.default_picture)
                             .into(binding.ivUserProfile)
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                        binding.ivUserProfile.setImageResource(R.drawable.default_picture)
                     }
                 }
             }

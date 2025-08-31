@@ -113,12 +113,12 @@ class CommunityChatAdapter(
                         Glide.with(itemView.context)
                             .load(url)
                             .circleCrop()
-                            .placeholder(R.drawable.ic_profile)
+                            .placeholder(R.drawable.default_picture)
                             .into(binding.ivUserProfile)
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
-                        binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                        binding.ivUserProfile.setImageResource(R.drawable.default_picture)
                     }
                 }
             }

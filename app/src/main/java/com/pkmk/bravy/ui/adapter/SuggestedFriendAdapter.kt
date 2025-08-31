@@ -74,8 +74,8 @@ class SuggestedFriendAdapter(
                         Glide.with(itemView.context)
                             .load(imageUrl)
                             .circleCrop()
-                            .placeholder(R.drawable.ic_profile)
-                            .error(R.drawable.ic_profile)
+                            .placeholder(R.drawable.default_picture)
+                            .error(R.drawable.default_picture)
                             .into(binding.ivUserPhoto)
                         return@launch
                     }
@@ -92,13 +92,13 @@ class SuggestedFriendAdapter(
                     Glide.with(itemView.context)
                         .load(imageUrl)
                         .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
-                        .error(R.drawable.ic_profile)
+                        .placeholder(R.drawable.default_picture)
+                        .error(R.drawable.default_picture)
                         .into(binding.ivUserPhoto)
 
                 } catch (e: Exception) {
                     Log.e(TAG, "Error getting download URL for '$imageName': ${e.message}")
-                    binding.ivUserPhoto.setImageResource(R.drawable.ic_profile)
+                    binding.ivUserPhoto.setImageResource(R.drawable.default_picture)
                 }
             }
         }

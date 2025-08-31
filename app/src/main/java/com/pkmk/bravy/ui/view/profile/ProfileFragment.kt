@@ -98,10 +98,10 @@ class ProfileFragment : Fragment() {
                 Glide.with(this@ProfileFragment)
                     .load(url)
                     .circleCrop()
-                    .placeholder(R.drawable.ic_profile)
+                    .placeholder(R.drawable.default_picture)
                     .into(binding.ivProfilePhoto)
             } catch (e: Exception) {
-                binding.ivProfilePhoto.setImageResource(R.drawable.ic_profile)
+                binding.ivProfilePhoto.setImageResource(R.drawable.default_picture)
             }
         }
     }

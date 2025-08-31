@@ -151,7 +151,7 @@ class CreateCommunityChatActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    binding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                    binding.ivUserProfile.setImageResource(R.drawable.default_picture)
                 }
             }
         }

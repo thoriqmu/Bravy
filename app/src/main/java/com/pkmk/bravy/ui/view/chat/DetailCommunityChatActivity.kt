@@ -208,12 +208,12 @@ class DetailCommunityChatActivity : AppCompatActivity() {
                     Glide.with(this@DetailCommunityChatActivity)
                         .load(url)
                         .circleCrop()
-                        .placeholder(R.drawable.ic_profile)
+                        .placeholder(R.drawable.default_picture)
                         .into(postDetailsBinding.ivUserProfile)
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    postDetailsBinding.ivUserProfile.setImageResource(R.drawable.ic_profile)
+                    postDetailsBinding.ivUserProfile.setImageResource(R.drawable.default_picture)
                 }
             }
         }
