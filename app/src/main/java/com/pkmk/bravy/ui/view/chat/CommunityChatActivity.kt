@@ -22,17 +22,34 @@ class CommunityChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupViewPagerAndTabs()
-
-        binding.btnBack.setOnClickListener { finish() }
-        binding.btnAddCommunityChat.setOnClickListener {
-            val intent = Intent(this, CreateCommunityChatActivity::class.java)
-            startActivity(intent)
-        }
+        setupListeners()
+        setupObservers()
     }
 
     override fun onResume() {
         super.onResume()
         viewModel.loadCommunityPosts()
+    }
+
+    private fun setupListeners() {
+        binding.btnBack.setOnClickListener { finish() }
+
+        binding.btnAddCommunityChat.setOnClickListener {
+            val intent = Intent(this, CreateCommunityChatActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.refreshCommunityPosts()
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.isLoading.observe(this) { isLoading ->
+            if (!isLoading) {
+                binding.swipeRefreshLayout.isRefreshing = false
+            }
+        }
     }
 
     private fun setupViewPagerAndTabs() {

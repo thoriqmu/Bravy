@@ -27,4 +27,16 @@
         android:background="#e4e4f4"
         tools:listitem="@layout/item_community_chat"/>
 
+    <TextView
+        android:id="@+id/tv_no_posts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="It all starts with you. Be bold and express yourself in front of this community!"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="40dp"
+        android:textColor="@color/onBackground"
+        android:textSize="16sp"
+        android:fontFamily="@font/poppins_medium"
+        android:visibility="gone" />
+
 </FrameLayout>

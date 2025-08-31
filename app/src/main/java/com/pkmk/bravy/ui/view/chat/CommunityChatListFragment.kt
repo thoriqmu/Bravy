@@ -8,9 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.pkmk.bravy.data.model.CommunityPostDetails
 import com.pkmk.bravy.databinding.FragmentCommunityChatListBinding
 import com.pkmk.bravy.ui.adapter.CommunityChatAdapter
 import com.pkmk.bravy.ui.viewmodel.CommunityChatViewModel
+import kotlinx.coroutines.delay
 
 class CommunityChatListFragment : Fragment() {
 
@@ -43,26 +45,32 @@ class CommunityChatListFragment : Fragment() {
             if (isLoading) {
                 binding.shimmerViewContainer.visibility = View.VISIBLE
                 binding.rvCommunityChat.visibility = View.GONE
+                binding.tvNoPosts.visibility = View.GONE
                 binding.shimmerViewContainer.startShimmer()
             } else {
                 binding.shimmerViewContainer.stopShimmer()
                 binding.shimmerViewContainer.visibility = View.GONE
-                binding.rvCommunityChat.visibility = View.VISIBLE
             }
         }
 
-        // Observer untuk data post
+        val dataObserver = { posts: List<CommunityPostDetails> ->
+            if (posts.isEmpty()) {
+                binding.rvCommunityChat.visibility = View.GONE
+                binding.tvNoPosts.visibility = View.VISIBLE
+            } else {
+                binding.rvCommunityChat.visibility = View.VISIBLE
+                binding.tvNoPosts.visibility = View.GONE
+                postAdapter.submitList(posts)
+            }
+        }
+
         if (postType == "all") {
             viewModel.allPosts.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { posts ->
-                    postAdapter.submitList(posts)
-                }
+                result.onSuccess { posts -> dataObserver(posts) }
             }
         } else {
             viewModel.friendPosts.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { posts ->
-                    postAdapter.submitList(posts)
-                }
+                result.onSuccess { posts -> dataObserver(posts) }
             }
         }
     }

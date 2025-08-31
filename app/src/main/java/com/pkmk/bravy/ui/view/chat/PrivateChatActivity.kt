@@ -51,35 +51,58 @@ class PrivateChatActivity : AppCompatActivity() {
         friendAdapter = FriendChatAdapter(lifecycleScope) { friend ->
             viewModel.onFriendClicked(friend)
         }
+
         binding.rvFriendList.apply {
             adapter = friendAdapter
             layoutManager = LinearLayoutManager(this@PrivateChatActivity, LinearLayoutManager.HORIZONTAL, false)
         }
+
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            viewModel.refreshData()
+        }
     }
 
     private fun setupObservers() {
-        // --- TAMBAHKAN OBSERVER BARU INI ---
         viewModel.isLoading.observe(this) { isLoading ->
-            if (isLoading) {
+            if (isLoading && !binding.swipeRefreshLayout.isRefreshing) {
+                // Tampilkan shimmer hanya saat loading awal
                 binding.shimmerViewContainer.visibility = View.VISIBLE
                 binding.contentLayout.visibility = View.GONE
-                binding.shimmerViewContainer.startShimmer()
-            } else {
-                binding.shimmerViewContainer.stopShimmer()
+            } else if (!isLoading) {
                 binding.shimmerViewContainer.visibility = View.GONE
                 binding.contentLayout.visibility = View.VISIBLE
             }
         }
 
+        viewModel.isRefreshing.observe(this) { isRefreshing ->
+            binding.swipeRefreshLayout.isRefreshing = isRefreshing
+        }
+
         viewModel.recentChats.observe(this) { result ->
-            result.onSuccess { chats -> chatAdapter.submitList(chats) }
-                .onFailure { Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
+            result.onSuccess { chats ->
+                if (chats.isEmpty()) {
+                    binding.rvPrivateChat.visibility = View.GONE
+                    binding.tvNoPrivateChat.visibility = View.VISIBLE
+                } else {
+                    binding.rvPrivateChat.visibility = View.VISIBLE
+                    binding.tvNoPrivateChat.visibility = View.GONE
+                    chatAdapter.submitList(chats)
+                }
+            }.onFailure { Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
         }
 
         // Observer BARU untuk friends list
         viewModel.friends.observe(this) { result ->
-            result.onSuccess { friends -> friendAdapter.submitList(friends) }
-                .onFailure { Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
+            result.onSuccess { friends ->
+                if (friends.isEmpty()) {
+                    binding.rvFriendList.visibility = View.GONE
+                    binding.tvNoFriendList.visibility = View.VISIBLE
+                } else {
+                    binding.rvFriendList.visibility = View.VISIBLE
+                    binding.tvNoFriendList.visibility = View.GONE
+                    friendAdapter.submitList(friends)
+                }
+            }.onFailure { Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show() }
         }
 
         viewModel.navigateToChat.observe(this) { chatInfo ->

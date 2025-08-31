@@ -39,6 +39,9 @@ class CommunityChatViewModel @Inject constructor(
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _isRefreshing = MutableLiveData<Boolean>()
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     fun loadCurrentUser() {
         val uid = auth.currentUser?.uid
         if (uid == null) {
@@ -178,5 +181,10 @@ class CommunityChatViewModel @Inject constructor(
                 _friendPosts.postValue(Result.success(currentFriendPosts))
             }
         }
+    }
+
+    fun refreshCommunityPosts() {
+        _isRefreshing.value = true
+        loadCommunityPosts()
     }
 }

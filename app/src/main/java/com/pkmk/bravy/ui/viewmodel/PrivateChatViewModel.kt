@@ -33,17 +33,31 @@ class PrivateChatViewModel @Inject constructor(
     private val _navigateToChat = MutableLiveData<Pair<String, User>?>()
     val navigateToChat: LiveData<Pair<String, User>?> = _navigateToChat
 
+    private val _isRefreshing = MutableLiveData<Boolean>()
+    val isRefreshing: LiveData<Boolean> = _isRefreshing
+
     fun loadInitialData() {
-        _isLoading.value = true // Mulai loading
+        _isLoading.value = true
         viewModelScope.launch {
             try {
-                // Panggil kedua fungsi load
                 loadFriends()
                 loadRecentChats()
             } finally {
-                // Selesaikan loading setelah semua selesai
-                kotlinx.coroutines.delay(5000) // Opsional
+                kotlinx.coroutines.delay(2000) // Sedikit delay agar transisi mulus
                 _isLoading.postValue(false)
+            }
+        }
+    }
+
+    fun refreshData() {
+        _isRefreshing.value = true
+        viewModelScope.launch {
+            try {
+                // Muat ulang semua data
+                loadFriends()
+                loadRecentChats()
+            } finally {
+                _isRefreshing.postValue(false)
             }
         }
     }
