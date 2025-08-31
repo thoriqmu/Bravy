@@ -1,80 +1,26 @@
 {
   "project_info": {
-    "project_number": "498247194273",
-    "firebase_url": "https://wertstoff-f093d-default-rtdb.firebaseio.com",
-    "project_id": "wertstoff-f093d",
-    "storage_bucket": "wertstoff-f093d.appspot.com"
+    "project_number": "762364351980",
+    "project_id": "bravyourvoice-um",
+    "storage_bucket": "bravyourvoice-um.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:498247194273:android:ffb3402e71cec089e102e0",
+        "mobilesdk_app_id": "1:762364351980:android:ff490d6fdff78a4652dcc9",
         "android_client_info": {
           "package_name": "com.pkmk.bravy"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "498247194273-2e9ajuftelfldb7dn84hqt64mtt1hrvu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyD7zBJ2FeXuk1KPkjSR0Xg_8y85BFK4AjI"
+          "current_key": "AIzaSyDAQDqMacKqnaA4P--1NzMkRPg8TNG-XEc"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "498247194273-2e9ajuftelfldb7dn84hqt64mtt1hrvu.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "498247194273-noljudlffpik6ntctgb1r9aficj8h2ut.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kewirausahaan.okgas"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:498247194273:android:1827c6adfc16329be102e0",
-        "android_client_info": {
-          "package_name": "com.spark.edtech"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "498247194273-2e9ajuftelfldb7dn84hqt64mtt1hrvu.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD7zBJ2FeXuk1KPkjSR0Xg_8y85BFK4AjI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "498247194273-2e9ajuftelfldb7dn84hqt64mtt1hrvu.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "498247194273-noljudlffpik6ntctgb1r9aficj8h2ut.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.kewirausahaan.okgas"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

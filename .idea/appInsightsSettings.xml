@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.pkmk.bravy" />
-                  <option name="mobileSdkAppId" value="1:498247194273:android:ffb3402e71cec089e102e0" />
-                  <option name="projectId" value="wertstoff-f093d" />
-                  <option name="projectNumber" value="498247194273" />
+                  <option name="mobileSdkAppId" value="1:762364351980:android:ff490d6fdff78a4652dcc9" />
+                  <option name="projectId" value="bravyourvoice-um" />
+                  <option name="projectNumber" value="762364351980" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

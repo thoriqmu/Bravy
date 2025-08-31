@@ -56,7 +56,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_profile"
+            android:src="@drawable/default_picture"
             android:background="@color/surface"
             android:layout_marginTop="15dp"
             app:layout_constraintEnd_toEndOf="parent"

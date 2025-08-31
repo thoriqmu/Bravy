@@ -28,7 +28,7 @@
                 android:layout_height="40dp"
                 android:background="@color/surface"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_home"
+                android:src="@drawable/default_picture"
                 app:shapeAppearanceOverlay="@style/image_rounded" />
 
             <LinearLayout
