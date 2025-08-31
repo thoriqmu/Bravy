@@ -305,4 +305,20 @@ class AuthRepositoryImpl @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override fun listenForLatestCommunityPost(callback: (Result<CommunityPost?>) -> Unit) {
+        dataSource.listenForLatestCommunityPost(callback)
+    }
+
+    override fun removeLatestPostListener() {
+        dataSource.removeLatestPostListener()
+    }
+
+    override fun listenForUserChats(uid: String, onChatsUpdated: () -> Unit) {
+        dataSource.listenForUserChats(uid, onChatsUpdated)
+    }
+
+    override fun removeUserChatsListener() {
+        dataSource.removeUserChatsListener()
+    }
 }

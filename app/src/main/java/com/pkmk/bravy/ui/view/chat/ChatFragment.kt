@@ -54,14 +54,21 @@ class ChatFragment : Fragment() {
         setupSuggestedFriendsAdapter()
         setupListeners()
         setupObservers()
+
+        // Panggil pemuatan data awal di sini, bukan di onResume
+        viewModel.initializeData()
     }
 
     override fun onResume() {
         super.onResume()
-        viewModel.loadUserProfile()
-        viewModel.loadRecentChatUsers()
-        viewModel.loadSuggestedFriends()
-        viewModel.loadLatestCommunityPost()
+        // Mulai listener setiap kali fragment kembali terlihat
+        viewModel.startRealtimeListeners()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Hentikan listener saat fragment tidak terlihat
+        viewModel.stopRealtimeListeners()
     }
 
     private fun setupListeners() {
@@ -79,7 +86,6 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        // --- TAMBAHKAN OBSERVER BARU UNTUK LOADING ---
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
             if (isLoading) {
                 binding.shimmerViewContainer.visibility = View.VISIBLE
@@ -173,10 +179,15 @@ class ChatFragment : Fragment() {
         viewModel.latestCommunityPost.observe(viewLifecycleOwner) { result ->
             result.onSuccess { postDetails ->
                 if (postDetails != null) {
-                    binding.layoutCommunity.visibility = View.VISIBLE
                     bindLatestCommunityPost(postDetails) // Panggil fungsi bind terpisah
                 } else {
-                    binding.layoutCommunity.visibility = View.GONE
+                    binding.tvUserName.text = "No Community Post"
+                    binding.tvPostTime.visibility = View.GONE
+                    binding.tvPostTitle.text = "Start a new community post"
+                    binding.tvPostDescription.text = "Start a new community post"
+                    binding.ivCommunityChatAttachment.visibility = View.GONE
+                    binding.layoutLikeComment.visibility = View.GONE
+                    binding.layoutButton.visibility = View.GONE
                 }
             }.onFailure { exception ->
                 binding.layoutCommunity.visibility = View.GONE

@@ -106,7 +106,7 @@
                         android:layout_marginTop="15dp"
                         android:text="@string/progress"
                         android:textColor="@color/onSecondary"
-                        android:textSize="12sp"
+                        android:textSize="16sp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -118,7 +118,7 @@
                         android:fontFamily="@font/poppins_bold"
                         android:text="@string/percent_progress"
                         android:textColor="@color/onSecondary"
-                        android:textSize="20sp"
+                        android:textSize="24sp"
                         app:layout_constraintEnd_toEndOf="@+id/tv_my_progress"
                         app:layout_constraintStart_toStartOf="@+id/tv_my_progress"
                         app:layout_constraintTop_toBottomOf="@+id/tv_my_progress" />
@@ -131,7 +131,7 @@
                         android:text="@string/task_progress"
                         android:textAlignment="textEnd"
                         android:textColor="@color/onSecondary"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tv_progress_result"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/tv_progress_result"
@@ -142,7 +142,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="25dp"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="15dp"
                         android:max="100"
                         android:progress="27"

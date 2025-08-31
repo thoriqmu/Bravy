@@ -48,11 +48,13 @@ class HomeFragment : Fragment() {
 
         setupListeners()
         setupObservers()
+
+        viewModel.loadUserProfile()
     }
 
+    // Hapus onResume() atau kosongkan isinya
     override fun onResume() {
         super.onResume()
-        viewModel.loadUserProfile()
     }
 
     private fun setupListeners() {
@@ -91,15 +93,28 @@ class HomeFragment : Fragment() {
         }
 
         viewModel.userProfile.observe(viewLifecycleOwner) { result ->
-            // Logika onSuccess dan onFailure tetap di sini untuk mengisi data
             result.onSuccess { user ->
                 binding.tvUserName.text = "Hi, ${user.name.split(" ").firstOrNull() ?: "User"}!"
-                // ... isi data lainnya ...
                 loadProfileImage(user.image)
                 updateMoodUI(user)
             }.onFailure { exception ->
                 Toast.makeText(requireContext(), "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
-                // ... handle error UI
+                binding.tvUserName.text = getString(R.string.greeting_user_name, "User")
+                loadProfileImage(null)
+            }
+        }
+
+        // --- TAMBAHKAN OBSERVER BARU INI UNTUK PROGRESS ---
+        viewModel.learningProgress.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { (percentage, completed, total) ->
+                binding.tvProgressResult.text = "$percentage%"
+                binding.tvTaskProgress.text = "$completed/$total Task Complete"
+                binding.indicatorProgressResult.progress = percentage
+            }.onFailure {
+                // Set ke nilai default jika gagal memuat
+                binding.tvProgressResult.text = "0%"
+                binding.tvTaskProgress.text = "0/0 Task Complete"
+                binding.indicatorProgressResult.progress = 0
             }
         }
 

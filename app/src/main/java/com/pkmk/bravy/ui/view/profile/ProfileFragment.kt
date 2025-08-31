@@ -20,6 +20,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -38,16 +42,14 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Setup UI dulu
         setupViewPagerAndTabs()
         setupObservers()
+        // Panggil data di sini agar shimmer tampil duluan
+        viewModel.loadUserProfile()
     }
 
     override fun onResume() {
         super.onResume()
-        // Muat data setiap kali fragment ditampilkan
-        viewModel.loadUserProfile()
     }
 
     private fun setupObservers() {
@@ -70,6 +72,17 @@ class ProfileFragment : Fragment() {
                 binding.tvUserName.text = user.name
                 binding.tvUserEmail.text = user.email
                 loadProfileImage(user.image)
+
+                if (user.createdAt > 0) {
+                    // Format tanggal bergabung
+                    val sdf = SimpleDateFormat("d MMMM yyyy", Locale.getDefault())
+                    binding.tvSinceDate.text = sdf.format(Date(user.createdAt))
+
+                    // Hitung selisih hari
+                    val diffInMillis = System.currentTimeMillis() - user.createdAt
+                    val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+                    binding.tvCountDate.text = days.toString()
+                }
             }.onFailure {
                 Toast.makeText(requireContext(), "Failed to load profile", Toast.LENGTH_SHORT).show()
             }

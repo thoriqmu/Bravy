@@ -3,7 +3,9 @@ package com.pkmk.bravy.data.source
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.getValue
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.data.model.AppNotification
@@ -31,6 +33,9 @@ class FirebaseDataSource @Inject constructor(
     private val chatMediaRef = storage.getReference("chat_media")
     private val communityChatsRef = database.getReference("community_chats")
     private val notificationsRef = database.getReference("notifications")
+    private var latestPostListener: ValueEventListener? = null
+    private var userChatsListener: ValueEventListener? = null
+    private var userChatsRef: com.google.firebase.database.Query? = null
 
     private val TAG = "FirebaseDataSource"
 
@@ -182,17 +187,6 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
-    suspend fun sendMessage(chatId: String, message: Message) {
-        try {
-            val messageRef = privateChatsRef.child(chatId).child("messages").push()
-            messageRef.setValue(message).await()
-            Log.d(TAG, "Sent message ${messageRef.key} in chat $chatId")
-        } catch (e: Exception) {
-            Log.e(TAG, "Error sending message in chat $chatId: ${e.message}")
-            throw e
-        }
-    }
-
     suspend fun uploadChatMedia(mediaFile: File, mediaName: String): String {
         try {
             val fileRef = chatMediaRef.child(mediaName)
@@ -203,18 +197,6 @@ class FirebaseDataSource @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Error uploading chat media $mediaName: ${e.message}")
             throw e
-        }
-    }
-
-    suspend fun getChatMessages(chatId: String): List<Message> {
-        try {
-            val snapshot = privateChatsRef.child(chatId).child("messages").get().await()
-            val messages = snapshot.children.mapNotNull { it.getValue(Message::class.java)?.copy(messageId = it.key ?: "") }
-            Log.d(TAG, "Fetched ${messages.size} messages for chat $chatId")
-            return messages
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching messages for chat $chatId: ${e.message}")
-            return emptyList()
         }
     }
 
@@ -246,20 +228,58 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
-    suspend fun getLastMessageTimestamp(chatId: String): Long? {
-        try {
-            val snapshot = privateChatsRef.child(chatId).child("messages")
-                .orderByChild("timestamp")
-                .limitToLast(1)
-                .get()
-                .await()
-            val timestamp =
-                snapshot.children.firstOrNull()?.child("timestamp")?.getValue(Long::class.java)
-            Log.d(TAG, "Fetched last message timestamp for chat $chatId: $timestamp")
-            return timestamp
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching last message timestamp for chat $chatId: ${e.message}")
-            return null
+    fun listenForLatestCommunityPost(callback: (Result<CommunityPost?>) -> Unit) {
+        // Hapus listener lama jika ada untuk mencegah duplikasi
+        removeLatestPostListener()
+
+        val query = communityChatsRef.orderByChild("timestamp").limitToLast(1)
+
+        latestPostListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val post = snapshot.children.firstOrNull()?.getValue(CommunityPost::class.java)
+                callback(Result.success(post))
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback(Result.failure(error.toException()))
+            }
+        }
+        query.addValueEventListener(latestPostListener!!)
+    }
+
+    fun removeLatestPostListener() {
+        latestPostListener?.let {
+            // Menggunakan try-catch untuk menghindari crash jika referensi sudah tidak valid
+            try {
+                communityChatsRef.removeEventListener(it)
+            } catch (e: Exception) {
+                Log.w(TAG, "Listener already removed or invalid: ${e.message}")
+            }
+        }
+    }
+
+    fun listenForUserChats(uid: String, onChatsUpdated: () -> Unit) {
+        // Hapus listener lama untuk menghindari duplikasi
+        removeUserChatsListener()
+
+        userChatsRef = usersRef.child(uid).child("chats")
+        userChatsListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Setiap kali daftar chat pengguna berubah (chat baru ditambahkan/dihapus),
+                // panggil callback ini.
+                onChatsUpdated()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "User chats listener cancelled: ${error.message}")
+            }
+        }
+        userChatsRef?.addValueEventListener(userChatsListener!!)
+    }
+
+    fun removeUserChatsListener() {
+        userChatsListener?.let { listener ->
+            userChatsRef?.removeEventListener(listener)
         }
     }
 
@@ -272,26 +292,6 @@ class FirebaseDataSource @Inject constructor(
         } catch (e: Exception) {
             Log.e(TAG, "Error fetching chats for user $userUid: ${e.message}")
             return emptyList()
-        }
-    }
-
-    suspend fun getChatParticipant(chatId: String, currentUserUid: String): User? {
-        try {
-            val snapshot = privateChatsRef.child(chatId).child("participants").get().await()
-            val otherUserUid = snapshot.children
-                .mapNotNull { it.key }
-                .find { it != currentUserUid }
-            if (otherUserUid != null) {
-                val participantSnapshot = snapshot.child(otherUserUid)
-                val name = participantSnapshot.child("name").getValue(String::class.java) ?: ""
-                val image = participantSnapshot.child("image").getValue(String::class.java) ?: ""
-                return User(uid = otherUserUid, name = name, image = image)
-            }
-            Log.d(TAG, "No other participant found in chat $chatId")
-            return null
-        } catch (e: Exception) {
-            Log.e(TAG, "Error fetching participant for chat $chatId: ${e.message}")
-            return null
         }
     }
 

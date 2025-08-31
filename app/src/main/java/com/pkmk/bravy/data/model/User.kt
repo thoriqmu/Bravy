@@ -14,12 +14,10 @@ data class User(
     val bio: String? = null,
     val image: String? = null,
     val chats: Map<String, Boolean>? = null,
-    // lastAnxietyLevel dihapus
     val user_progress: Map<String, UserProgress>? = null,
     val friends: Map<String, Friend>? = null,
-    // Field yang sudah kita tambahkan sebelumnya
     val streak: Int = 0,
     val dailyMood: DailyMood? = null,
-    // Kita tambahkan points untuk kelengkapan
-    val points: Int = 0
+    val points: Int = 0,
+    val createdAt: Long = 0L
 ) : Parcelable

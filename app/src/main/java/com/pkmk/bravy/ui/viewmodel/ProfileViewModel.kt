@@ -38,16 +38,21 @@ class ProfileViewModel @Inject constructor(
     fun loadUserProfile() {
         _isLoading.value = true // Mulai loading
         viewModelScope.launch {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser != null) {
-                val result = authRepository.getUser(currentUser.uid)
-                _userProfile.postValue(result)
-            } else {
-                _userProfile.postValue(Result.failure(Exception("No user logged in")))
+            try {
+                val currentUser = firebaseAuth.currentUser
+                if (currentUser != null) {
+                    val result = authRepository.getUser(currentUser.uid)
+                    _userProfile.postValue(result)
+                } else {
+                    _userProfile.postValue(Result.failure(Exception("No user logged in")))
+                }
+            } catch (e: Exception) {
+                _userProfile.postValue(Result.failure(e))
+            } finally {
+                // Tambahkan delay 2 detik
+                kotlinx.coroutines.delay(2000)
+                _isLoading.postValue(false) // Selesaikan loading
             }
-            // Selesaikan loading setelah data diproses
-            delay(3000)
-            _isLoading.postValue(false)
         }
     }
 

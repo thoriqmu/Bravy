@@ -33,4 +33,8 @@ interface AuthRepository {
     suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit>
     suspend fun toggleLikeOnPost(postId: String, uid: String): Result<Unit>
     suspend fun postComment(postId: String, comment: Comment): Result<Unit>
+    fun listenForLatestCommunityPost(callback: (Result<CommunityPost?>) -> Unit)
+    fun removeLatestPostListener()
+    fun listenForUserChats(uid: String, onChatsUpdated: () -> Unit)
+    fun removeUserChatsListener()
 }

@@ -28,22 +28,66 @@ class HomeViewModel @Inject constructor(
     private val _moodUpdateStatus = MutableLiveData<Result<Unit>>()
     val moodUpdateStatus: LiveData<Result<Unit>> = _moodUpdateStatus
 
+    private val _learningProgress = MutableLiveData<Result<Triple<Int, Int, Int>>>()
+    val learningProgress: LiveData<Result<Triple<Int, Int, Int>>> = _learningProgress
+
     fun loadUserProfile() {
         _isLoading.value = true // Mulai loading
         viewModelScope.launch {
             try {
                 val currentUser = firebaseAuth.currentUser
                 if (currentUser != null) {
-                    val result = authRepository.getUser(currentUser.uid)
-                    _userProfile.postValue(result)
+                    val userResult = authRepository.getUser(currentUser.uid)
+                    _userProfile.postValue(userResult)
+
+                    userResult.onSuccess { user ->
+                        calculateTotalProgress(user)
+                    }
                 } else {
-                    _userProfile.postValue(Result.failure(Exception("No user logged in")))
+                    val error = Result.failure<User>(Exception("No user logged in"))
+                    _userProfile.postValue(error)
+                    _learningProgress.postValue(Result.failure(error.exceptionOrNull()!!))
                 }
             } catch (e: Exception) {
                 _userProfile.postValue(Result.failure(e))
+                _learningProgress.postValue(Result.failure(e))
             } finally {
-                kotlinx.coroutines.delay(3000)
-                _isLoading.value = false // Selesaikan loading
+                // Tambahkan delay 2 detik (2000 milidetik)
+                kotlinx.coroutines.delay(2000)
+                _isLoading.postValue(false) // Selesaikan loading setelah delay
+            }
+        }
+    }
+
+    // --- TAMBAHKAN FUNGSI BARU UNTUK MENGHITUNG PROGRESS ---
+    private fun calculateTotalProgress(user: User) {
+        viewModelScope.launch {
+            val levelsResult = authRepository.getLearningLevels()
+            levelsResult.onSuccess { levelsSnapshot ->
+                var totalSections = 0
+                var completedSections = 0
+
+                // Hitung total section dari semua level
+                for (levelSnap in levelsSnapshot.children) {
+                    totalSections += levelSnap.child("sections").children.count()
+                }
+
+                // Hitung section yang sudah diselesaikan oleh user
+                user.user_progress?.values?.forEach { progress ->
+                    completedSections += progress.completed_sections.count { it.value }
+                }
+
+                // Hitung persentase
+                val percentage = if (totalSections > 0) {
+                    (completedSections * 100) / totalSections
+                } else {
+                    0
+                }
+
+                _learningProgress.postValue(Result.success(Triple(percentage, completedSections, totalSections)))
+
+            }.onFailure {
+                _learningProgress.postValue(Result.failure(it))
             }
         }
     }

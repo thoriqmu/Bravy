@@ -13,6 +13,9 @@ import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import com.pkmk.bravy.data.source.FirebaseDataSource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
@@ -28,7 +31,7 @@ class ChatViewModel @Inject constructor(
     val isLoading: LiveData<Boolean> = _isLoading
 
     private val _userProfile = MutableLiveData<Result<User>>()
-    val userProfile: LiveData<Result<User>> get() = _userProfile
+    val userProfile: LiveData<Result<User>> = _userProfile
 
     private val _recentChats = MutableLiveData<Result<List<RecentChat>>>()
     val recentChats: LiveData<Result<List<RecentChat>>> = _recentChats
@@ -44,92 +47,109 @@ class ChatViewModel @Inject constructor(
 
     private val TAG = "ChatViewModel"
 
-    fun loadUserProfile() {
-        viewModelScope.launch {
-            val currentUser = auth.currentUser
-            if (currentUser != null) {
-                val result = authRepository.getUser(currentUser.uid)
-                _userProfile.postValue(result)
-            } else {
-                _userProfile.postValue(Result.failure(Exception("No user logged in")))
-            }
-        }
-    }
-
-    fun loadAllChatData() {
+    // Fungsi utama untuk memuat semua data awal dan memulai listener
+    fun initializeData() {
         _isLoading.value = true
         viewModelScope.launch {
-            try {
-                // Panggil semua fungsi load data
-                loadUserProfile()
-                loadRecentChatUsers()
-                loadSuggestedFriends()
-                loadLatestCommunityPost()
-            } finally {
-                kotlinx.coroutines.delay(5000) // Opsional, tapi membantu transisi
-                _isLoading.postValue(false)
-            }
+            // Jalankan tugas yang tidak perlu listener secara bersamaan
+            val profileJob = async { loadUserProfile() }
+            val friendsJob = async { loadSuggestedFriends() }
+            awaitAll(profileJob, friendsJob) // Tunggu keduanya selesai
+
+            // Setelah tugas awal selesai, mulai listener
+            startListeningForLatestPost()
+            startListeningForChatListChanges()
+
+            delay(2000)
+            _isLoading.postValue(false) // Selesaikan loading
         }
     }
 
-    fun loadRecentChatUsers() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val currentUser = auth.currentUser
-                if (currentUser == null) {
-                    _recentChats.value = Result.failure(Exception("User not logged in"))
-                    return@launch
+    // Fungsi untuk memulai semua listener saat onResume
+    fun startRealtimeListeners() {
+        startListeningForLatestPost()
+        startListeningForChatListChanges()
+    }
+
+    // Fungsi untuk menghentikan semua listener saat onPause
+    fun stopRealtimeListeners() {
+        stopListeningForLatestPost()
+        stopListeningForChatListChanges()
+    }
+
+    private suspend fun loadUserProfile() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val result = authRepository.getUser(currentUser.uid)
+            _userProfile.postValue(result)
+        } else {
+            _userProfile.postValue(Result.failure(Exception("No user logged in")))
+        }
+    }
+
+    private suspend fun loadSuggestedFriends() {
+        val currentUid = auth.currentUser?.uid ?: return
+        val result = authRepository.getSuggestedFriends(currentUid, 5)
+        _suggestedFriends.postValue(result)
+    }
+
+    private fun startListeningForLatestPost() {
+        authRepository.listenForLatestCommunityPost { result ->
+            result.onSuccess { post ->
+                if (post == null) {
+                    _latestCommunityPost.postValue(Result.success(null))
+                    return@onSuccess
                 }
-
-                val chatIds = firebaseDataSource.getUserChats(currentUser.uid)
-                val recentChatList = mutableListOf<RecentChat>()
-
-                for (chatId in chatIds) {
-                    val participantUids = firebaseDataSource.getParticipantUids(chatId)
-                    val otherUserUid = participantUids.firstOrNull { it != currentUser.uid }
-
-                    if (otherUserUid != null) {
-                        val otherUser = firebaseDataSource.getUser(otherUserUid)
-                        val lastMessage = firebaseDataSource.getLastChatMessage(chatId)
-
-                        if (otherUser != null) {
-                            recentChatList.add(RecentChat(otherUser, chatId, lastMessage))
-                        }
+                viewModelScope.launch {
+                    authRepository.getUser(post.authorUid).onSuccess { author ->
+                        _latestCommunityPost.postValue(Result.success(CommunityPostDetails(post, author)))
+                    }.onFailure {
+                        _latestCommunityPost.postValue(Result.failure(it))
                     }
                 }
-
-                recentChatList.sortByDescending { it.lastMessage?.timestamp }
-                _recentChats.value = Result.success(recentChatList)
-
-            } catch (e: Exception) {
-                if (e !is CancellationException) {
-                    _recentChats.value = Result.failure(e)
-                }
-            } finally {
-                kotlinx.coroutines.delay(5000)
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun loadLatestCommunityPost() {
-        viewModelScope.launch {
-            val result = authRepository.getAllCommunityPostsWithDetails()
-            result.onSuccess { posts ->
-                // Ambil post pertama (yang terbaru), atau null jika tidak ada post
-                _latestCommunityPost.postValue(Result.success(posts.firstOrNull()))
             }.onFailure {
                 _latestCommunityPost.postValue(Result.failure(it))
             }
         }
     }
 
-    fun loadSuggestedFriends() {
+    private fun stopListeningForLatestPost() {
+        authRepository.removeLatestPostListener()
+    }
+
+    private fun startListeningForChatListChanges() {
+        val uid = auth.currentUser?.uid ?: return
+        authRepository.listenForUserChats(uid) {
+            Log.d(TAG, "Chat list changed, reloading recent chats.")
+            loadRecentChatUsers() // Panggil fungsi load saat ada perubahan
+        }
+    }
+
+    private fun stopListeningForChatListChanges() {
+        authRepository.removeUserChatsListener()
+    }
+
+    private fun loadRecentChatUsers() {
         viewModelScope.launch {
-            val currentUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.getSuggestedFriends(currentUid, 3)
-            _suggestedFriends.postValue(result)
+            try {
+                val currentUser = auth.currentUser ?: return@launch
+                val chatIds = firebaseDataSource.getUserChats(currentUser.uid)
+                val recentChatList = mutableListOf<RecentChat>()
+                for (chatId in chatIds) {
+                    val otherUserUid = firebaseDataSource.getParticipantUids(chatId).firstOrNull { it != currentUser.uid }
+                    if (otherUserUid != null) {
+                        val otherUser = firebaseDataSource.getUser(otherUserUid)
+                        val lastMessage = firebaseDataSource.getLastChatMessage(chatId)
+                        if (otherUser != null) {
+                            recentChatList.add(RecentChat(otherUser, chatId, lastMessage))
+                        }
+                    }
+                }
+                recentChatList.sortByDescending { it.lastMessage?.timestamp }
+                _recentChats.postValue(Result.success(recentChatList))
+            } catch (e: Exception) {
+                _recentChats.postValue(Result.failure(e))
+            }
         }
     }
 

@@ -57,7 +57,8 @@ class AuthViewModel @Inject constructor(
                         name = name,
                         email = email,
                         redeemCode = redeemCode,
-                        user_progress = initialProgress
+                        user_progress = initialProgress,
+                        createdAt = System.currentTimeMillis()
                     )
 
                     // Simpan objek User ke database
