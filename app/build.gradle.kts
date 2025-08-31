@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.pkmk.bravy"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -49,7 +49,6 @@ android {
 }
 
 dependencies {
-
     // AndroidX Core
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -79,6 +78,7 @@ dependencies {
     implementation(libs.tensorflow.lite)
     implementation(libs.tensorflow.lite.metadata)
     implementation(libs.tensorflow.lite.task.vision)
+    implementation(libs.tensorflow.lite.support)
 
     //ML Kit Face Detection
     implementation(libs.face.detection)
@@ -101,6 +101,13 @@ dependencies {
     // Dependency Injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // ExoPlayer
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    //noinspection UseTomlInstead
+    implementation(libs.androidx.media3.exoplayer.hls)
+//    implementation(libs.androidx.media3.datasource.cache)
 
     // Lain-lain
     implementation(libs.androidx.legacy.support.v4)

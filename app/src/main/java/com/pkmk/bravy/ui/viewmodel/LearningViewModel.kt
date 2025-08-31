@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.pkmk.bravy.data.model.LearningLevel
+import com.pkmk.bravy.data.model.LearningScene
 import com.pkmk.bravy.data.model.LearningSection
 import com.pkmk.bravy.data.model.UserProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,15 +27,29 @@ class LearningViewModel @Inject constructor(
     private val _sections = MutableLiveData<List<LearningSection>>()
     val sections: LiveData<List<LearningSection>> = _sections
 
-    private val _showMicControls = MutableLiveData<Boolean>()
-    val showMicControls: LiveData<Boolean> = _showMicControls
+    private val _showMicControls = MutableLiveData<Pair<Boolean, Int?>>()
+    val showMicControls: LiveData<Pair<Boolean, Int?>> = _showMicControls
+
+    private val _showAnalysisButton = MutableLiveData<Boolean>()
+    val showAnalysisButton: LiveData<Boolean> = _showAnalysisButton
+
+    private val _analysisResult = MutableLiveData<Pair<Int, Int>>()
+    val analysisResult: LiveData<Pair<Int, Int>> = _analysisResult
 
     // LiveData untuk mengirim hasil analisis suara dari Activity ke Fragment
     private val _speechResult = MutableLiveData<String>()
     val speechResult: LiveData<String> = _speechResult
 
+    private val _finalPracticeScore = MutableLiveData<Int>()
+    val finalPracticeScore: LiveData<Int> = _finalPracticeScore
+
+    private var accumulatedScore = 0
+    private var practiceCount = 0
+
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
+
+    private var currentShadowingScene: LearningScene? = null
 
     fun loadLevelData(levelId: String) {
         viewModelScope.launch {
@@ -95,11 +110,49 @@ class LearningViewModel @Inject constructor(
         }
     }
 
-    fun setMicControlsVisibility(isVisible: Boolean) {
-        _showMicControls.postValue(isVisible)
+    fun setMicControlsVisibility(isVisible: Boolean, duration: Int? = null) {
+        _showMicControls.postValue(isVisible to duration)
     }
 
     fun postSpeechResult(resultType: String) {
         _speechResult.postValue(resultType)
+    }
+
+    // Panggil ini dari Fragment saat video shadowing selesai
+    fun requestAnalysis(scene: LearningScene) {
+        currentShadowingScene = scene
+        _showAnalysisButton.postValue(true)
+    }
+
+    // Fungsi untuk menyembunyikan tombol setelah analisis
+    fun hideAnalysisButton() {
+        _showAnalysisButton.postValue(false)
+    }
+
+    fun getCurrentShadowingScene(): LearningScene? {
+        return currentShadowingScene
+    }
+
+    fun postAnalysisResult(confidencePoints: Int, speechPoints: Int) {
+        val totalScore = confidencePoints + speechPoints
+        accumulatedScore += totalScore
+        practiceCount++
+        _analysisResult.postValue(confidencePoints to speechPoints)
+    }
+
+    // Panggil fungsi ini saat section shadowing selesai
+    fun calculateFinalScore() {
+        if (practiceCount > 0) {
+            val averageScore = accumulatedScore / practiceCount
+            _finalPracticeScore.postValue(averageScore)
+        } else {
+            _finalPracticeScore.postValue(0)
+        }
+    }
+
+    // Reset skor saat level baru dimuat untuk menghindari data lama
+    fun resetScores() {
+        accumulatedScore = 0
+        practiceCount = 0
     }
 }

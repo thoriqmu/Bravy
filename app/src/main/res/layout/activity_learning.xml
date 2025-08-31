@@ -154,4 +154,29 @@
             tools:ignore="ContentDescription" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_analysis_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:background="@color/background"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_start_analysis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Analysis"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            app:icon="@drawable/ic_play"
+            app:iconGravity="textStart"/>
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

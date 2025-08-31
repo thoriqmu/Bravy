@@ -6,16 +6,18 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.pkmk.bravy.data.model.LearningSection
 import com.pkmk.bravy.ui.view.practice.LearningSectionFragment
 
-class LearningPagerAdapter(
-    fragmentActivity: FragmentActivity,
-    private val sections: List<LearningSection>
-) : FragmentStateAdapter(fragmentActivity) {
+class LearningPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+
+    private var sections: List<LearningSection> = emptyList()
+
+    fun setSections(sections: List<LearningSection>) {
+        this.sections = sections
+        notifyDataSetChanged()
+    }
 
     override fun getItemCount(): Int = sections.size
 
     override fun createFragment(position: Int): Fragment {
-        val section = sections[position]
-        // Selalu buat instance dari LearningSectionFragment yang baru
-        return LearningSectionFragment.newInstance(section)
+        return LearningSectionFragment.newInstance(sections[position])
     }
 }

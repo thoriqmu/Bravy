@@ -6,10 +6,10 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class LearningScene(
     val sceneType: String = "",
-    // Properti yang mungkin ada di scene
     val videoUrl: String? = null,
     val prompt: String? = null,
     val duration: Int? = null,
     val responses: Map<String, String>? = null,
-    val text: String? = null
+    val text: String? = null,
+    val keySentence: String? = null // <- Tambahkan ini
 ) : Parcelable
