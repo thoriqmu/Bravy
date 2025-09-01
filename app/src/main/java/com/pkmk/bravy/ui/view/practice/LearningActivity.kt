@@ -1,7 +1,6 @@
 package com.pkmk.bravy.ui.view.practice
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -17,10 +16,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
-import com.pkmk.bravy.R
+import com.pkmk.bravy.data.model.LearningScene
 import com.pkmk.bravy.databinding.ActivityLearningBinding
 import com.pkmk.bravy.ui.adapter.LearningPagerAdapter
 import com.pkmk.bravy.ui.adapter.SectionListAdapter
+import com.pkmk.bravy.ui.view.practice.level1.PracticeLevel1Fragment
 import com.pkmk.bravy.ui.viewmodel.LearningViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
@@ -30,7 +30,6 @@ class LearningActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLearningBinding
     private val viewModel: LearningViewModel by viewModels()
-
     private lateinit var sectionsAdapter: SectionListAdapter
     private lateinit var pagerAdapter: LearningPagerAdapter
 
@@ -43,25 +42,9 @@ class LearningActivity : AppCompatActivity() {
             if (isGranted) {
                 startSpeechRecognition()
             } else {
-                Toast.makeText(this, "Izin mikrofon diperlukan untuk latihan berbicara", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Izin mikrofon diperlukan", Toast.LENGTH_SHORT).show()
             }
         }
-
-    private val analysisResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        viewModel.hideAnalysisButton() // Sembunyikan tombol setelah kembali
-        if (result.resultCode == Activity.RESULT_OK) {
-            val confidencePoints = result.data?.getIntExtra("CONFIDENCE_POINTS", 0) ?: 0
-            val speechPoints = result.data?.getIntExtra("SPEECH_POINTS", 0) ?: 0
-
-            // Kirim hasil skor ke ViewModel untuk diproses
-            viewModel.postAnalysisResult(confidencePoints, speechPoints)
-        } else {
-            Toast.makeText(this, "Analysis cancelled.", Toast.LENGTH_SHORT).show()
-            viewModel.postAnalysisResult(0, 0) // Kirim skor 0 jika dibatalkan
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,37 +53,30 @@ class LearningActivity : AppCompatActivity() {
 
         levelId = intent.getStringExtra("LEVEL_ID")
         if (levelId == null) {
-            Toast.makeText(this, "Level tidak ditemukan", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
 
         setupUI()
         observeViewModel()
-        viewModel.resetScores() // <-- TAMBAHKAN INI
+        viewModel.resetScores()
         viewModel.loadLevelData(levelId!!)
     }
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener { finish() }
 
-        // Setup untuk daftar section di bawah
-        sectionsAdapter = SectionListAdapter { section, position ->
-            if (!section.isLocked) {
-                binding.viewPagerContent.currentItem = position
-            } else {
-                Toast.makeText(this, "Selesaikan section sebelumnya terlebih dahulu", Toast.LENGTH_SHORT).show()
-            }
+        sectionsAdapter = SectionListAdapter { _, position ->
+            binding.viewPagerContent.currentItem = position
         }
         binding.rvSectionList.apply {
             adapter = sectionsAdapter
-            layoutManager = LinearLayoutManager(this@LearningActivity, LinearLayoutManager.VERTICAL, false)
+            layoutManager = LinearLayoutManager(this@LearningActivity)
         }
 
-        // Setup untuk ViewPager yang menampilkan fragment video/interaksi
         pagerAdapter = LearningPagerAdapter(this)
         binding.viewPagerContent.adapter = pagerAdapter
-        binding.viewPagerContent.isUserInputEnabled = false // Agar navigasi hanya melalui klik
+        binding.viewPagerContent.isUserInputEnabled = false
 
         binding.viewPagerContent.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
@@ -114,10 +90,9 @@ class LearningActivity : AppCompatActivity() {
         binding.btnStartAnalysis.setOnClickListener {
             val scene = viewModel.getCurrentShadowingScene()
             if (scene != null) {
-                val intent = Intent(this, AnalysisActivity::class.java).apply {
-                    putExtra("KEY_SENTENCE", scene.keySentence)
-                }
-                analysisResultLauncher.launch(intent)
+                // Cara baru: Panggil fungsi di fragment aktif
+                val currentFragment = supportFragmentManager.findFragmentByTag("f${binding.viewPagerContent.currentItem}")
+                (currentFragment as? PracticeLevel1Fragment)?.launchAnalysis(scene)
             }
         }
     }
@@ -127,7 +102,7 @@ class LearningActivity : AppCompatActivity() {
             level?.let {
                 binding.tvLevelTitle.text = it.title
                 binding.tvMaterialTitle.text = it.title
-                binding.tvAboutMaterial.text = it.description
+                binding.tvMaterialDescription.text = it.description
             }
         }
 
@@ -139,19 +114,17 @@ class LearningActivity : AppCompatActivity() {
         viewModel.showMicControls.observe(this) { (isVisible, duration) ->
             binding.layoutMicControls.isVisible = isVisible
             if (!isVisible) {
-                // Jika UI disembunyikan, selalu batalkan timer
                 countDownTimer?.cancel()
-                binding.tvCountdown.text = "" // Reset teks countdown
+                binding.tvCountdown.text = ""
             }
-        }
-
-        viewModel.finalPracticeScore.observe(this) { finalScore ->
-            // Tampilkan dialog atau pesan dengan skor akhir
-            Toast.makeText(this, "Practice Complete! Your average score: $finalScore / 15", Toast.LENGTH_LONG).show()
         }
 
         viewModel.showAnalysisButton.observe(this) { isVisible ->
             binding.layoutAnalysisControls.isVisible = isVisible
+        }
+
+        viewModel.finalPracticeScore.observe(this) { finalScore ->
+            Toast.makeText(this, "Practice Complete! Your average score: $finalScore / 15", Toast.LENGTH_LONG).show()
         }
 
         viewModel.error.observe(this) { errorMsg ->
@@ -161,14 +134,29 @@ class LearningActivity : AppCompatActivity() {
 
     fun onSectionCompleted(sectionId: String) {
         viewModel.completeSection(levelId!!, sectionId)
-        Toast.makeText(this, "Section Selesai! Poin ditambahkan.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Section Selesai!", Toast.LENGTH_SHORT).show()
+        // Pindah ke section berikutnya secara otomatis
+        val nextPosition = binding.viewPagerContent.currentItem + 1
+        if (nextPosition < pagerAdapter.itemCount) {
+            binding.viewPagerContent.currentItem = nextPosition
+        }
+    }
+
+    fun showAnalysisButton(scene: LearningScene) {
+        binding.btnStartAnalysis.setOnClickListener {
+            val intent = Intent(this, AnalysisActivity::class.java).apply {
+                putExtra("KEY_SENTENCE", scene.keySentence)
+            }
+            // Dapatkan fragment saat ini dan minta dia untuk meluncurkan activity
+            val currentFragment = supportFragmentManager.findFragmentByTag("f${binding.viewPagerContent.currentItem}")
+            (currentFragment as? PracticeLevel1Fragment)?.launchAnalysis(scene)
+        }
     }
 
     private fun handleMicClick() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
-            // Dapatkan durasi dari ViewModel
             val duration = viewModel.showMicControls.value?.second ?: 20
-            startCountdown(duration) // Mulai countdown di sini
+            startCountdown(duration)
             startSpeechRecognition()
         } else {
             requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
@@ -179,10 +167,8 @@ class LearningActivity : AppCompatActivity() {
         countDownTimer?.cancel()
         countDownTimer = object : CountDownTimer(durationSeconds * 1000L, 1000) {
             override fun onTick(millisUntilFinished: Long) {
-                val secondsRemaining = millisUntilFinished / 1000
-                binding.tvCountdown.text = String.format(Locale.getDefault(), "00:%02d", secondsRemaining)
+                binding.tvCountdown.text = String.format(Locale.getDefault(), "00:%02d", millisUntilFinished / 1000)
             }
-
             override fun onFinish() {
                 binding.tvCountdown.text = "00:00"
                 speechRecognizer?.stopListening()
@@ -191,40 +177,25 @@ class LearningActivity : AppCompatActivity() {
     }
 
     private fun startSpeechRecognition() {
-        if (speechRecognizer == null) {
-            speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this)
-            speechRecognizer?.setRecognitionListener(object : RecognitionListener {
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this).apply {
+            setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {}
                 override fun onBeginningOfSpeech() {}
                 override fun onRmsChanged(rmsdB: Float) {}
                 override fun onBufferReceived(buffer: ByteArray?) {}
-                override fun onEndOfSpeech() {
-                    countDownTimer?.cancel()
-                }
-
-                override fun onError(error: Int) {
-                    // Jika ada error (termasuk tidak ada suara), kirim hasil 'no_speech'
-                    viewModel.postSpeechResult("no_speech")
-                }
-
+                override fun onEndOfSpeech() { countDownTimer?.cancel() }
+                override fun onError(error: Int) { viewModel.postSpeechResult("no_speech") }
                 override fun onResults(results: Bundle?) {
                     val spokenText = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                    if (spokenText.isNullOrEmpty()) {
-                        viewModel.postSpeechResult("no_speech")
-                    } else {
-                        // Untuk saat ini, kita anggap semua hasil adalah "fluent"
-                        viewModel.postSpeechResult("fluent")
-                    }
+                    viewModel.postSpeechResult(if (spokenText.isNullOrEmpty()) "no_speech" else "fluent")
                 }
-
                 override fun onPartialResults(partialResults: Bundle?) {}
                 override fun onEvent(eventType: Int, params: Bundle?) {}
             })
         }
-
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US") // Set ke Bahasa Inggris
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
         }
         speechRecognizer?.startListening(intent)
     }

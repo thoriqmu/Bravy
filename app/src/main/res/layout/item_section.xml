@@ -6,7 +6,8 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:paddingVertical="8dp">
+    android:paddingVertical="8dp"
+    android:paddingHorizontal="16dp">
 
     <TextView
         android:id="@+id/tv_section_number"

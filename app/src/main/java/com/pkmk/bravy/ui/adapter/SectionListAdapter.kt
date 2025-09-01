@@ -55,15 +55,18 @@ class SectionListAdapter(
                 binding.tvSectionTitle.setTextColor(disabledColor)
             } else {
                 binding.ivStatusIcon.setImageResource(R.drawable.ic_play)
-                val primaryColor = ContextCompat.getColor(context, R.color.primary)
-                binding.ivStatusIcon.setColorFilter(primaryColor)
-                binding.tvSectionNumber.setTextColor(primaryColor)
+                val lockedColor = ContextCompat.getColor(context, R.color.primaryContainer)
+                binding.ivStatusIcon.setColorFilter(lockedColor)
+                binding.tvSectionNumber.setTextColor(lockedColor)
                 binding.tvSectionTitle.setTextColor(ContextCompat.getColor(context, R.color.onBackground))
             }
 
             // Highlight the current section
             if (position == currentSectionIndex) {
-                binding.root.setBackgroundColor(ContextCompat.getColor(context, R.color.primaryContainer))
+                binding.root.setBackgroundResource(R.drawable.selected_section)
+                binding.tvSectionNumber.setTextColor(ContextCompat.getColor(context, R.color.onPrimary))
+                binding.tvSectionTitle.setTextColor(ContextCompat.getColor(context, R.color.onPrimary))
+                binding.ivStatusIcon.setColorFilter(ContextCompat.getColor(context, R.color.onPrimary))
             } else {
                 binding.root.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent))
             }

@@ -94,10 +94,11 @@
                 android:textColor="@color/onSurface"/>
 
             <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_material_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="This material is designed for Level 1 to help you start at a steady and comfortable pace. Each section will guide you step by step to build confidence and develop your skills gradually. Take your time, repeat any part if needed, and move forward only when you feel ready."
+                tools:text="This material is designed for Level 1 to help you start at a steady and comfortable pace. Each section will guide you step by step to build confidence and develop your skills gradually. Take your time, repeat any part if needed, and move forward only when you feel ready."
                 android:textColor="@color/onSurface"
                 android:textSize="14sp" />
 
@@ -112,7 +113,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:listitem="@layout/item_section"
-                tools:itemCount="5"
+                tools:itemCount="2"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         </LinearLayout>
@@ -172,11 +173,15 @@
             android:id="@+id/btn_start_analysis"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Analysis"
+            android:backgroundTint="@color/primary"
+            android:text="Start Speaking"
             android:textAllCaps="false"
             android:textSize="16sp"
+            android:textColor="@color/onPrimary"
             app:icon="@drawable/ic_play"
-            app:iconGravity="textStart"/>
+            app:iconTint="@color/onPrimary"
+            app:iconGravity="textStart"
+            app:cornerRadius="10dp"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

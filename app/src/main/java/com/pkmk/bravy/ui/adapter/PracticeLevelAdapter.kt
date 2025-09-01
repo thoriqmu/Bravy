@@ -34,7 +34,7 @@ class PracticeLevelAdapter(
     inner class LevelViewHolder(private val binding: ItemPracticeLevelBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(level: LearningLevel) {
             binding.tvLevelTitle.text = level.title
-            binding.tvMinPoints.text = "Kumpulkan ${level.minPoints} poin untuk membuka"
+            binding.tvMinPoints.text = "Collect ${level.minPoints} points to unlock the level"
 
             // Load thumbnail
             level.thumbnailUrl?.let { url ->
