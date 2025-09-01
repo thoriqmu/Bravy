@@ -7,7 +7,7 @@ import com.pkmk.bravy.data.model.LearningSection
 import com.pkmk.bravy.ui.view.practice.level1.MaterialLevel1Fragment
 import com.pkmk.bravy.ui.view.practice.level1.PracticeLevel1Fragment
 
-class LearningPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+class LearningPagerAdapter(activity: FragmentActivity, private val levelId: String) : FragmentStateAdapter(activity) {
 
     private var sections: List<LearningSection> = emptyList()
 
@@ -21,17 +21,17 @@ class LearningPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(ac
     override fun createFragment(position: Int): Fragment {
         val section = sections[position]
 
-        // Logika untuk memilih Fragment berdasarkan ID atau judul
-        return when (section.sectionId) {
-            "section_1" -> MaterialLevel1Fragment.newInstance(section)
-            "section_2" -> PracticeLevel1Fragment.newInstance(section)
-            // Tambahkan case untuk level dan section lain di sini
-            else -> {
-                // Fragment default atau error jika tidak ada yang cocok
-                // Untuk sekarang, kita bisa asumsikan selalu ada yang cocok
-                // atau buat fragment placeholder
-                Fragment()
+        // Logika untuk memilih Fragment berdasarkan ID level dan section
+        return when (levelId) {
+            "level_1" -> {
+                when (section.sectionId) {
+                    "section_1" -> MaterialLevel1Fragment.newInstance(section)
+                    "section_2" -> PracticeLevel1Fragment.newInstance(section)
+                    else -> Fragment() // Placeholder
+                }
             }
+            // "level_2" -> { ... } // Tambahkan logika untuk level 2 di sini
+            else -> Fragment() // Fragment default
         }
     }
 }

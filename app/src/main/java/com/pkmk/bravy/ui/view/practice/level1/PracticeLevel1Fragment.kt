@@ -113,7 +113,6 @@ class PracticeLevel1Fragment : Fragment() {
     private fun handleShadowingScene(scene: LearningScene) {
         binding.playerView.isVisible = true
         playVideoFromUrl(scene.videoUrl) {
-            // Setelah video selesai, tampilkan tombol untuk memulai analisis
             viewModel.showAnalysisButton.observe(viewLifecycleOwner) { show ->
                 if (show) {
                     (activity as? LearningActivity)?.showAnalysisButton(scene)
@@ -145,6 +144,7 @@ class PracticeLevel1Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val videoUri = FirebaseStorage.getInstance().getReferenceFromUrl(storageUrl).downloadUrl.await()
+                viewModel.setLastPlayedVideoUri(videoUri)
                 val cacheDataSourceFactory = CacheDataSource.Factory()
                     .setCache(VideoCache.getInstance(requireContext()))
                     .setUpstreamDataSourceFactory(DefaultDataSource.Factory(requireContext()))
@@ -178,9 +178,11 @@ class PracticeLevel1Fragment : Fragment() {
 
     private fun hideAllUI() {
         if (_binding == null) return
-        binding.playerView.isVisible = false
-        binding.progressBar.isVisible = false
         viewModel.hideAnalysisButton()
+        if (exoPlayer?.currentMediaItem == null) {
+            binding.playerView.isVisible = false
+        }
+        binding.progressBar.isVisible = false
         exoPlayer?.stop()
     }
 

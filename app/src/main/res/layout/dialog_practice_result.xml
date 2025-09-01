@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginVertical="48dp"
+        android:layout_gravity="center"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="20dp">
 
@@ -31,16 +32,6 @@
                 android:paddingTop="20dp"
                 android:paddingBottom="20dp">
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/iv_user"
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearance="@style/image_rounded"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:src="@drawable/default_picture" />
-
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_congratulations"
                     android:layout_width="0dp"
@@ -49,11 +40,12 @@
                     android:text="Results for Level 1"
                     android:textSize="20sp"
                     android:textColor="@color/onPrimary"
-                    app:layout_constraintStart_toEndOf="@id/iv_user"
+                    android:textAlignment="center"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/iv_user"
-                    android:layout_marginStart="12dp"
-                    tools:text="Results for Level 1" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/tv_subtitle"
@@ -63,11 +55,11 @@
                     android:text="Great job! Here’s your practice report."
                     android:textSize="14sp"
                     android:textColor="@color/onPrimary"
-                    app:layout_constraintStart_toStartOf="@id/tv_congratulations"
+                    android:textAlignment="center"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/tv_congratulations"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginTop="4dp"
-                    tools:text="Great job! Here’s your practice report." />
+                    android:layout_marginTop="4dp" />
 
                 <View
                     android:id="@+id/divider_top"
@@ -79,145 +71,147 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginTop="14dp" />
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_confidence"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/layout_card_top"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="horizontal"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
-                    app:cardElevation="2dp"
-                    app:cardCornerRadius="16dp"
                     app:layout_constraintTop_toBottomOf="@id/divider_top"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/card_cognitive">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_confidence_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Confidence"
-                            android:textSize="14sp"
-                            android:textColor="@color/onBackground"
-                            android:fontFamily="@font/poppins_medium" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginTop="8dp">
-
-                            <androidx.appcompat.widget.AppCompatRatingBar
-                                android:id="@+id/rating_confidence"
-                                style="?android:attr/ratingBarStyleSmall"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:isIndicator="true"
-                                android:numStars="5"
-                                android:stepSize="1"
-                                android:rating="4"
-                                android:progressTint="@color/primary"
-                                tools:rating="4" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_confidence_value"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/poppins_bold"
-                                android:text="4/5"
-                                android:layout_marginStart="8dp"
-                                android:textColor="@color/primary" />
-                        </LinearLayout>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_confidence_note"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="Eye contact &amp; ekspresi stabil."
-                            android:textSize="12sp"
-                            android:textColor="@color/onBackground"
-                            android:layout_marginTop="6dp"
-                            tools:text="Eye contact &amp; ekspresi stabil." />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/card_cognitive"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginStart="8dp"
-                    app:cardElevation="2dp"
-                    app:cardCornerRadius="16dp"
-                    app:layout_constraintTop_toBottomOf="@id/divider_top"
-                    app:layout_constraintStart_toEndOf="@id/card_confidence"
                     app:layout_constraintEnd_toEndOf="parent">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_confidence"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tvCognitiveTitletv_cognitive_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Word Accuracy"
-                            android:textSize="14sp"
-                            android:textColor="@color/onBackground"
-                            android:fontFamily="@font/poppins_medium" />
-
-                        <com.google.android.material.progressindicator.LinearProgressIndicator
-                            android:id="@+id/progressCognitive"
-                            style="@style/Widget.MaterialComponents.LinearProgressIndicator"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:progress="80"
-                            app:trackCornerRadius="8dp"
-                            app:trackThickness="8dp"
-                            app:indicatorDirectionLinear="leftToRight"
-                            app:indeterminate="false"
-                            app:indicatorColor="@color/primary"
-                            tools:progress="80" />
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp"
+                        app:cardCornerRadius="16dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:layout_marginTop="8dp">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
                             <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_cognitive_value"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:fontFamily="@font/poppins_bold"
-                                android:text="8/10"
-                                android:textColor="@color/primary" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/tv_cognitive_percentage"
+                                android:id="@+id/tv_confidence_title"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="80%"
+                                android:text="Confidence"
+                                android:textSize="14sp"
+                                android:textColor="@color/onBackground"
+                                android:fontFamily="@font/poppins_medium" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="8dp">
+
+                                <androidx.appcompat.widget.AppCompatRatingBar
+                                    android:id="@+id/rating_confidence"
+                                    style="?android:attr/ratingBarStyleSmall"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:isIndicator="true"
+                                    android:numStars="5"
+                                    android:stepSize="1"
+                                    android:rating="4"
+                                    android:progressTint="@color/primary" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_confidence_value"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/poppins_bold"
+                                    android:text="4/5"
+                                    android:layout_marginStart="8dp"
+                                    android:textColor="@color/primary" />
+                            </LinearLayout>
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tv_confidence_note"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="Eye contact &amp; ekspresi stabil."
                                 android:textSize="12sp"
                                 android:textColor="@color/onBackground"
-                                android:layout_marginStart="8dp" />
+                                android:layout_marginTop="6dp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_cognitive"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        app:cardElevation="2dp"
+                        app:cardCornerRadius="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/tvCognitiveTitletv_cognitive_title"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Word Accuracy"
+                                android:textSize="14sp"
+                                android:textColor="@color/onBackground"
+                                android:fontFamily="@font/poppins_medium" />
+
+                            <com.google.android.material.progressindicator.LinearProgressIndicator
+                                android:id="@+id/progressCognitive"
+                                style="@style/Widget.MaterialComponents.LinearProgressIndicator"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:progress="80"
+                                app:trackCornerRadius="8dp"
+                                app:trackThickness="8dp"
+                                app:indicatorDirectionLinear="leftToRight"
+                                app:indicatorColor="@color/primary" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:layout_marginTop="8dp">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_cognitive_value"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:fontFamily="@font/poppins_bold"
+                                    android:text="8/10"
+                                    android:textColor="@color/primary" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/tv_cognitive_percentage"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="80%"
+                                    android:textSize="12sp"
+                                    android:textColor="@color/onBackground"
+                                    android:layout_marginStart="8dp" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
-                    </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
-                </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_total"
@@ -226,7 +220,7 @@
                     android:layout_marginTop="16dp"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="2dp"
-                    app:layout_constraintTop_toBottomOf="@+id/card_confidence"
+                    app:layout_constraintTop_toBottomOf="@+id/layout_card_top"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent">
 
@@ -254,8 +248,7 @@
                             android:fontFamily="@font/poppins_bold"
                             android:text="12"
                             android:textSize="18sp"
-                            android:textColor="@color/primary"
-                            tools:text="12" />
+                            android:textColor="@color/primary" />
 
                         <com.google.android.material.imageview.ShapeableImageView
                             android:layout_width="48dp"
@@ -302,23 +295,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="13sp"
                             android:textColor="?attr/colorOnSurface"
-                            tools:text="Latih ekspresi muka; rekam pada jarak 50–70 cm dengan cahaya frontal." />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_suggestion_2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="?attr/colorOnSurface"
-                            tools:text="Ulangi segmen cepat (00:41–00:48) 3× pada 0.75x lalu 1x." />
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/tv_suggestion_3"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="?attr/colorOnSurface"
-                            tools:text="Fokus perbaiki preposisi: at / in / on; review 5 menit/hari." />
+                            android:text="Latih ekspresi muka; rekam pada jarak 50–70 cm dengan cahaya frontal." />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -332,8 +309,8 @@
         android:id="@+id/fab_close"
         android:layout_width="56dp"
         android:layout_height="56dp"
-        android:layout_gravity="bottom|center"
         android:layout_margin="24dp"
+        android:layout_gravity="bottom|center"
         app:backgroundTint="@color/primary"
         app:tint="@color/onPrimary"
         app:srcCompat="@drawable/ic_close" />

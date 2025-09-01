@@ -46,10 +46,8 @@ class MaterialLevel1Fragment : Fragment() {
         section = arguments?.getParcelable(ARG_SECTION)
         setupPlayer()
 
-        // Observer untuk hasil speech dari Activity
         viewModel.speechResult.observe(viewLifecycleOwner) { resultType ->
             val currentScene = section?.scenes?.getOrNull(currentSceneIndex)
-            // Pastikan observer ini hanya bereaksi jika scene saat ini adalah speech practice
             if (isResumed && currentScene?.sceneType == "SPEECH_PRACTICE") {
                 playResponseVideo(currentScene, resultType)
             }
@@ -91,23 +89,25 @@ class MaterialLevel1Fragment : Fragment() {
     }
 
     private fun handleSpeechPracticeScene(scene: LearningScene) {
-        // Beri tahu Activity untuk menampilkan tombol mic dengan durasi dari Firebase
+        // Tampilkan video terakhir yang diputar, tapi jangan auto-play
+        binding.playerView.isVisible = true
+        exoPlayer?.seekTo(0)
+        exoPlayer?.playWhenReady = false
+
         viewModel.setMicControlsVisibility(true, scene.duration ?: 20)
     }
 
     private fun playResponseVideo(scene: LearningScene?, responseType: String) {
-        viewModel.setMicControlsVisibility(false) // Sembunyikan tombol mic
+        viewModel.setMicControlsVisibility(false)
         val responseUrl = scene?.responses?.get(responseType)
 
         if (responseUrl.isNullOrEmpty()) {
-            // Jika tidak ada video respons (misal, untuk 'fluent'), langsung lanjut
             goToNextScene()
             return
         }
 
         binding.playerView.isVisible = true
         playVideoFromUrl(responseUrl) {
-            // Setelah video respons selesai, lanjut ke scene berikutnya
             goToNextScene()
         }
     }
@@ -134,6 +134,7 @@ class MaterialLevel1Fragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val videoUri = FirebaseStorage.getInstance().getReferenceFromUrl(storageUrl).downloadUrl.await()
+                viewModel.setLastPlayedVideoUri(videoUri) // Simpan URI video terakhir
                 val cacheDataSourceFactory = CacheDataSource.Factory()
                     .setCache(VideoCache.getInstance(requireContext()))
                     .setUpstreamDataSourceFactory(DefaultDataSource.Factory(requireContext()))
@@ -160,9 +161,12 @@ class MaterialLevel1Fragment : Fragment() {
 
     private fun hideAllUI() {
         if (_binding == null) return
-        binding.playerView.isVisible = false
-        binding.progressBar.isVisible = false
         viewModel.setMicControlsVisibility(false)
+        // Jangan sembunyikan player view jika sudah ada video
+        if (exoPlayer?.currentMediaItem == null) {
+            binding.playerView.isVisible = false
+        }
+        binding.progressBar.isVisible = false
         exoPlayer?.stop()
     }
 

@@ -1,14 +1,19 @@
 package com.pkmk.bravy.ui.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.pkmk.bravy.data.model.LearningLevel
 import com.pkmk.bravy.data.model.LearningScene
 import com.pkmk.bravy.data.model.LearningSection
+import com.pkmk.bravy.data.model.PracticeResult
 import com.pkmk.bravy.data.model.UserProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -43,49 +48,46 @@ class LearningViewModel @Inject constructor(
     private val _finalPracticeScore = MutableLiveData<Int>()
     val finalPracticeScore: LiveData<Int> = _finalPracticeScore
 
-    private var accumulatedScore = 0
-    private var practiceCount = 0
-
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> = _error
 
+    private val _lastPlayedVideoUri = MutableLiveData<Uri?>()
+    val lastPlayedVideoUri: LiveData<Uri?> = _lastPlayedVideoUri
+
+    private val _showResultDialog = MutableLiveData<PracticeResult>()
+    val showResultDialog: LiveData<PracticeResult> = _showResultDialog
+
+    private var accumulatedScore = 0
+    private var totalConfidenceScore = 0
+    private var totalSpeechScore = 0
+    private var practiceCount = 0
     private var currentShadowingScene: LearningScene? = null
 
     fun loadLevelData(levelId: String) {
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
             try {
-                // Ambil data level
                 val levelSnapshot = database.getReference("learning_levels/$levelId").get().await()
-
-                // PERUBAHAN DI SINI: Path untuk mengambil user_progress
                 val progressSnapshot = database
-                    .getReference("users/$userId/user_progress/$levelId") // <-- Path baru
+                    .getReference("users/$userId/user_progress/$levelId")
                     .get().await()
 
                 val level = levelSnapshot.getValue(LearningLevel::class.java)
                 val progress = progressSnapshot.getValue(UserProgress::class.java)
 
-                if (level == null) {
-                    _error.postValue("Level data not found.")
-                    return@launch
-                }
                 _learningLevel.postValue(level)
 
-                // Logika proses section tidak perlu diubah, karena sudah benar
-                val processedSections = level.sections.values
-                    .sortedBy { it.order }
-                    .mapIndexed { index, section ->
-                        // ... (logika isLocked tetap sama) ...
+                val processedSections = level?.sections?.values
+                    ?.sortedBy { it.order }
+                    ?.mapIndexed { index, section ->
                         val previousSectionOrder = index
                         val previousSectionId = level.sections.values.firstOrNull { it.order == previousSectionOrder }?.sectionId
-
                         section.copy(isLocked = when {
-                            index == 0 -> false // Section pertama selalu terbuka
-                            previousSectionId == null -> true // Jika tidak ada section sebelumnya (seharusnya tidak terjadi)
+                            index == 0 -> false
+                            previousSectionId == null -> true
                             else -> !(progress?.completed_sections?.get(previousSectionId) ?: false)
                         })
-                    }
+                    } ?: emptyList()
                 _sections.postValue(processedSections)
 
             } catch (e: Exception) {
@@ -98,16 +100,18 @@ class LearningViewModel @Inject constructor(
         viewModelScope.launch {
             val userId = auth.currentUser?.uid ?: return@launch
             try {
-                // PERUBAHAN DI SINI: Path untuk menyimpan user_progress
                 database
-                    .getReference("users/$userId/user_progress/$levelId/completed_sections/$sectionId") // <-- Path baru
+                    .getReference("users/$userId/user_progress/$levelId/completed_sections/$sectionId")
                     .setValue(true).await()
-                // Muat ulang data untuk memperbarui UI
                 loadLevelData(levelId)
             } catch (e: Exception) {
                 _error.postValue("Failed to update progress: ${e.message}")
             }
         }
+    }
+
+    fun setLastPlayedVideoUri(uri: Uri?) {
+        _lastPlayedVideoUri.postValue(uri)
     }
 
     fun setMicControlsVisibility(isVisible: Boolean, duration: Int? = null) {
@@ -118,13 +122,11 @@ class LearningViewModel @Inject constructor(
         _speechResult.postValue(resultType)
     }
 
-    // Panggil ini dari Fragment saat video shadowing selesai
     fun requestAnalysis(scene: LearningScene) {
         currentShadowingScene = scene
         _showAnalysisButton.postValue(true)
     }
 
-    // Fungsi untuk menyembunyikan tombol setelah analisis
     fun hideAnalysisButton() {
         _showAnalysisButton.postValue(false)
     }
@@ -133,26 +135,63 @@ class LearningViewModel @Inject constructor(
         return currentShadowingScene
     }
 
+    fun calculateFinalScore() {
+        if (practiceCount > 0) {
+            // Kita bagi total skor dengan jumlah latihan untuk mendapatkan rata-rata
+            // Kita kalikan dulu dengan 1.0f untuk memastikan hasilnya float
+            val avgTotal = (accumulatedScore * 1.0f / practiceCount).toInt()
+            val avgConfidence = (totalConfidenceScore * 1.0f / practiceCount).toInt()
+            val avgSpeech = (totalSpeechScore * 1.0f / practiceCount).toInt()
+
+            val recommendation = generateRecommendation(avgConfidence, avgSpeech)
+            val levelTitle = _learningLevel.value?.title ?: "Practice"
+
+            val result = PracticeResult(avgConfidence, avgSpeech, avgTotal, recommendation, levelTitle)
+            _showResultDialog.postValue(result)
+
+            updateUserPoints(avgTotal) // Tambahkan poin ke Firebase
+        }
+    }
+
+    private fun generateRecommendation(confidence: Int, speech: Int): String {
+        return when {
+            confidence >= 4 && speech >= 9 -> "Excellent work! Your confidence and speech accuracy are both outstanding. Keep practicing to maintain this great level!"
+            confidence < 3 && speech >= 9 -> "Your speech is very clear, great job! Try to be more relaxed. Maintain good eye contact with the camera to boost your confidence score."
+            confidence >= 4 && speech < 5 -> "You look very confident! Let's work on pronunciation. Try listening to the sentence a few more times and repeat it slowly."
+            else -> "Good start! Consistent practice is key. Try repeating this level to improve both your confidence and speech accuracy."
+        }
+    }
+
+    fun updateUserPoints(pointsToAdd: Int) {
+        val userId = auth.currentUser?.uid ?: return
+        val userPointsRef = database.getReference("users/$userId/points")
+
+        userPointsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val currentPoints = snapshot.getValue(Int::class.java) ?: 0
+                val newTotalPoints = currentPoints + pointsToAdd
+                userPointsRef.setValue(newTotalPoints)
+            }
+            override fun onCancelled(error: DatabaseError) {
+                _error.postValue("Failed to update points: ${error.message}")
+            }
+        })
+    }
+
     fun postAnalysisResult(confidencePoints: Int, speechPoints: Int) {
-        val totalScore = confidencePoints + speechPoints
-        accumulatedScore += totalScore
+        accumulatedScore += (confidencePoints + speechPoints)
+        totalConfidenceScore += confidencePoints
+        totalSpeechScore += speechPoints
         practiceCount++
         _analysisResult.postValue(confidencePoints to speechPoints)
     }
 
-    // Panggil fungsi ini saat section shadowing selesai
-    fun calculateFinalScore() {
-        if (practiceCount > 0) {
-            val averageScore = accumulatedScore / practiceCount
-            _finalPracticeScore.postValue(averageScore)
-        } else {
-            _finalPracticeScore.postValue(0)
-        }
-    }
-
-    // Reset skor saat level baru dimuat untuk menghindari data lama
+    // Ubah resetScores
     fun resetScores() {
         accumulatedScore = 0
         practiceCount = 0
+        totalConfidenceScore = 0
+        totalSpeechScore = 0
+        _lastPlayedVideoUri.postValue(null)
     }
 }

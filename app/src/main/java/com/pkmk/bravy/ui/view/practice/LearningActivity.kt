@@ -74,7 +74,7 @@ class LearningActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@LearningActivity)
         }
 
-        pagerAdapter = LearningPagerAdapter(this)
+        pagerAdapter = LearningPagerAdapter(this, levelId!!) // Kirim levelId ke adapter
         binding.viewPagerContent.adapter = pagerAdapter
         binding.viewPagerContent.isUserInputEnabled = false
 
@@ -82,19 +82,11 @@ class LearningActivity : AppCompatActivity() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 sectionsAdapter.setCurrentSection(position)
+                viewModel.setLastPlayedVideoUri(null) // Reset video saat ganti section
             }
         })
 
         binding.btnMic.setOnClickListener { handleMicClick() }
-
-        binding.btnStartAnalysis.setOnClickListener {
-            val scene = viewModel.getCurrentShadowingScene()
-            if (scene != null) {
-                // Cara baru: Panggil fungsi di fragment aktif
-                val currentFragment = supportFragmentManager.findFragmentByTag("f${binding.viewPagerContent.currentItem}")
-                (currentFragment as? PracticeLevel1Fragment)?.launchAnalysis(scene)
-            }
-        }
     }
 
     private fun observeViewModel() {
@@ -124,18 +116,27 @@ class LearningActivity : AppCompatActivity() {
         }
 
         viewModel.finalPracticeScore.observe(this) { finalScore ->
-            Toast.makeText(this, "Practice Complete! Your average score: $finalScore / 15", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Practice Complete! Your average score: $finalScore / 15", Toast.LENGTH_LONG).show()
         }
 
         viewModel.error.observe(this) { errorMsg ->
             Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+        }
+
+        viewModel.showResultDialog.observe(this) { result ->
+            ResultDialogFragment.newInstance(
+                result.confidenceScore,
+                result.speechScore,
+                result.totalScore,
+                result.recommendation,
+                result.levelTitle
+            ).show(supportFragmentManager, ResultDialogFragment.TAG)
         }
     }
 
     fun onSectionCompleted(sectionId: String) {
         viewModel.completeSection(levelId!!, sectionId)
         Toast.makeText(this, "Section Selesai!", Toast.LENGTH_SHORT).show()
-        // Pindah ke section berikutnya secara otomatis
         val nextPosition = binding.viewPagerContent.currentItem + 1
         if (nextPosition < pagerAdapter.itemCount) {
             binding.viewPagerContent.currentItem = nextPosition
@@ -144,10 +145,6 @@ class LearningActivity : AppCompatActivity() {
 
     fun showAnalysisButton(scene: LearningScene) {
         binding.btnStartAnalysis.setOnClickListener {
-            val intent = Intent(this, AnalysisActivity::class.java).apply {
-                putExtra("KEY_SENTENCE", scene.keySentence)
-            }
-            // Dapatkan fragment saat ini dan minta dia untuk meluncurkan activity
             val currentFragment = supportFragmentManager.findFragmentByTag("f${binding.viewPagerContent.currentItem}")
             (currentFragment as? PracticeLevel1Fragment)?.launchAnalysis(scene)
         }

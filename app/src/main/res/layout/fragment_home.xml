@@ -150,7 +150,6 @@
                         app:trackCornerRadius="8dp"
                         app:trackThickness="8dp"
                         app:indicatorDirectionLinear="leftToRight"
-                        app:indeterminate="false"
                         app:indicatorColor="@color/primary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
