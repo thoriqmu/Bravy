@@ -5,5 +5,6 @@ data class PracticeResult(
     val speechScore: Int,
     val totalScore: Int,
     val recommendation: String,
+    val confidenceRecommendation: String,
     val levelTitle: String
 )

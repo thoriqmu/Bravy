@@ -29,6 +29,7 @@ class ResultDialogFragment : DialogFragment() {
         val speech = arguments?.getInt(ARG_SPEECH) ?: 0
         val total = arguments?.getInt(ARG_TOTAL) ?: 0
         val recommendation = arguments?.getString(ARG_RECOMMENDATION) ?: ""
+        val confidenceRecommendation = arguments?.getString(ARG_CONFIDENCE_RECOMMENDATION) ?: ""
         val levelTitle = arguments?.getString(ARG_LEVEL_TITLE) ?: "Practice"
 
         binding.tvCongratulations.text = "Results for $levelTitle"
@@ -36,6 +37,7 @@ class ResultDialogFragment : DialogFragment() {
         binding.tvCognitiveValue.text = "$speech / 10"
         binding.tvTotalValue.text = "$total / 15"
         binding.tvSuggestion1.text = recommendation
+        binding.tvConfidenceNote.text = confidenceRecommendation
 
         binding.ratingConfidence.rating = confidence.toFloat()
         binding.progressCognitive.progress = speech * 10
@@ -65,6 +67,7 @@ class ResultDialogFragment : DialogFragment() {
         private const val ARG_SPEECH = "speech_score"
         private const val ARG_TOTAL = "total_score"
         private const val ARG_RECOMMENDATION = "recommendation"
+        private const val ARG_CONFIDENCE_RECOMMENDATION = "confidence_recommendation"
         private const val ARG_LEVEL_TITLE = "level_title"
 
         fun newInstance(
@@ -72,6 +75,7 @@ class ResultDialogFragment : DialogFragment() {
             speechScore: Int,
             totalScore: Int,
             recommendation: String,
+            confidenceRecommendation: String,
             levelTitle: String
         ): ResultDialogFragment {
             val args = Bundle().apply {
@@ -79,6 +83,7 @@ class ResultDialogFragment : DialogFragment() {
                 putInt(ARG_SPEECH, speechScore)
                 putInt(ARG_TOTAL, totalScore)
                 putString(ARG_RECOMMENDATION, recommendation)
+                putString(ARG_CONFIDENCE_RECOMMENDATION, confidenceRecommendation)
                 putString(ARG_LEVEL_TITLE, levelTitle)
             }
             return ResultDialogFragment().apply {

@@ -137,19 +137,57 @@ class LearningViewModel @Inject constructor(
 
     fun calculateFinalScore() {
         if (practiceCount > 0) {
-            // Kita bagi total skor dengan jumlah latihan untuk mendapatkan rata-rata
-            // Kita kalikan dulu dengan 1.0f untuk memastikan hasilnya float
-            val avgTotal = (accumulatedScore * 1.0f / practiceCount).toInt()
-            val avgConfidence = (totalConfidenceScore * 1.0f / practiceCount).toInt()
-            val avgSpeech = (totalSpeechScore * 1.0f / practiceCount).toInt()
+            val avgTotal = (accumulatedScore.toFloat() / practiceCount).toInt()
+            val avgConfidence = (totalConfidenceScore.toFloat() / practiceCount).toInt()
+            val avgSpeech = (totalSpeechScore.toFloat() / practiceCount).toInt()
 
             val recommendation = generateRecommendation(avgConfidence, avgSpeech)
+            val confidenceRecommendation = generateConfidenceRecommendation(avgConfidence)
             val levelTitle = _learningLevel.value?.title ?: "Practice"
+            val levelId = _learningLevel.value?.levelId ?: return
 
-            val result = PracticeResult(avgConfidence, avgSpeech, avgTotal, recommendation, levelTitle)
+            val result = PracticeResult(avgConfidence, avgSpeech, avgTotal, recommendation, confidenceRecommendation, levelTitle)
             _showResultDialog.postValue(result)
 
-            updateUserPoints(avgTotal) // Tambahkan poin ke Firebase
+            // Panggil fungsi update skor yang baru
+            updateUserScores(levelId, avgTotal)
+        }
+    }
+
+    private fun updateUserScores(levelId: String, newPracticeScore: Int) {
+        val userId = auth.currentUser?.uid ?: return
+        viewModelScope.launch {
+            try {
+                val userProgressRef = database.getReference("users/$userId/user_progress/$levelId")
+                val totalPointsRef = database.getReference("users/$userId/points")
+
+                // 1. Ambil skor terbaik sebelumnya dari user_progress
+                val progressSnapshot = userProgressRef.get().await()
+                val currentProgress = progressSnapshot.getValue(UserProgress::class.java)
+                val previousBestScore = currentProgress?.points ?: 0
+
+                // 2. Bandingkan dengan skor baru
+                if (newPracticeScore > previousBestScore) {
+                    // Hitung selisih poin yang akan ditambahkan
+                    val pointsDifference = newPracticeScore - previousBestScore
+
+                    // 3. Update skor terbaik di user_progress/{levelId}/points
+                    userProgressRef.child("points").setValue(newPracticeScore).await()
+
+                    // 4. Update total poin pengguna
+                    val totalPointsSnapshot = totalPointsRef.get().await()
+                    val currentTotalPoints = totalPointsSnapshot.getValue(Int::class.java) ?: 0
+                    val newTotalPoints = currentTotalPoints + pointsDifference
+                    totalPointsRef.setValue(newTotalPoints).await()
+
+                    _error.postValue("Congratulations! Your score improved by $pointsDifference points.")
+                } else {
+                    _error.postValue("You've completed the practice. Try to beat your high score of $previousBestScore!")
+                }
+
+            } catch (e: Exception) {
+                _error.postValue("Failed to update points: ${e.message}")
+            }
         }
     }
 
@@ -159,6 +197,26 @@ class LearningViewModel @Inject constructor(
             confidence < 3 && speech >= 9 -> "Your speech is very clear, great job! Try to be more relaxed. Maintain good eye contact with the camera to boost your confidence score."
             confidence >= 4 && speech < 5 -> "You look very confident! Let's work on pronunciation. Try listening to the sentence a few more times and repeat it slowly."
             else -> "Good start! Consistent practice is key. Try repeating this level to improve both your confidence and speech accuracy."
+        }
+    }
+
+    private fun generateConfidenceRecommendation(confidence: Int): String {
+        return when (confidence) {
+            5 -> "Excellent confidence! Keep it up."
+            4 -> "Great confidence, maintain this level."
+            3 -> "Decent confidence, try to stay calmer."
+            2 -> "You seem a bit tense, relax and focus."
+            else -> "Low confidence, practice more to feel comfortable."
+        }
+    }
+
+    private fun generateSpeechRecommendation(speech: Int): String {
+        return when {
+            speech >= 9 -> "Your pronunciation is excellent and very clear!"
+            speech >= 7 -> "Good pronunciation, just a bit more polishing."
+            speech >= 5 -> "Fair pronunciation, focus on word clarity."
+            speech >= 3 -> "Pronunciation needs improvement, practice slowly."
+            else -> "Significant practice needed, listen carefully and repeat."
         }
     }
 

@@ -42,7 +42,7 @@ class LearningActivity : AppCompatActivity() {
             if (isGranted) {
                 startSpeechRecognition()
             } else {
-                Toast.makeText(this, "Izin mikrofon diperlukan", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Microphone permission required", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -129,6 +129,7 @@ class LearningActivity : AppCompatActivity() {
                 result.speechScore,
                 result.totalScore,
                 result.recommendation,
+                result.confidenceRecommendation,
                 result.levelTitle
             ).show(supportFragmentManager, ResultDialogFragment.TAG)
         }
@@ -136,7 +137,7 @@ class LearningActivity : AppCompatActivity() {
 
     fun onSectionCompleted(sectionId: String) {
         viewModel.completeSection(levelId!!, sectionId)
-        Toast.makeText(this, "Section Selesai!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Section Completed!", Toast.LENGTH_SHORT).show()
         val nextPosition = binding.viewPagerContent.currentItem + 1
         if (nextPosition < pagerAdapter.itemCount) {
             binding.viewPagerContent.currentItem = nextPosition
