@@ -1,6 +1,7 @@
 package com.pkmk.bravy.data.repository
 
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
@@ -38,4 +39,5 @@ interface AuthRepository {
     fun removeLatestPostListener()
     fun listenForUserChats(uid: String, onChatsUpdated: () -> Unit)
     fun removeUserChatsListener()
+    suspend fun getUserNotifications(): Result<List<AppNotification>>
 }

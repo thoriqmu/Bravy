@@ -2,6 +2,7 @@ package com.pkmk.bravy.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
+import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
@@ -334,5 +335,21 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun removeUserChatsListener() {
         dataSource.removeUserChatsListener()
+    }
+
+    override suspend fun getUserNotifications(): Result<List<AppNotification>> {
+        return try {
+            val uid = dataSource.getCurrentUserId()
+            if (uid != null) {
+                val notifications = dataSource.getUserNotifications(uid)
+                Result.success(notifications)
+            } else {
+                Log.e(TAG, "Cannot get notifications: User is not logged in.")
+                Result.failure(Exception("User not logged in"))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching user notifications", e)
+            Result.failure(e)
+        }
     }
 }

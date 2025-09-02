@@ -1,19 +1,22 @@
 package com.pkmk.bravy.data.model
 
 import android.os.Parcelable
+import com.google.firebase.database.PropertyName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class AppNotification(
     val id: String = "",
-    val recipientUid: String = "", // UID pengguna yang menerima notifikasi
-    val senderUid: String? = null, // UID pengirim (opsional)
-    val senderName: String? = null, // Nama pengirim (untuk kemudahan tampilan)
-    val senderImage: String? = null, // Gambar profil pengirim (opsional)
-    val type: String = "", // "PROGRESS", "CHAT_PRIVATE", "CHAT_COMMUNITY_REPLY"
+    val senderId: String? = null,
+
+    val senderName: String? = null, // Ini akan null karena tidak ada di DB
+    val senderImage: String? = null, // Ini akan null karena tidak ada di DB
+    val type: String = "",
     val title: String = "",
     val message: String = "",
-    val referenceId: String? = null, // ID dari post, chat, atau level
+    val referenceId: String? = null, // Ini akan null karena tidak ada di DB
     val timestamp: Long = 0L,
+
+    @get:PropertyName("read") @set:PropertyName("read")
     var isRead: Boolean = false
 ) : Parcelable

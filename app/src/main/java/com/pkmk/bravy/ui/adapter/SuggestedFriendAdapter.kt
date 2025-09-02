@@ -27,7 +27,11 @@ class SuggestedFriendAdapter(
     inner class ViewHolder(val binding: ItemSuggestedFriendBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(user: User) {
             binding.tvUserName.text = user.name
-            binding.tvUserDesc.text = user.bio ?: "A new Bravy user!"
+            if (user.bio.isNullOrEmpty()) {
+                binding.tvUserDesc.text = "A new Bravy user!"
+            } else {
+                binding.tvUserDesc.text = user.bio
+            }
             loadProfileImage(user.image)
 
             if (sentRequests.contains(user.uid)) {

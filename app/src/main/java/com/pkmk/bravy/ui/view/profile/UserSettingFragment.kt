@@ -22,6 +22,7 @@ import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.DialogTermsAndConditionsBinding
 import com.pkmk.bravy.databinding.FragmentUserSettingBinding
 import com.pkmk.bravy.ui.view.auth.LoginActivity
+import com.pkmk.bravy.ui.view.auth.OnboardingActivity
 
 class UserSettingFragment : Fragment() {
 
@@ -170,7 +171,7 @@ class UserSettingFragment : Fragment() {
             .setMessage("Are you sure you want to log out?")
             .setPositiveButton("Yes") { _, _ ->
                 FirebaseAuth.getInstance().signOut()
-                val intent = Intent(requireContext(), LoginActivity::class.java)
+                val intent = Intent(requireContext(), OnboardingActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
             }

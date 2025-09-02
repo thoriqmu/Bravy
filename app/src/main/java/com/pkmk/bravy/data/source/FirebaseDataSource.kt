@@ -404,10 +404,10 @@ class FirebaseDataSource @Inject constructor(
         communityChatsRef.child(postId).child("comments").child(commentId).setValue(comment).await()
     }
 
-    suspend fun sendNotification(notification: AppNotification) {
-        // Simpan notifikasi di bawah node UID penerima
-        notificationsRef.child(notification.recipientUid).child(notification.id).setValue(notification).await()
-    }
+//    suspend fun sendNotification(notification: AppNotification) {
+//        // Simpan notifikasi di bawah node UID penerima
+//        notificationsRef.child(notification.recipientUid).child(notification.id).setValue(notification).await()
+//    }
 
     suspend fun getUserNotifications(uid: String): List<AppNotification> {
         val snapshot = notificationsRef.child(uid).orderByChild("timestamp").get().await()

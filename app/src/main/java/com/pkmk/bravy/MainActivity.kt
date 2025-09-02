@@ -30,8 +30,9 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var sessionListener: ValueEventListener
-    private lateinit var sessionRef: DatabaseReference
+    // --- UBAH 'lateinit' menjadi nullable ---
+    private var sessionListener: ValueEventListener? = null
+    private var sessionRef: DatabaseReference? = null
 
     private val viewModel: AuthViewModel by viewModels()
 
@@ -53,57 +54,64 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-
         navView.setupWithNavController(navController)
 
-        if (auth.currentUser != null) {
-            listenForSessionChanges()
+        // Panggil listenForSessionChanges hanya jika user ada
+        auth.currentUser?.let {
+            listenForSessionChanges(it.uid)
         }
     }
 
-    private fun listenForSessionChanges() {
-        val uid = auth.currentUser!!.uid
+    private fun listenForSessionChanges(uid: String) {
         sessionRef = FirebaseDatabase.getInstance().getReference("users").child(uid).child("session")
 
         sessionListener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
+                // Tambahkan pengecekan: jika listener sudah dilepas, jangan lakukan apa-apa
+                if (sessionListener == null) return
+
                 if (snapshot.exists()) {
                     val remoteSessionId = snapshot.child("sessionId").getValue(String::class.java)
-
                     val sharedPref = getSharedPreferences("AppSession", Context.MODE_PRIVATE)
                     val localSessionId = sharedPref.getString("SESSION_ID", null)
 
                     if (localSessionId != null && remoteSessionId != localSessionId) {
-                        // SESI TIDAK VALID! Logout paksa.
                         forceLogout()
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.w("SessionListener", "Listener was cancelled", error.toException())
+                // Error ini wajar terjadi saat logout, jadi kita bisa log jika user masih ada
+                if (auth.currentUser != null) {
+                    Log.w("SessionListener", "Listener was cancelled unexpectedly", error.toException())
+                }
             }
         }
-        sessionRef.addValueEventListener(sessionListener)
+        sessionRef?.addValueEventListener(sessionListener!!)
     }
 
     private fun forceLogout() {
-        // Hapus listener agar tidak terjadi loop
-        sessionRef.removeEventListener(sessionListener)
+        // --- Urutan yang lebih aman ---
+        // 1. Hapus listener terlebih dahulu
+        sessionListener?.let {
+            sessionRef?.removeEventListener(it)
+        }
+        // 2. Null-kan referensi agar tidak ada lagi pemanggilan onDataChange
+        sessionListener = null
+        sessionRef = null
 
-        // Logout dari Firebase
+        // 3. Logout dari Firebase
         auth.signOut()
 
-        // Hapus data lokal
+        // 4. Hapus data lokal
         val sharedPref = getSharedPreferences("AppSession", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
             clear()
             apply()
         }
 
-        // Tampilkan pesan dan kembali ke Login
+        // 5. Tampilkan pesan dan kembali ke Login
         Toast.makeText(this, "Your account is logged in from another device.", Toast.LENGTH_LONG).show()
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -113,9 +121,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Penting untuk menghapus listener saat activity dihancurkan
-        if (::sessionListener.isInitialized) {
-            sessionRef.removeEventListener(sessionListener)
+        // Hapus listener jika masih ada saat activity dihancurkan
+        sessionListener?.let {
+            sessionRef?.removeEventListener(it)
         }
     }
 }
