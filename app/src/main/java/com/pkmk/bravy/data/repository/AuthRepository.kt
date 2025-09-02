@@ -16,6 +16,7 @@ interface AuthRepository {
     suspend fun registerUser(user: User): Result<Unit>
     suspend fun createUserWithEmail(email: String, password: String): Result<String>
     suspend fun loginUser(email: String, password: String): Result<String>
+    suspend fun saveSessionData(token: String, sessionId: String): Result<Unit>
     suspend fun getUser(uid: String): Result<User>
     suspend fun updateUser(user: User): Result<Unit>
     suspend fun uploadProfilePicture(uid: String, imageFile: File): Result<String>

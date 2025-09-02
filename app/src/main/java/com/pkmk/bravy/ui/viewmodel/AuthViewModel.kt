@@ -103,4 +103,10 @@ class AuthViewModel @Inject constructor(
             _loginResult.postValue(result.map { })
         }
     }
+
+    fun saveSessionData(token: String, sessionId: String) {
+        viewModelScope.launch {
+            repository.saveSessionData(token, sessionId)
+        }
+    }
 }

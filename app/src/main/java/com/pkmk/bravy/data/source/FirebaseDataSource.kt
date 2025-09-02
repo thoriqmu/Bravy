@@ -99,6 +99,23 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
+    // Tambahkan fungsi ini
+    suspend fun saveSessionData(uid: String, token: String, sessionId: String) {
+        try {
+            val sessionData = mapOf("fcmToken" to token, "sessionId" to sessionId)
+            usersRef.child(uid).child("session").setValue(sessionData).await()
+            Log.d(TAG, "Saved session data for user $uid")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error saving session data for user $uid: ${e.message}")
+            throw e
+        }
+    }
+
+    // Tambahkan fungsi ini
+    fun getCurrentUserId(): String? {
+        return auth.currentUser?.uid
+    }
+
     suspend fun getUser(uid: String): User? {
         try {
             val snapshot = usersRef.child(uid).get().await()

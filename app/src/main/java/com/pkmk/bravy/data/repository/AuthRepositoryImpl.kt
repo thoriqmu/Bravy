@@ -96,6 +96,20 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveSessionData(token: String, sessionId: String): Result<Unit> {
+        return try {
+            val uid = dataSource.getCurrentUserId()
+            if (uid != null) {
+                dataSource.saveSessionData(uid, token, sessionId)
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("User not logged in"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun getUser(uid: String): Result<User> {
         return try {
             val user = dataSource.getUser(uid)

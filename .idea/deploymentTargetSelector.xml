@@ -15,12 +15,12 @@
           <targets>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\offic\.android\avd\Pixel_3a.avd" />
+                <DeviceId pluginId="PhysicalDevice" identifier="serial=RR8M40JX14N" />
               </handle>
             </Target>
             <Target type="DEFAULT_BOOT">
               <handle>
-                <DeviceId pluginId="PhysicalDevice" identifier="serial=RR8M40JX14N" />
+                <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\offic\.android\avd\Pixel_3a.avd" />
               </handle>
             </Target>
           </targets>

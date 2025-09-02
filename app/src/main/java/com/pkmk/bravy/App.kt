@@ -13,16 +13,5 @@ class App : Application() {
         super.onCreate()
 
         FirebaseApp.initializeApp(this)
-
-//        Log.d("BravyApp", "Application.onCreate() called") // Log untuk memastikan kelas ini berjalan
-//
-//        FirebaseApp.initializeApp(this)
-//        val firebaseAppCheck = FirebaseAppCheck.getInstance()
-//
-//        Log.d("BravyApp", "Forcing installation of DebugAppCheckProviderFactory")
-//
-//        firebaseAppCheck.installAppCheckProviderFactory(
-//            DebugAppCheckProviderFactory.getInstance()
-//        )
     }
 }
