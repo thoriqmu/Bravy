@@ -28,17 +28,34 @@ class NotificationAdapter : ListAdapter<AppNotification, NotificationAdapter.Not
     class NotificationViewHolder(private val binding: ItemNotificationBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(notification: AppNotification) {
             binding.tvNotificationTitle.text = notification.title
-            binding.tvNotificationDesc.text = notification.message
+            if (notification.type == "CHAT_MESSAGE"){
+                binding.tvNotificationDesc.text = "New message: ${notification.message}"
+            } else {
+                binding.tvNotificationDesc.text = notification.message
+            }
             binding.tvNotificationTime.text = formatTimestamp(notification.timestamp)
 
-            // Memuat gambar (masih menggunakan default jika tidak ada URL)
-            // Anda perlu menambahkan `senderImage` ke model AppNotification
-            // dan Cloud Function untuk fitur ini bekerja sepenuhnya.
-            Glide.with(binding.root.context)
-                .load(notification.senderImage)
-                .placeholder(R.drawable.default_picture)
-                .error(R.drawable.default_picture) // Tampilkan gambar default jika gagal
-                .into(binding.ivNotification)
+            when (notification.type) {
+                "LEARNING_REMINDER" -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_notification_clock)
+                }
+                "NEW_POST" -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_notification_new_post)
+                }
+                "NEW_COMMENT" -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_notification_new_comment)
+                }
+                "NEW_LIKE" -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_thumb_up_fill)
+                }
+                "CHAT_MESSAGE" -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_notification_new_chat)
+                }
+                else -> {
+                    binding.ivNotification.setImageResource(R.drawable.ic_notification_setting)
+                }
+            }
+
         }
 
         private fun formatTimestamp(timestamp: Long): String {

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="250dp"
-    android:layout_height="150dp"
+    android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
     app:cardCornerRadius="15dp">
 
@@ -56,10 +56,11 @@
                 android:id="@+id/tv_user_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
                 android:text="@string/user_desc"
                 android:textColor="@color/onSecondary"
                 android:textSize="12sp"
-                android:maxLines="2"
+                android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_weight="1"/>
 

@@ -240,9 +240,11 @@ class ChatFragment : Fragment() {
     private fun updateLikeButton(isLiked: Boolean) {
         val context = requireContext()
         if (isLiked) {
+            binding.btnLike.icon = ContextCompat.getDrawable(context, R.drawable.ic_thumb_up_fill)
             binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.primary))
             binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.primary))
         } else {
+            binding.btnLike.icon = ContextCompat.getDrawable(context, R.drawable.ic_thumb_up)
             binding.btnLike.setTextColor(ContextCompat.getColor(context, R.color.onBackground))
             binding.btnLike.iconTint = ColorStateList.valueOf(ContextCompat.getColor(context, R.color.onBackground))
         }
