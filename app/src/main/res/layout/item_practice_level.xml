@@ -36,38 +36,13 @@
             app:layout_constraintTop_toTopOf="@id/iv_level_thumbnail" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone"
-            android:id="@+id/layout_locked"
-            app:layout_constraintBottom_toBottomOf="@id/overlay_locked"
-            app:layout_constraintEnd_toEndOf="@id/overlay_locked"
-            app:layout_constraintStart_toStartOf="@id/overlay_locked"
-            app:layout_constraintTop_toTopOf="@id/overlay_locked">
-
-            <com.google.android.material.imageview.ShapeableImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_lock"
-                app:tint="@color/onPrimary" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_min_points"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_medium"
-                android:textColor="@color/onPrimary"
-                android:textSize="14sp"
-                tools:text="collect 15 points to unlock" />
-        </LinearLayout>
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="12dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_level_thumbnail">
 
             <com.google.android.material.textview.MaterialTextView
@@ -91,6 +66,35 @@
                 android:textAllCaps="false"
                 app:cornerRadius="15dp" />
 
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible"
+            android:id="@+id/layout_locked"
+            android:background="#90000000"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/onPrimary" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_min_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@color/onPrimary"
+                android:textSize="14sp"
+                tools:text="collect 15 points to unlock" />
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

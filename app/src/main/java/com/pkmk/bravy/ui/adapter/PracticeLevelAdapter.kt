@@ -3,6 +3,7 @@ package com.pkmk.bravy.ui.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.pkmk.bravy.data.model.LearningLevel
@@ -42,7 +43,6 @@ class PracticeLevelAdapter(
                     .load(url)
                     .into(binding.ivLevelThumbnail)
             }
-
             if (level.isLocked) {
                 binding.overlayLocked.visibility = View.VISIBLE
                 binding.layoutLocked.visibility = View.VISIBLE
@@ -51,11 +51,12 @@ class PracticeLevelAdapter(
                 binding.overlayLocked.visibility = View.GONE
                 binding.layoutLocked.visibility = View.GONE
                 binding.btnStartLearning.isEnabled = true
-            }
-
-            itemView.setOnClickListener {
-                if (!level.isLocked) {
-                    onLevelClick(level)
+                binding.btnStartLearning.setOnClickListener {
+                    if (level.status == "available") {
+                        onLevelClick(level)
+                    } else {
+                        Toast.makeText(itemView.context, "Level is not available yet, coming soon!", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }

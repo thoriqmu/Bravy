@@ -18,8 +18,7 @@ class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
-    // --- DAN UBAH BARIS INI ---
-    private val viewModel: NotificationsViewModel by activityViewModels() // Diubah dari viewModels()
+    private val viewModel: NotificationsViewModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
@@ -39,10 +38,7 @@ class NotificationsFragment : Fragment() {
                 else -> null
             }
         }.attach()
-    }
 
-    override fun onResume() {
-        super.onResume()
         viewModel.loadNotifications()
     }
 

@@ -35,14 +35,39 @@ class NotificationListFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
+        viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            if (isLoading) {
+                binding.shimmerViewContainer.visibility = View.VISIBLE
+                binding.rvNotification.visibility = View.GONE
+                binding.tvNoNotifications.visibility = View.GONE
+                binding.shimmerViewContainer.startShimmer()
+            } else {
+                binding.shimmerViewContainer.stopShimmer()
+                binding.shimmerViewContainer.visibility = View.GONE
+            }
+        }
+
         viewModel.notifications.observe(viewLifecycleOwner) { result ->
             result.onSuccess { allNotifications ->
                 val filteredList = when (filterType) {
-                    "PROGRESS" -> allNotifications.filter { it.type == "LEARNING_REMINDER" }
+                    "PROGRESS" -> allNotifications.filter { it.type == "PROGRESS" }
                     "CHAT" -> allNotifications.filter { it.type == "NEW_COMMENT" || it.type == "NEW_POST" || it.type == "NEW_LIKE" || it.type == "CHAT_MESSAGE" }
                     else -> allNotifications
                 }
-                notificationAdapter.submitList(filteredList)
+
+                if (filteredList.isEmpty()) {
+                    binding.rvNotification.visibility = View.GONE
+                    binding.tvNoNotifications.visibility = View.VISIBLE
+                    binding.tvNoNotifications.text = when (filterType) {
+                        "PROGRESS" -> "No notifications for Progress"
+                        "CHAT" -> "No notifications for Chat"
+                        else -> "No notifications"
+                    }
+                } else {
+                    binding.rvNotification.visibility = View.VISIBLE
+                    binding.tvNoNotifications.visibility = View.GONE
+                    notificationAdapter.submitList(filteredList)
+                }
             }
         }
     }

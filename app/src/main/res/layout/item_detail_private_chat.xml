@@ -64,15 +64,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="28dp"
                 android:visibility="gone">
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_play_audio_current"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="6dp"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_play" />
+                    app:icon="@drawable/ic_play"
+                    app:iconSize="36dp" />
 
                 <TextView
                     android:id="@+id/tv_audio_duration_current"
@@ -90,8 +94,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="4dp"
                 android:textColor="@color/surface"
                 android:textSize="11sp"
                 tools:text="12:00 PM" />
@@ -156,15 +160,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp"
+                android:paddingHorizontal="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="28dp"
                 android:visibility="gone">
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_play_audio_other"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:padding="6dp"
                     android:background="@android:color/transparent"
-                    android:src="@drawable/ic_play" />
+                    app:icon="@drawable/ic_play"
+                    app:iconSize="36dp" />
 
                 <TextView
                     android:id="@+id/tv_audio_duration_other"
@@ -181,8 +189,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|bottom"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginVertical="4dp"
                 android:textColor="@color/surface"
                 android:textSize="11sp"
                 tools:text="12:01 PM" />

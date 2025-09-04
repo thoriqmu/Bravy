@@ -74,11 +74,11 @@ class UserSettingFragment : Fragment() {
         }
 
         binding.btnTermsConditions.setOnClickListener {
-            showInfoDialog(getString(R.string.terms_and_conditions_title), getString(R.string.terms_and_conditions_full_text))
+            showInfoDialog(getString(R.string.terms_and_conditions_title), getString(R.string.terms_and_conditions_content))
         }
 
         binding.btnPrivacyPolicy.setOnClickListener {
-            showInfoDialog(getString(R.string.privacy_policy_title), getString(R.string.terms_and_conditions_full_text))
+            showInfoDialog(getString(R.string.privacy_policy_title), getString(R.string.privacy_policy_content))
         }
 
         binding.btnLogout.setOnClickListener {

@@ -81,7 +81,7 @@
             android:id="@+id/btn_attachment"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:background="@color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:padding="12dp"
             app:icon="@drawable/ic_add_media" />
 
@@ -126,8 +126,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="@color/secondary"
         android:visibility="gone"
+        android:background="@color/secondary"
+        tools:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/recyclerView"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -135,9 +136,11 @@
             android:id="@+id/btn_attach_image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:drawableTint="@color/onSecondary"
-            android:drawableTop="@drawable/ic_image"
+            android:background="?attr/selectableItemBackground"
+            android:padding="0dp"
+            app:icon="@drawable/ic_image"
+            app:iconTint="@color/onSecondary"
+            app:iconGravity="top"
             android:text="Image"
             android:textColor="@color/onSecondary"
             android:textAllCaps="false"/>
@@ -146,13 +149,45 @@
             android:id="@+id/btn_attach_voice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:drawableTint="@color/onSecondary"
-            android:drawableTop="@drawable/ic_voice"
+            android:background="?attr/selectableItemBackground"
+            android:padding="0dp"
+            app:icon="@drawable/ic_voice"
+            app:iconTint="@color/onSecondary"
+            app:iconGravity="top"
             android:text="Voice"
             android:textColor="@color/onSecondary"
             android:textAllCaps="false"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_media_preview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/primary"
+        android:orientation="horizontal"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="10dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_media_preview"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            tools:src="@drawable/level_1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_remove_media"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:padding="0dp"
+            android:background="?attr/selectableItemBackground"
+            app:icon="@drawable/ic_close"
+            app:iconTint="@color/white" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
