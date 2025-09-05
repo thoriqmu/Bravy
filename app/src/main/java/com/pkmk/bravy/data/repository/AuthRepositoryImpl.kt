@@ -6,12 +6,18 @@ import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.DailyMissionStatus
 import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.FriendInfo
+import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.source.FirebaseDataSource
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -351,5 +357,75 @@ class AuthRepositoryImpl @Inject constructor(
             Log.e(TAG, "Error fetching user notifications", e)
             Result.failure(e)
         }
+    }
+
+    override suspend fun getDailyMissionTopics(): Result<List<String>> {
+        return try {
+            Result.success(dataSource.getDailyMissionTopics())
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun updateUserMissionsAndStreak(uid: String, status: DailyMissionStatus, emotion: String, timestamp: Long, streak: Int, confidence: Int, wordCount: Int): Result<Unit> {
+        return try {
+            dataSource.updateUserMissionsAndStreak(uid, status, emotion, timestamp, streak, confidence, wordCount)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun completeDailyMission(missionType: MissionType): Result<Unit> {
+        val uid = dataSource.getCurrentUserId() ?: return Result.failure(Exception("User not logged in"))
+
+        return try {
+            val userResult = getUser(uid)
+            if (userResult.isFailure) return Result.failure(userResult.exceptionOrNull()!!)
+
+            val user = userResult.getOrThrow()
+            val todayDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+            val currentStatus = user.dailyMissionStatus?.takeIf { it.date == todayDateString }
+                ?: DailyMissionStatus(date = todayDateString)
+
+            val missionKey = missionType.name
+            val timestampField: String
+            val lastActionTimestamp: Long
+
+            when (missionType) {
+                MissionType.COMMUNITY -> {
+                    timestampField = "lastCommunityInteractionTimestamp"
+                    lastActionTimestamp = user.lastCommunityInteractionTimestamp
+                }
+                MissionType.CHAT -> {
+                    timestampField = "lastPrivateChatTimestamp"
+                    lastActionTimestamp = user.lastPrivateChatTimestamp
+                }
+                else -> return Result.success(Unit) // Abaikan untuk tipe speaking
+            }
+
+            // Cek apakah sudah diselesaikan hari ini
+            if (currentStatus.completedMissions[missionKey] == true && isSameDay(System.currentTimeMillis(), lastActionTimestamp)) {
+                return Result.success(Unit) // Sudah selesai, tidak perlu update
+            }
+
+            // Jika belum, update
+            val updatedMissions = currentStatus.completedMissions.toMutableMap().apply { this[missionKey] = true }
+            val newStatus = currentStatus.copy(completedMissions = updatedMissions)
+
+            dataSource.completeMission(uid, missionKey, newStatus, timestampField, System.currentTimeMillis())
+            Result.success(Unit)
+
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    private fun isSameDay(timestamp1: Long, timestamp2: Long): Boolean {
+        val cal1 = Calendar.getInstance().apply { timeInMillis = timestamp1 }
+        val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 }

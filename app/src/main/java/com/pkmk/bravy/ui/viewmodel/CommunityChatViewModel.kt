@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -186,5 +187,11 @@ class CommunityChatViewModel @Inject constructor(
     fun refreshCommunityPosts() {
         _isRefreshing.value = true
         loadCommunityPosts()
+    }
+
+    fun onPostCreated() {
+        viewModelScope.launch {
+            authRepository.completeDailyMission(MissionType.COMMUNITY)
+        }
     }
 }

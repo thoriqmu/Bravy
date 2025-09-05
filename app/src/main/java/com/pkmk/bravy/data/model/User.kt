@@ -17,7 +17,13 @@ data class User(
     val user_progress: Map<String, UserProgress>? = null,
     val friends: Map<String, Friend>? = null,
     val streak: Int = 0,
-    val dailyMood: DailyMood? = null,
     val points: Int = 0,
-    val createdAt: Long = 0L
+    val createdAt: Long = 0L,
+    val dailyMissionStatus: DailyMissionStatus? = null,
+    val lastSpeakingResult: String? = null,
+    val lastSpeakingTimestamp: Long = 0L,
+    val lastSpeakingConfidence: Int = 0,
+    val lastSpeakingWordCount: Int = 0,
+    val lastCommunityInteractionTimestamp: Long = 0L,
+    val lastPrivateChatTimestamp: Long = 0L
 ) : Parcelable

@@ -114,6 +114,7 @@ class CreateCommunityChatActivity : AppCompatActivity() {
 
             // ViewModel akan mengubah isLoading menjadi true di sini
             viewModel.createPost(title, description, selectedImageUri)
+            viewModel.onPostCreated()
         }
     }
 

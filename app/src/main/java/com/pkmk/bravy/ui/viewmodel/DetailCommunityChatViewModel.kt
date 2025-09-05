@@ -14,6 +14,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommentDetails
 import com.pkmk.bravy.data.model.CommunityPost
+import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -170,6 +171,10 @@ class DetailCommunityChatViewModel @Inject constructor(
                 // 3. Simpan ke database
                 val result = repository.postComment(postId, comment)
                 _commentPostStatus.postValue(result)
+
+                if (result.isSuccess) {
+                    repository.completeDailyMission(MissionType.COMMUNITY)
+                }
             } catch (e: Exception) {
                 _commentPostStatus.postValue(Result.failure(e))
             } finally {

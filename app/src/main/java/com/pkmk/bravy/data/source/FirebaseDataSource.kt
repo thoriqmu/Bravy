@@ -11,6 +11,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
+import com.pkmk.bravy.data.model.DailyMissionStatus
 import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.Friend
 import com.pkmk.bravy.data.model.Message
@@ -33,6 +34,7 @@ class FirebaseDataSource @Inject constructor(
     private val chatMediaRef = storage.getReference("chat_media")
     private val communityChatsRef = database.getReference("community_chats")
     private val notificationsRef = database.getReference("notifications")
+    private val dailyMissionsRef = database.getReference("daily_missions")
     private var latestPostListener: ValueEventListener? = null
     private var userChatsListener: ValueEventListener? = null
     private var userChatsRef: com.google.firebase.database.Query? = null
@@ -412,6 +414,39 @@ class FirebaseDataSource @Inject constructor(
     suspend fun getUserNotifications(uid: String): List<AppNotification> {
         val snapshot = notificationsRef.child(uid).orderByChild("timestamp").get().await()
         return snapshot.children.mapNotNull { it.getValue(AppNotification::class.java) }.reversed()
+    }
+
+    suspend fun getDailyMissionTopics(): List<String> {
+        val snapshot = dailyMissionsRef.child("topics").get().await()
+        return snapshot.children.mapNotNull { it.getValue(String::class.java) }
+    }
+
+    suspend fun updateUserMissionsAndStreak(
+        uid: String,
+        status: DailyMissionStatus,
+        emotion: String,
+        timestamp: Long,
+        streak: Int,
+        confidence: Int,
+        wordCount: Int
+    ) {
+        val updates = mapOf(
+            "/users/$uid/dailyMissionStatus" to status,
+            "/users/$uid/lastSpeakingResult" to emotion,
+            "/users/$uid/lastSpeakingTimestamp" to timestamp,
+            "/users/$uid/streak" to streak,
+            "/users/$uid/lastSpeakingConfidence" to confidence,
+            "/users/$uid/lastSpeakingWordCount" to wordCount
+        )
+        database.reference.updateChildren(updates).await()
+    }
+
+    suspend fun completeMission(uid: String, missionKey: String, newStatus: DailyMissionStatus, timestampField: String, timestampValue: Long) {
+        val updates = mapOf(
+            "/users/$uid/dailyMissionStatus" to newStatus,
+            "/users/$uid/$timestampField" to timestampValue
+        )
+        database.reference.updateChildren(updates).await()
     }
 
 }

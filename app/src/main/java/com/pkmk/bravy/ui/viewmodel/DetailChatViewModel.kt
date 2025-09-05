@@ -8,6 +8,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.pkmk.bravy.data.model.ChatItem // <-- Import baru
 import com.pkmk.bravy.data.model.Message
+import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -142,12 +143,10 @@ class DetailChatViewModel @Inject constructor(
                 timestamp = System.currentTimeMillis()
             )
             messageRef.setValue(message)
+            authRepository.completeDailyMission(MissionType.CHAT)
         }
     }
 
-    /**
-     * Membersihkan listener saat ViewModel dihancurkan untuk mencegah memory leak.
-     */
     override fun onCleared() {
         super.onCleared()
         if (::messagesRef.isInitialized && messagesListener != null) {

@@ -5,8 +5,10 @@ import com.pkmk.bravy.data.model.AppNotification
 import com.pkmk.bravy.data.model.Comment
 import com.pkmk.bravy.data.model.CommunityPost
 import com.pkmk.bravy.data.model.CommunityPostDetails
+import com.pkmk.bravy.data.model.DailyMissionStatus
 import com.pkmk.bravy.data.model.DailyMood
 import com.pkmk.bravy.data.model.FriendInfo
+import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
 import java.io.File
@@ -40,4 +42,7 @@ interface AuthRepository {
     fun listenForUserChats(uid: String, onChatsUpdated: () -> Unit)
     fun removeUserChatsListener()
     suspend fun getUserNotifications(): Result<List<AppNotification>>
+    suspend fun getDailyMissionTopics(): Result<List<String>>
+    suspend fun updateUserMissionsAndStreak(uid: String, status: DailyMissionStatus, emotion: String, timestamp: Long, streak: Int, confidence: Int, wordCount: Int): Result<Unit>
+    suspend fun completeDailyMission(missionType: MissionType): Result<Unit>
 }
