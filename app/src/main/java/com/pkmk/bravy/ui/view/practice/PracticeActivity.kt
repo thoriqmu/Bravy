@@ -8,10 +8,12 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.pkmk.bravy.R
+import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.databinding.ActivityPracticeBinding
 import com.pkmk.bravy.ui.adapter.PracticeLevelAdapter
 import com.pkmk.bravy.ui.viewmodel.PracticeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.Calendar
 
 @AndroidEntryPoint
 class PracticeActivity : AppCompatActivity() {
@@ -64,7 +66,7 @@ class PracticeActivity : AppCompatActivity() {
             result.onSuccess { user ->
                 binding.tvPoints.text = (user.points ?: 0).toString()
                 binding.tvStreak.text = (user.streak ?: 0).toString()
-                // Handle mood display if needed
+                updateDailyMoodUI(viewModel.userProfile.value?.getOrNull() ?: User())
             }.onFailure {
                 // Handle error
             }
@@ -77,5 +79,35 @@ class PracticeActivity : AppCompatActivity() {
                 Toast.makeText(this, "Gagal memuat level", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun updateDailyMoodUI(user: User?) {
+        if (user == null) {
+            binding.tvNoEmotion.visibility = View.VISIBLE
+            return
+        }
+
+        val today = Calendar.getInstance()
+        val lastCheckInCal = Calendar.getInstance().apply { timeInMillis = user.lastSpeakingTimestamp }
+
+        if (isSameDay(today, lastCheckInCal) && user.lastSpeakingResult != null){
+            binding.tvNoEmotion.visibility = View.GONE
+            binding.layoutWithEmotion.visibility = View.VISIBLE
+            binding.tvLastSpeakingResult.text = user.lastSpeakingResult
+            when (user.lastSpeakingResult.lowercase()) {
+                "happy" -> binding.ivEmotion.setImageResource(R.drawable.vector_happy)
+                "neutral" -> binding.ivEmotion.setImageResource(R.drawable.vector_neutral)
+                "sad" -> binding.ivEmotion.setImageResource(R.drawable.vector_sad)
+                else -> binding.ivEmotion.setImageResource(R.drawable.vector_happy)
+            }
+        } else {
+            binding.tvNoEmotion.visibility = View.VISIBLE
+            binding.layoutWithEmotion.visibility = View.GONE
+        }
+    }
+
+    private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
     }
 }

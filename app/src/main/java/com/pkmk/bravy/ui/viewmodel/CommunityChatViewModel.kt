@@ -43,20 +43,31 @@ class CommunityChatViewModel @Inject constructor(
     private val _isRefreshing = MutableLiveData<Boolean>()
     val isRefreshing: LiveData<Boolean> = _isRefreshing
 
+    fun setIsLoading(isLoading: Boolean) {
+        _isLoading.value = isLoading
+    }
+
     fun loadCurrentUser() {
+        _isLoading.value = true
         val uid = auth.currentUser?.uid
         if (uid == null) {
             _currentUser.postValue(Result.failure(Exception("User not logged in")))
+            _isLoading.value = false
             return
         }
         viewModelScope.launch {
-            _currentUser.postValue(authRepository.getUser(uid))
+            try {
+                _currentUser.postValue(authRepository.getUser(uid))
+            } catch (e: Exception) {
+                _currentUser.postValue(Result.failure(e))
+            } finally {
+                delay(2000)
+                _isLoading.postValue(false)
+            }
         }
     }
 
-
-    // --- TAMBAHKAN FUNGSI BARU ---
-    fun createPost(title: String, description: String, imageUri: Uri?) {
+    fun createPost(title: String, description: String, imageBytes: ByteArray?) {
         _isLoading.value = true
         val currentUid = auth.currentUser?.uid
         if (currentUid == null) {
@@ -68,12 +79,14 @@ class CommunityChatViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 var imageUrl: String? = null
-                // 1. Jika ada gambar, upload dulu ke Firebase Storage
-                if (imageUri != null) {
-                    val storageRef = FirebaseStorage.getInstance()
-                        .getReference("community_images/${UUID.randomUUID()}")
-                    imageUrl = storageRef.putFile(imageUri).await()
-                        .storage.downloadUrl.await().toString()
+                // 1. Jika ada gambar, unggah dulu
+                if (imageBytes != null) {
+                    val uploadResult = authRepository.uploadCommunityPostImage(imageBytes)
+                    if (uploadResult.isSuccess) {
+                        imageUrl = uploadResult.getOrThrow()
+                    } else {
+                        throw uploadResult.exceptionOrNull() ?: Exception("Image upload failed")
+                    }
                 }
 
                 // 2. Buat objek CommunityPost
@@ -81,7 +94,7 @@ class CommunityChatViewModel @Inject constructor(
                 val post = CommunityPost(
                     postId = postId,
                     authorUid = currentUid,
-                    title = title, // Kita akan gunakan baris pertama deskripsi sebagai judul
+                    title = title,
                     description = description,
                     imageUrl = imageUrl,
                     timestamp = System.currentTimeMillis()
@@ -91,10 +104,14 @@ class CommunityChatViewModel @Inject constructor(
                 val result = authRepository.createCommunityPost(post)
                 _postCreationStatus.postValue(result)
 
+                if (result.isSuccess) {
+                    onPostCreated()
+                }
+
             } catch (e: Exception) {
                 _postCreationStatus.postValue(Result.failure(e))
             } finally {
-                _isLoading.value = false
+                _isLoading.postValue(false)
             }
         }
     }

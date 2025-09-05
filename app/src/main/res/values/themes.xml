@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Theme.Bravy" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Bravy" parent="Theme.MaterialComponents.Light.NoActionBar">
 
         <item name="android:fontFamily">@font/poppins_regular</item>
 
@@ -31,5 +31,19 @@
     <style name="corner_rounded">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">15%</item>
+    </style>
+
+    <style name="current_user_chat">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+        <item name="cornerSizeTopLeft">10dp</item>
+    </style>
+
+    <style name="other_user_chat">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+        <item name="cornerSizeTopRight">10dp</item>
     </style>
 </resources>

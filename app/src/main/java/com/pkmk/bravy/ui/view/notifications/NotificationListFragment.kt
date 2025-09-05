@@ -50,7 +50,7 @@ class NotificationListFragment : Fragment() {
         viewModel.notifications.observe(viewLifecycleOwner) { result ->
             result.onSuccess { allNotifications ->
                 val filteredList = when (filterType) {
-                    "PROGRESS" -> allNotifications.filter { it.type == "PROGRESS" }
+                    "PROGRESS" -> allNotifications.filter { it.type == "PROGRESS" || it.type == "LEARNING_REMINDER" }
                     "CHAT" -> allNotifications.filter { it.type == "NEW_COMMENT" || it.type == "NEW_POST" || it.type == "NEW_LIKE" || it.type == "CHAT_MESSAGE" }
                     else -> allNotifications
                 }

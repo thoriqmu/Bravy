@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -257,6 +258,26 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun uploadChatImage(imageBytes: ByteArray): Result<String> {
+        return try {
+            val fileName = "${UUID.randomUUID()}.jpg"
+            val downloadUrl = dataSource.uploadChatImage(imageBytes, fileName)
+            Result.success(downloadUrl)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun uploadChatAudio(audioFile: File): Result<String> {
+        return try {
+            val fileName = "${UUID.randomUUID()}.3gp"
+            val downloadUrl = dataSource.uploadChatAudio(audioFile, fileName)
+            Result.success(downloadUrl)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit> {
         return try {
             dataSource.createChatRoomIfNeeded(chatId, currentUser, otherUser)
@@ -270,6 +291,16 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             dataSource.createCommunityPost(post)
             Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun uploadCommunityPostImage(imageBytes: ByteArray): Result<String> {
+        return try {
+            val fileName = "${UUID.randomUUID()}.jpg"
+            val downloadUrl = dataSource.uploadCommunityPostImage(imageBytes, fileName)
+            Result.success(downloadUrl)
         } catch (e: Exception) {
             Result.failure(e)
         }

@@ -71,7 +71,7 @@ class DetailCommunityChatActivity : AppCompatActivity() {
         setupObservers()
 
         viewModel.loadAndListenToPost(postId)
-        viewModel.loadAuthorDetails(authorId) // Minta ViewModel memuat data author
+        viewModel.loadAuthorDetails(authorId)
 
         if (focusComment) {
             focusCommentInput()

@@ -40,7 +40,12 @@ class MissionAdapter(private val onMissionClick: (MissionType) -> Unit) :
                 if (mission.isCompleted) R.drawable.ic_circle_check else R.drawable.ic_right
             )
 
-            itemView.setOnClickListener { onMissionClick(mission.type) }
+            itemView.setOnClickListener {
+                if (!mission.isCompleted) {
+                    onMissionClick(mission.type)
+                }
+            }
+            itemView.isClickable = !mission.isCompleted
         }
     }
 

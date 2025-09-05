@@ -31,8 +31,11 @@ interface AuthRepository {
     suspend fun acceptFriendRequest(accepterUid: String, senderUid: String): Result<Unit>
     suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit>
     suspend fun startPrivateChat(user1Uid: String, user2Uid: String): Result<String>
+    suspend fun uploadChatImage(imageBytes: ByteArray): Result<String>
+    suspend fun uploadChatAudio(audioFile: File): Result<String>
     suspend fun createChatRoomIfNeeded(chatId: String, currentUser: User, otherUser: User): Result<Unit>
     suspend fun createCommunityPost(post: CommunityPost): Result<Unit>
+    suspend fun uploadCommunityPostImage(imageBytes: ByteArray): Result<String>
     suspend fun getAllCommunityPostsWithDetails(): Result<List<CommunityPostDetails>>
     suspend fun updateUserStreakAndMood(uid: String, newStreak: Int, newMood: DailyMood): Result<Unit>
     suspend fun toggleLikeOnPost(postId: String, uid: String): Result<Unit>

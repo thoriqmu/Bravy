@@ -32,6 +32,8 @@ class FirebaseDataSource @Inject constructor(
     private val privateChatsRef = database.getReference("private_chats")
     private val storageRef = storage.getReference("picture")
     private val chatMediaRef = storage.getReference("chat_media")
+    private val audioRef = storage.getReference("chat_audio")
+    private val communityImagesRef = storage.getReference("community_images")
     private val communityChatsRef = database.getReference("community_chats")
     private val notificationsRef = database.getReference("notifications")
     private val dailyMissionsRef = database.getReference("daily_missions")
@@ -206,15 +208,25 @@ class FirebaseDataSource @Inject constructor(
         }
     }
 
-    suspend fun uploadChatMedia(mediaFile: File, mediaName: String): String {
-        try {
-            val fileRef = chatMediaRef.child(mediaName)
-            fileRef.putFile(android.net.Uri.fromFile(mediaFile)).await()
+    suspend fun uploadChatImage(imageBytes: ByteArray, fileName: String): String {
+        return try {
+            val fileRef = chatMediaRef.child(fileName)
+            fileRef.putBytes(imageBytes).await()
             val downloadUrl = fileRef.downloadUrl.await().toString()
-            Log.d(TAG, "Uploaded chat media $mediaName: $downloadUrl")
-            return downloadUrl
+            Log.d(TAG, "Uploaded chat image $fileName: $downloadUrl")
+            downloadUrl
         } catch (e: Exception) {
-            Log.e(TAG, "Error uploading chat media $mediaName: ${e.message}")
+            Log.e(TAG, "Error uploading chat image $fileName: ${e.message}")
+            throw e
+        }
+    }
+
+    suspend fun uploadChatAudio(audioFile: File, fileName: String): String {
+        try {
+            val fileRef = audioRef.child(fileName)
+            fileRef.putFile(android.net.Uri.fromFile(audioFile)).await()
+            return fileRef.downloadUrl.await().toString()
+        } catch (e: Exception) {
             throw e
         }
     }
@@ -366,6 +378,19 @@ class FirebaseDataSource @Inject constructor(
         updates["/users/${post.authorUid}/communities/$postId"] = true
 
         database.reference.updateChildren(updates).await()
+    }
+
+    suspend fun uploadCommunityPostImage(imageBytes: ByteArray, fileName: String): String {
+        return try {
+            val fileRef = communityImagesRef.child(fileName)
+            fileRef.putBytes(imageBytes).await()
+            val downloadUrl = fileRef.downloadUrl.await().toString()
+            Log.d(TAG, "Uploaded community image $fileName: $downloadUrl")
+            downloadUrl
+        } catch (e: Exception) {
+            Log.e(TAG, "Error uploading community image $fileName: ${e.message}")
+            throw e
+        }
     }
 
     // Fungsi untuk mendapatkan semua community post

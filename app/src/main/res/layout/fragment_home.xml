@@ -462,6 +462,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Mood: Happy 😊"
+                                    android:textColor="@color/onBackground"
                                     app:chipBackgroundColor="@color/white"
                                     app:chipStrokeWidth="0dp" />
 
@@ -470,6 +471,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Confidence: 68% 👌"
+                                    android:textColor="@color/onBackground"
                                     app:chipBackgroundColor="@color/white"
                                     app:chipStrokeWidth="0dp" />
 
@@ -478,6 +480,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="30s · 42 words  💬 "
+                                    android:textColor="@color/onBackground"
                                     app:chipBackgroundColor="@color/white"
                                     app:chipStrokeWidth="0dp" />
 
@@ -486,6 +489,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="1 Streak 🔥"
+                                    android:textColor="@color/onBackground"
                                     app:chipBackgroundColor="@color/white"
                                     app:chipStrokeWidth="0dp" />
 
