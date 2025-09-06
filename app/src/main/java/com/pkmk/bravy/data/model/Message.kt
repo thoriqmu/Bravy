@@ -10,5 +10,6 @@ data class Message(
     val type: String = "text", // "text", "image", "audio"
     val content: String = "",
     val timestamp: Long = 0L,
-    val reply_to: String? = null
+    val reply_to: String? = null,
+    val duration: Int = 0 // Untuk pesan audio, dalam detik
 ) : Parcelable

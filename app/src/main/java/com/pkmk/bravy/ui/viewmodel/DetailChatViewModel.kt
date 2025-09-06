@@ -1,5 +1,7 @@
 package com.pkmk.bravy.ui.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,9 +13,13 @@ import com.pkmk.bravy.data.model.Message
 import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
+import com.pkmk.bravy.util.ImageUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -37,6 +43,9 @@ class DetailChatViewModel @Inject constructor(
 
     private val _otherUser = MutableLiveData<User?>()
     val otherUser: LiveData<User?> = _otherUser
+
+    private val _isUploading = MutableLiveData<Boolean>()
+    val isUploading: LiveData<Boolean> = _isUploading
 
     fun setOtherUser(user: User) {
         _otherUser.value = user
@@ -117,19 +126,51 @@ class DetailChatViewModel @Inject constructor(
         return SimpleDateFormat("MMMM d, yyyy", Locale.getDefault()).format(Date(timestamp)) // e.g., "August 1, 2025"
     }
 
-    // Fungsi BARU untuk memuat data pengguna berdasarkan ID
-    fun loadChatDetails(otherUserId: String) {
+    fun sendImageMessage(chatId: String, imageUri: Uri, context: Context) {
+        _isUploading.value = true
         viewModelScope.launch {
-            val result = authRepository.getUser(otherUserId)
-            result.onSuccess {
-                _otherUser.postValue(it)
-            }.onFailure {
-                _error.postValue("Failed to load user details.")
+            try {
+                // Kompres gambar terlebih dahulu
+                val imageBytes = withContext(Dispatchers.IO) {
+                    ImageUtils.compressImage(context, imageUri)
+                }
+
+                // Upload gambar yang sudah dikompres
+                val uploadResult = authRepository.uploadChatImage(imageBytes)
+
+                uploadResult.onSuccess { imageUrl ->
+                    // Jika upload berhasil, kirim pesan dengan tipe 'image'
+                    sendMessage(chatId, imageUrl, "image")
+                }.onFailure {
+                    _error.postValue("Failed to upload image: ${it.message}")
+                }
+            } catch (e: Exception) {
+                _error.postValue("An error occurred: ${e.message}")
+            } finally {
+                _isUploading.postValue(false)
             }
         }
     }
 
-    fun sendMessage(chatId: String, content: String, type: String) {
+    fun sendVoiceNote(chatId: String, audioFile: File, durationInSeconds: Int) {
+        _isUploading.value = true
+        viewModelScope.launch {
+            try {
+                val uploadResult = authRepository.uploadChatAudio(audioFile)
+                uploadResult.onSuccess { audioUrl ->
+                    sendMessage(chatId, audioUrl, "audio", durationInSeconds)
+                }.onFailure {
+                    _error.postValue("Failed to upload voice note: ${it.message}")
+                }
+            } catch(e: Exception) {
+                _error.postValue("Error: ${e.message}")
+            } finally {
+                _isUploading.postValue(false)
+            }
+        }
+    }
+
+    fun sendMessage(chatId: String, content: String, type: String, duration: Int = 0) {
         // FUNGSI INI SEKARANG JAUH LEBIH SEDERHANA
         viewModelScope.launch {
             val currentUserId = auth.currentUser?.uid ?: return@launch
@@ -140,7 +181,8 @@ class DetailChatViewModel @Inject constructor(
                 sender_uid = currentUserId,
                 content = content,
                 type = type,
-                timestamp = System.currentTimeMillis()
+                timestamp = System.currentTimeMillis(),
+                duration = duration
             )
             messageRef.setValue(message)
             authRepository.completeDailyMission(MissionType.CHAT)

@@ -17,19 +17,20 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.DialogTermsAndConditionsBinding
 import com.pkmk.bravy.databinding.FragmentUserSettingBinding
 import com.pkmk.bravy.ui.view.auth.LoginActivity
 import com.pkmk.bravy.ui.view.auth.OnboardingActivity
+import com.pkmk.bravy.ui.viewmodel.ProfileViewModel
 
 class UserSettingFragment : Fragment() {
 
     private var _binding: FragmentUserSettingBinding? = null
     private val binding get() = _binding!!
-
-    // --- PERBAIKAN 1: Deklarasikan launcher di sini ---
+    private val viewModel: ProfileViewModel by activityViewModels()
     private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     // --- PERBAIKAN 2: Pindahkan inisialisasi ke onCreate ---
@@ -58,10 +59,9 @@ class UserSettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // --- PERBAIKAN 3: Panggil syncNotificationSwitch di sini ---
         syncNotificationSwitch()
         setupListeners()
+        setupObservers()
     }
 
     private fun setupListeners() {
@@ -91,6 +91,16 @@ class UserSettingFragment : Fragment() {
             } else {
                 saveNotificationPreference(false)
                 Toast.makeText(requireContext(), "Notifications disabled", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private fun setupObservers() {
+        viewModel.logoutResult.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                Toast.makeText(requireContext(), "Logging out...", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Logout failed. Please try again.", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -170,10 +180,7 @@ class UserSettingFragment : Fragment() {
             .setTitle("Log Out")
             .setMessage("Are you sure you want to log out?")
             .setPositiveButton("Yes") { _, _ ->
-                FirebaseAuth.getInstance().signOut()
-                val intent = Intent(requireContext(), OnboardingActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+                viewModel.logout()
             }
             .setNegativeButton("No", null)
             .show()

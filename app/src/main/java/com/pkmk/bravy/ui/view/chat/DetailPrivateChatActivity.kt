@@ -1,9 +1,13 @@
 package com.pkmk.bravy.ui.view.chat
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +19,7 @@ import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.databinding.ActivityDetailPrivateChatBinding
 import com.pkmk.bravy.ui.adapter.DetailPrivateChatAdapter
 import com.pkmk.bravy.ui.viewmodel.DetailChatViewModel
+import com.pkmk.bravy.util.VoiceNoteRecorder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -25,6 +30,28 @@ class DetailPrivateChatActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailPrivateChatBinding
     private val viewModel: DetailChatViewModel by viewModels()
     private lateinit var messageAdapter: DetailPrivateChatAdapter
+    private var selectedImageUri: Uri? = null
+    private lateinit var voiceRecorder: VoiceNoteRecorder
+    private var recordingStartTime: Long = 0
+
+    private val requestAudioPermission = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Toast.makeText(this, "Microphone permission is required for voice notes.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private val pickImageLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            binding.layoutMediaPreview.visibility = View.VISIBLE
+            binding.layoutAttachment.visibility = View.GONE
+            Glide.with(this).load(it).into(binding.ivMediaPreview)
+        }
+    }
 
     companion object {
         const val EXTRA_CHAT_ID = "extra_chat_id"
@@ -60,6 +87,9 @@ class DetailPrivateChatActivity : AppCompatActivity() {
         // Langsung berikan objek 'otherUser' ke ViewModel, tidak perlu load lagi
         viewModel.setOtherUser(otherUser)
         viewModel.listenForMessages(chatId)
+
+        voiceRecorder = VoiceNoteRecorder(this)
+        requestAudioPermission.launch(Manifest.permission.RECORD_AUDIO)
     }
 
     private fun setupRecyclerView() {
@@ -73,7 +103,11 @@ class DetailPrivateChatActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observer BARU untuk data pengguna lain
+        viewModel.isUploading.observe(this) { isUploading ->
+            binding.btnSend.isEnabled = !isUploading
+            // Anda bisa menambahkan ProgressBar di sini jika mau
+        }
+
         viewModel.otherUser.observe(this) { user ->
             user?.let {
                 binding.tvUserName.text = it.name
@@ -96,17 +130,34 @@ class DetailPrivateChatActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private fun setupListeners(chatId: String) {
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
+        binding.btnBack.setOnClickListener { finish() }
 
         binding.btnSend.setOnClickListener {
             val messageContent = binding.messageInput.text.toString().trim()
-            if (messageContent.isNotEmpty()) {
+
+            if (selectedImageUri != null) {
+                // Kirim gambar jika ada
+                viewModel.sendImageMessage(chatId, selectedImageUri!!, this)
+                // Reset UI
+                selectedImageUri = null
+                binding.layoutMediaPreview.visibility = View.GONE
+                binding.messageInput.text?.clear()
+            } else if (messageContent.isNotEmpty()) {
+                // Kirim teks jika tidak ada gambar
                 viewModel.sendMessage(chatId, messageContent, "text")
                 binding.messageInput.text?.clear()
             }
+        }
+
+        binding.btnAttachImage.setOnClickListener {
+            pickImageLauncher.launch("image/*")
+        }
+
+        binding.btnRemoveMedia.setOnClickListener {
+            selectedImageUri = null
+            binding.layoutMediaPreview.visibility = View.GONE
         }
 
         binding.btnAttachment.setOnClickListener {
@@ -115,6 +166,10 @@ class DetailPrivateChatActivity : AppCompatActivity() {
             } else {
                 View.VISIBLE
             }
+        }
+
+        binding.btnAttachVoice.setOnClickListener {
+            Toast.makeText(this, "Voice note feature coming soon", Toast.LENGTH_SHORT).show()
         }
     }
 

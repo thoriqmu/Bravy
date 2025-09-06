@@ -57,7 +57,9 @@
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:src="@drawable/level_1"
+                android:visibility="gone"
+                app:shapeAppearance="@style/current_user_chat"/>
 
             <LinearLayout
                 android:id="@+id/ll_audio_container_current"
@@ -153,7 +155,8 @@
                 android:layout_width="250dp"
                 android:layout_height="250dp"
                 android:scaleType="centerCrop"
-                android:visibility="gone" />
+                android:visibility="gone"
+                app:shapeAppearance="@style/other_user_chat"/>
 
             <LinearLayout
                 android:id="@+id/ll_audio_container_other"

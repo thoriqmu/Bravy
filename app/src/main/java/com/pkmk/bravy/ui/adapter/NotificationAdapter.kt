@@ -29,7 +29,11 @@ class NotificationAdapter : ListAdapter<AppNotification, NotificationAdapter.Not
         fun bind(notification: AppNotification) {
             binding.tvNotificationTitle.text = notification.title
             if (notification.type == "CHAT_MESSAGE"){
-                binding.tvNotificationDesc.text = "New message: ${notification.message}"
+                if (notification.message != null && notification.message.startsWith("https://", ignoreCase = true)) {
+                    binding.tvNotificationDesc.text = "New message: Image media"
+                } else {
+                    binding.tvNotificationDesc.text = "New message: ${notification.message}"
+                }
             } else {
                 binding.tvNotificationDesc.text = notification.message
             }

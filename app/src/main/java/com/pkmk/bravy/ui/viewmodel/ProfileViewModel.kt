@@ -57,13 +57,11 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logout() {
-        viewModelScope.launch(Dispatchers.Main) {
-            try {
-                firebaseAuth.signOut()
-                _logoutResult.postValue(true)
-            } catch (e: Exception) {
-                _logoutResult.postValue(false)
-            }
+        try {
+            firebaseAuth.signOut()
+            _logoutResult.postValue(true)
+        } catch (e: Exception) {
+            _logoutResult.postValue(false)
         }
     }
 

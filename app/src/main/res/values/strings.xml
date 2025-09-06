@@ -57,34 +57,37 @@
         \n\n<b>6. Contact Us</b>
         \nIf you have any questions, please contact us at: bravyourvoice@gmail.com
     </string>
+
     <string name="privacy_policy_content">
         Last updated: August 21, 2025
-        \nBravy (the “Application”) is developed and operated by BRAVY_ID (“we,” “our,” or “us”).
-        \nWe value your privacy. This document explains how we collect, use, and protect your personal data.
+        \nBRAVY (the “App”) is developed and operated by BRAVY_ID (“we,” “us,” or “our”).
+        \nWe are committed to protecting your privacy and ensuring compliance with Google Play requirements.
         \n\n<b>1. Information We Collect</b>
         \nAccount data: name, email, username, password.
         \nUsage data: in-app activity (chat, community, settings).
         \nDevice data: device type, operating system, notifications.
-        \nBiometric data (optional): facial expression analysis used only within the app and not shared with third parties.
+        \nBiometric data (optional): facial expression analysis used only within the app and never shared with third parties.
         \n\n<b>2. How We Use Your Data</b>
-        \nTo provide login and registration.
+        \nTo provide registration and login services.
         \nTo enable private and community chat features.
-        \nTo send notifications.
+        \nTo send relevant notifications.
         \nTo personalize learning experiences.
-        \nTo improve our services (e.g., facial expression analysis).
-        \n\n<b>3. Data Protection</b>
-        \nWe use reasonable technical and organizational measures to protect your data. However, no method of transmission over the Internet is 100% secure.
-        \n\n<b>4. Sharing of Data</b>
-        \nWe do not sell or trade your data. Data may be processed by third-party services (such as hosting providers or notification services) solely to support the Application.
-        \n\n<b>5. Your Rights</b>
+        \nTo improve services (e.g., Fluency Evaluator Assistant and facial expression analysis).
+        \n\n<b>3. Data Security</b>
+        \nWe apply reasonable technical and organizational measures (e.g., encryption, access control) to protect your data. However, no method of transmission over the Internet is 100% secure.
+        \n\n<b>4. Data Sharing</b>
+        \nWe do not sell or trade your data. Data may be processed by trusted third-party providers (such as hosting or notification services) solely to support the App’s functionality.
+        \n\n<b>5. Your Privacy Rights</b>
         \nYou have the right to:
-        \n\nAccess or update your account information.
-        \nRequest deletion of your account and data.
-        \nWithdraw consent at any time.
+        \n- Access or update your account information.
+        \n- Request deletion of your account and associated data (via in-app or web link).
+        \n- Withdraw consent at any time.
         \nFor privacy requests, please contact us at: bravyourvoice@gmail.com.
-        \n\n<b>6. Changes</b>
-        \nWe may update this Privacy Policy from time to time. The latest version will be published in the Application or on our official website.
-    </string>
+        \n\n<b>6. Data Retention &amp; Deletion</b>
+        \nWhen you request account deletion, all associated data will be permanently deleted, unless required for security, fraud prevention, or legal compliance.
+        \n\n<b>7. Policy Updates</b>
+        \nWe may update this Privacy Policy from time to time. The latest version will be available in the App and/or on our official website. Significant changes will be communicated to users.
+</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -92,31 +95,33 @@
     <string name="terms_and_conditions_full_text">
         <b>📑 Privacy Policy</b>
         \nLast updated: August 21, 2025
-        \nBravy (the “Application”) is developed and operated by BRAVY_ID (“we,” “our,” or “us”).
-        \nWe value your privacy. This document explains how we collect, use, and protect your personal data.
+        \nBRAVY (the “App”) is developed and operated by BRAVY_ID (“we,” “us,” or “our”).
+        \nWe are committed to protecting your privacy and ensuring compliance with Google Play requirements.
         \n\n<b>1. Information We Collect</b>
         \nAccount data: name, email, username, password.
         \nUsage data: in-app activity (chat, community, settings).
         \nDevice data: device type, operating system, notifications.
-        \nBiometric data (optional): facial expression analysis used only within the app and not shared with third parties.
+        \nBiometric data (optional): facial expression analysis used only within the app and never shared with third parties.
         \n\n<b>2. How We Use Your Data</b>
-        \nTo provide login and registration.
+        \nTo provide registration and login services.
         \nTo enable private and community chat features.
-        \nTo send notifications.
+        \nTo send relevant notifications.
         \nTo personalize learning experiences.
-        \nTo improve our services (e.g., facial expression analysis).
-        \n\n<b>3. Data Protection</b>
-        \nWe use reasonable technical and organizational measures to protect your data. However, no method of transmission over the Internet is 100% secure.
-        \n\n<b>4. Sharing of Data</b>
-        \nWe do not sell or trade your data. Data may be processed by third-party services (such as hosting providers or notification services) solely to support the Application.
-        \n\n<b>5. Your Rights</b>
+        \nTo improve services (e.g., Fluency Evaluator Assistant and facial expression analysis).
+        \n\n<b>3. Data Security</b>
+        \nWe apply reasonable technical and organizational measures (e.g., encryption, access control) to protect your data. However, no method of transmission over the Internet is 100% secure.
+        \n\n<b>4. Data Sharing</b>
+        \nWe do not sell or trade your data. Data may be processed by trusted third-party providers (such as hosting or notification services) solely to support the App’s functionality.
+        \n\n<b>5. Your Privacy Rights</b>
         \nYou have the right to:
-        \n\nAccess or update your account information.
-        \nRequest deletion of your account and data.
-        \nWithdraw consent at any time.
+        \n- Access or update your account information.
+        \n- Request deletion of your account and associated data (via in-app or web link).
+        \n- Withdraw consent at any time.
         \nFor privacy requests, please contact us at: bravyourvoice@gmail.com.
-        \n\n<b>6. Changes</b>
-        \nWe may update this Privacy Policy from time to time. The latest version will be published in the Application or on our official website.
+        \n\n<b>6. Data Retention &amp; Deletion</b>
+        \nWhen you request account deletion, all associated data will be permanently deleted, unless required for security, fraud prevention, or legal compliance.
+        \n\n<b>7. Policy Updates</b>
+        \nWe may update this Privacy Policy from time to time. The latest version will be available in the App and/or on our official website. Significant changes will be communicated to users.
         \n\n\n<b>📑 Terms and Conditions</b>
         \nLast updated: August 21, 2025
         \nBy using Bravy, you agree to the following Terms and Conditions.

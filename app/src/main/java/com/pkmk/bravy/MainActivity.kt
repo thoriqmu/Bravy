@@ -30,18 +30,39 @@ import javax.inject.Inject
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    // --- UBAH 'lateinit' menjadi nullable ---
     private var sessionListener: ValueEventListener? = null
     private var sessionRef: DatabaseReference? = null
-
-    private val viewModel: AuthViewModel by viewModels()
+    private var currentUid: String? = null
 
     @Inject
     lateinit var auth: FirebaseAuth
 
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        val user = firebaseAuth.currentUser
+        if (user == null) {
+            // Pengguna baru saja logout
+            Log.d("MainActivity", "User logged out. Cleaning up listeners and navigating.")
+
+            // 1. Hapus listener sebelum melakukan hal lain
+            removeSessionListener()
+
+            // 2. Hapus data sesi lokal
+            val sharedPref = getSharedPreferences("AppSession", Context.MODE_PRIVATE)
+            with(sharedPref.edit()) {
+                clear()
+                apply()
+            }
+
+            // 3. Arahkan ke halaman onboarding
+            val intent = Intent(this, OnboardingActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -56,10 +77,36 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         navView.setupWithNavController(navController)
 
-        // Panggil listenForSessionChanges hanya jika user ada
         auth.currentUser?.let {
-            listenForSessionChanges(it.uid)
+            currentUid = it.uid
+            listenForSessionChanges(currentUid!!)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        auth.addAuthStateListener(authStateListener)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        auth.removeAuthStateListener(authStateListener)
+        removeSessionListener()
+    }
+
+    private fun forceLogout() {
+        Toast.makeText(this, "Your account is logged in from another device.", Toast.LENGTH_LONG).show()
+        auth.signOut()
+    }
+
+    private fun removeSessionListener() {
+        sessionListener?.let { listener ->
+            sessionRef?.removeEventListener(listener)
+            Log.d("MainActivity", "Session listener removed for UID: $currentUid")
+        }
+        sessionListener = null
+        sessionRef = null
+        currentUid = null
     }
 
     private fun listenForSessionChanges(uid: String) {
@@ -91,39 +138,35 @@ class MainActivity : AppCompatActivity() {
         sessionRef?.addValueEventListener(sessionListener!!)
     }
 
-    private fun forceLogout() {
-        // --- Urutan yang lebih aman ---
-        // 1. Hapus listener terlebih dahulu
-        sessionListener?.let {
-            sessionRef?.removeEventListener(it)
-        }
-        // 2. Null-kan referensi agar tidak ada lagi pemanggilan onDataChange
-        sessionListener = null
-        sessionRef = null
-
-        // 3. Logout dari Firebase
-        auth.signOut()
-
-        // 4. Hapus data lokal
-        val sharedPref = getSharedPreferences("AppSession", Context.MODE_PRIVATE)
-        with(sharedPref.edit()) {
-            clear()
-            apply()
-        }
-
-        // 5. Tampilkan pesan dan kembali ke Login
-        Toast.makeText(this, "Your account is logged in from another device.", Toast.LENGTH_LONG).show()
-        val intent = Intent(this, LoginActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-    }
+//    private fun forceLogout() {
+//        // --- Urutan yang lebih aman ---
+//        // 1. Hapus listener terlebih dahulu
+//        sessionListener?.let {
+//            sessionRef?.removeEventListener(it)
+//        }
+//        // 2. Null-kan referensi agar tidak ada lagi pemanggilan onDataChange
+//        sessionListener = null
+//        sessionRef = null
+//
+//        // 3. Logout dari Firebase
+//        auth.signOut()
+//
+//        // 4. Hapus data lokal
+//        val sharedPref = getSharedPreferences("AppSession", Context.MODE_PRIVATE)
+//        with(sharedPref.edit()) {
+//            clear()
+//            apply()
+//        }
+//
+//        // 5. Tampilkan pesan dan kembali ke Login
+//        Toast.makeText(this, "Your account is logged in from another device.", Toast.LENGTH_LONG).show()
+//        val intent = Intent(this, LoginActivity::class.java)
+//        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//        startActivity(intent)
+//        finish()
+//    }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Hapus listener jika masih ada saat activity dihancurkan
-        sessionListener?.let {
-            sessionRef?.removeEventListener(it)
-        }
     }
 }
