@@ -67,7 +67,7 @@ class HomeViewModel @Inject constructor(
                 _learningProgress.postValue(Result.failure(e))
             } finally {
                 // Tambahkan delay 2 detik (2000 milidetik)
-                kotlinx.coroutines.delay(2000)
+                kotlinx.coroutines.delay(1000)
                 _isLoading.postValue(false) // Selesaikan loading setelah delay
             }
         }
@@ -171,7 +171,6 @@ class HomeViewModel @Inject constructor(
             }
         }.start()
     }
-
     fun stopDailyMissionCountdown() {
         countDownTimer?.cancel()
     }

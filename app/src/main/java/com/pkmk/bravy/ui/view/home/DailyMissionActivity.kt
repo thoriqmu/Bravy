@@ -33,9 +33,14 @@ import com.pkmk.bravy.databinding.DialogMissionResultBinding
 import com.pkmk.bravy.ml.AnxietyClassifier // Menggunakan classifier yang sama seperti AnalysisActivity
 import com.pkmk.bravy.ui.viewmodel.DailyMissionViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import android.os.Handler
+import android.os.Looper
+import com.pkmk.bravy.databinding.DialogInactivityPromptBinding
 
 @AndroidEntryPoint
 class DailyMissionActivity : AppCompatActivity() {
@@ -54,6 +59,10 @@ class DailyMissionActivity : AppCompatActivity() {
     private var speechRecognizer: SpeechRecognizer? = null
     private var spokenText: String = ""
 
+    private val silenceHandler = Handler(Looper.getMainLooper())
+    private var inactivityDialog: Dialog? = null
+    private val silenceRunnable = Runnable { showInactivityDialog() }
+
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             if (permissions[Manifest.permission.CAMERA] == true && permissions[Manifest.permission.RECORD_AUDIO] == true) {
@@ -70,8 +79,10 @@ class DailyMissionActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         cameraExecutor = Executors.newSingleThreadExecutor()
-        // Inisialisasi classifier Anda di sini
-        anxietyClassifier = AnxietyClassifier(this)
+        lifecycleScope.launch(Dispatchers.IO) {
+            // PERBAIKAN 1: Inisialisasi classifier di background thread
+            anxietyClassifier = AnxietyClassifier(this@DailyMissionActivity)
+        }
 
         requestMultiplePermissions.launch(arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO))
     }
@@ -93,7 +104,10 @@ class DailyMissionActivity : AppCompatActivity() {
                         if (isAnalyzing) {
                             val bitmap = imageProxy.toBitmap()
                             if (bitmap != null) {
-                                classifyFace(bitmap)
+                                // PERBAIKAN 2: Pastikan klasifikasi berjalan di dalam coroutine
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    classifyFace(bitmap)
+                                }
                             }
                         }
                         imageProxy.close()
@@ -113,10 +127,11 @@ class DailyMissionActivity : AppCompatActivity() {
     }
 
     private fun classifyFace(bitmap: Bitmap) {
-        // Logika klasifikasi wajah sama seperti di AnalysisActivity
-        val confidenceScore = anxietyClassifier?.classify(bitmap) ?: 0
-        totalConfidenceScore += confidenceScore
-        analysisFrameCount++
+        anxietyClassifier?.let { classifier ->
+            val confidenceScore = classifier.classify(bitmap)
+            totalConfidenceScore += confidenceScore
+            analysisFrameCount++
+        }
     }
 
     private fun startPreparationCountdown() {
@@ -136,15 +151,16 @@ class DailyMissionActivity : AppCompatActivity() {
     }
 
     private fun startMissionCountdown() {
-        isAnalyzing = true
+        isAnalyzing = true // <-- Analisis dimulai
         startSpeechRecognition()
+        resetSilenceTimer()
 
         val topic = intent.getStringExtra("TOPIC") ?: "Speak about your day!"
         binding.tvTopic.text = topic
         binding.tvTopic.visibility = View.VISIBLE
         binding.tvInstruction.text = "Start Speaking!"
 
-        missionCountdown = object : CountDownTimer(30000, 1000) { // 30 detik
+        missionCountdown = object : CountDownTimer(30000, 1000) {
             override fun onTick(millisUntilFinished: Long) {
                 if (isFinishing) return
                 binding.tvCountdown.text = "${millisUntilFinished / 1000}"
@@ -152,8 +168,9 @@ class DailyMissionActivity : AppCompatActivity() {
 
             override fun onFinish() {
                 if (isFinishing) return
+                stopSilenceTimer()
                 isAnalyzing = false
-                speechRecognizer?.stopListening() // Hentikan rekam suara
+                speechRecognizer?.stopListening()
                 ProcessCameraProvider.getInstance(this@DailyMissionActivity).get().unbindAll()
                 binding.tvCountdown.visibility = View.GONE
                 binding.tvInstruction.text = "Analyzing your result..."
@@ -187,13 +204,86 @@ class DailyMissionActivity : AppCompatActivity() {
                 override fun onError(error: Int) { Log.e("SpeechRecognizer", "Error: $error") }
                 override fun onReadyForSpeech(params: Bundle?) {}
                 override fun onBeginningOfSpeech() {}
-                override fun onRmsChanged(rmsdB: Float) {}
+                override fun onRmsChanged(rmsdB: Float) {
+                    if (rmsdB > 2.5f) {
+                        resetSilenceTimer()
+                    }
+                }
                 override fun onBufferReceived(buffer: ByteArray?) {}
                 override fun onEndOfSpeech() {}
                 override fun onEvent(eventType: Int, params: Bundle?) {}
             })
             startListening(intent)
         }
+    }
+
+    private fun resetSilenceTimer() {
+        silenceHandler.removeCallbacks(silenceRunnable)
+        silenceHandler.postDelayed(silenceRunnable, 7000) // 7 detik
+    }
+
+    private fun stopSilenceTimer() {
+        silenceHandler.removeCallbacks(silenceRunnable)
+    }
+
+    private fun showInactivityDialog() {
+        if (isFinishing || (inactivityDialog?.isShowing == true)) {
+            return
+        }
+
+        missionCountdown?.cancel()
+        isAnalyzing = false
+        stopSilenceTimer()
+
+        val dialogBinding = DialogInactivityPromptBinding.inflate(LayoutInflater.from(this))
+        inactivityDialog = Dialog(this, R.style.Theme_Bravy).apply { // Gunakan constructor default, atau R.style.Theme_Bravy jika sudah di-setting transparan
+            setContentView(dialogBinding.root)
+            setCancelable(false)
+
+            // ================== INI KUNCINYA ==================
+            // Membuat window dialog menjadi transparan
+            window?.setBackgroundDrawableResource(android.R.color.transparent)
+            // ====================================================
+        }
+
+        dialogBinding.btnExitSession.setOnClickListener {
+            inactivityDialog?.dismiss()
+            finish()
+        }
+
+        dialogBinding.btnRetrySession.setOnClickListener {
+            inactivityDialog?.dismiss()
+
+            val remainingTime = binding.tvCountdown.text.toString().toLongOrNull() ?: 0
+            if (remainingTime > 0) {
+                isAnalyzing = true
+                resumeMissionCountdown(remainingTime * 1000)
+            }
+            resetSilenceTimer()
+        }
+
+        inactivityDialog?.show()
+    }
+
+    // Fungsi baru untuk melanjutkan countdown
+    private fun resumeMissionCountdown(remainingMillis: Long) {
+        missionCountdown = object : CountDownTimer(remainingMillis, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                if (isFinishing) return
+                binding.tvCountdown.text = "${millisUntilFinished / 1000}"
+            }
+
+            override fun onFinish() {
+                if (isFinishing) return
+                stopSilenceTimer()
+                isAnalyzing = false
+                speechRecognizer?.stopListening()
+                ProcessCameraProvider.getInstance(this@DailyMissionActivity).get().unbindAll()
+                binding.tvCountdown.visibility = View.GONE
+                binding.tvInstruction.text = "Analyzing your result..."
+                calculateAndShowResult()
+            }
+        }.start()
     }
 
     private fun calculateAndShowResult() {
@@ -220,6 +310,8 @@ class DailyMissionActivity : AppCompatActivity() {
     }
 
     private fun showResultDialog(emotion: String, confidence: Int, wordCount: Int) {
+        if (isFinishing) return // Tambahkan pengecekan ini untuk mencegah dialog muncul di activity yang sudah hancur
+
         val dialogBinding = DialogMissionResultBinding.inflate(LayoutInflater.from(this))
         val dialog = Dialog(this, R.style.Theme_Bravy)
         dialog.setContentView(dialogBinding.root)
@@ -235,42 +327,52 @@ class DailyMissionActivity : AppCompatActivity() {
         dialogBinding.ivResultEmotion.setImageResource(emotionDrawable)
 
         dialogBinding.btnCloseDialog.setOnClickListener {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                // TUNGGU di lifecycleScope UI, bukan langsung finish
-                lifecycleScope.launch {
-                    val result = runCatching {
-                        viewModel.completeSpeakingMission(uid, emotion, confidence, wordCount)
-                    }.getOrElse { it } // biar gampang catch nested
-
-//                    if (result is Result<*>) {
-//                        if (result.isSuccess) {
-//                            Toast.makeText(this@DailyMissionActivity, "Mission saved!", Toast.LENGTH_SHORT).show()
-//                        } else {
-//                            Toast.makeText(this@DailyMissionActivity, "Failed to save mission.", Toast.LENGTH_SHORT).show()
-//                        }
-//                    }
-                    dialog.dismiss()
-                    finish()
-                }
-            } else {
-                dialog.dismiss()
-                finish()
-            }
+            dialog.dismiss() // Tutup dialog dulu
+            saveAndFinish(emotion, confidence, wordCount) // Panggil fungsi baru
         }
-
-
-        dialog.show()
 
         dialog.setCancelable(false)
         dialog.show()
     }
 
+    // PERBAIKAN 3: Fungsi baru untuk menyimpan hasil dan menutup activity dengan aman
+    private fun saveAndFinish(emotion: String, confidence: Int, wordCount: Int) {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid
+        if (uid == null) {
+            finish() // Jika tidak ada user, langsung tutup
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                viewModel.completeSpeakingMission(uid, emotion, confidence, wordCount)
+                // Pindah ke UI thread untuk menampilkan Toast
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DailyMissionActivity, "Mission saved!", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Log.e("DailyMissionActivity", "Failed to save mission", e)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@DailyMissionActivity, "Failed to save mission.", Toast.LENGTH_SHORT).show()
+                }
+            } finally {
+                // Pastikan finish() dipanggil di UI thread setelah semua selesai
+                withContext(Dispatchers.Main) {
+                    finish()
+                }
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        stopSilenceTimer() // Pastikan handler dihentikan
+        inactivityDialog?.dismiss() // Hapus dialog jika masih ada
         prepCountdown?.cancel()
         missionCountdown?.cancel()
-        cameraExecutor.shutdownNow()
+        if (::cameraExecutor.isInitialized && !cameraExecutor.isShutdown) {
+            cameraExecutor.shutdown()
+        }
         anxietyClassifier?.close()
         speechRecognizer?.destroy()
     }

@@ -12,15 +12,18 @@ import org.tensorflow.lite.support.image.TensorImage
 import org.tensorflow.lite.support.image.ops.ResizeOp
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 import java.io.IOException
+import java.nio.ByteBuffer
 
 class AnxietyClassifier(private val context: Context) {
 
     private var interpreter: Interpreter? = null
     private var inputImageWidth: Int = 0
     private var inputImageHeight: Int = 0
-    private val modelInputSize = 4 * 224 * 224 * 3 // Float32 * Lebar * Tinggi * 3 Channel (RGB)
 
-    // Definisikan label sesuai dengan urutan output model Anda
+    // PERBAIKAN 1: Tambahkan flag untuk melacak status interpreter
+    @Volatile
+    private var isClosed = false
+
     private val labels = listOf("very relaxed", "relaxed", "mildly anxious", "anxious", "very anxious")
 
     init {
@@ -30,29 +33,26 @@ class AnxietyClassifier(private val context: Context) {
             options.setNumThreads(4)
             interpreter = Interpreter(model, options)
 
-            // Dapatkan dimensi input dari model
             val inputShape = interpreter?.getInputTensor(0)?.shape()
             if (inputShape != null && inputShape.size >= 3) {
                 inputImageHeight = inputShape[1]
                 inputImageWidth = inputShape[2]
             } else {
-                // Fallback jika tidak bisa membaca shape
                 inputImageHeight = 224
                 inputImageWidth = 224
             }
-
         } catch (e: IOException) {
             Log.e("AnxietyClassifier", "Error initializing TFLite Interpreter.", e)
         }
     }
 
-    fun classify(bitmap: Bitmap): Int {
-        if (interpreter == null) {
-            Log.e("AnxietyClassifier", "Classifier not initialized.")
+    // PERBAIKAN 2: Gunakan synchronized untuk memastikan thread-safety
+    fun classify(bitmap: Bitmap): Int = synchronized(this) {
+        if (interpreter == null || isClosed) {
+            Log.e("AnxietyClassifier", "Classifier not initialized or has been closed.")
             return 0
         }
 
-        // 1. Preprocess the image
         val imageProcessor = ImageProcessor.Builder()
             .add(ResizeOp(inputImageHeight, inputImageWidth, ResizeOp.ResizeMethod.BILINEAR))
             .add(NormalizeOp(0f, 255f))
@@ -62,26 +62,24 @@ class AnxietyClassifier(private val context: Context) {
         tensorImage.load(bitmap)
         tensorImage = imageProcessor.process(tensorImage)
 
-        // 2. Prepare the output buffer
         val outputBuffer = TensorBuffer.createFixedSize(intArrayOf(1, labels.size), DataType.FLOAT32)
 
-        // 3. Run inference
         try {
-            interpreter?.run(tensorImage.buffer, outputBuffer.buffer.rewind())
+            // PERBAIKAN 3: Gunakan buffer.rewind() di dalam blok try-catch
+            val inputBuffer: ByteBuffer = tensorImage.buffer
+            interpreter?.run(inputBuffer, outputBuffer.buffer.rewind())
         } catch (e: Exception) {
             Log.e("AnxietyClassifier", "Error running model inference.", e)
             return 0
         }
 
-
-        // 4. Post-process the output
         val scores = outputBuffer.floatArray
         var maxScore = -1f
         var maxIndex = -1
-        for (i in scores.indices) {
-            if (scores[i] > maxScore) {
-                maxScore = scores[i]
-                maxIndex = i
+        scores.forEachIndexed { index, score ->
+            if (score > maxScore) {
+                maxScore = score
+                maxIndex = index
             }
         }
 
@@ -102,7 +100,12 @@ class AnxietyClassifier(private val context: Context) {
         }
     }
 
-    fun close() {
-        interpreter?.close()
+    // PERBAIKAN 4: Gunakan synchronized untuk menutup dengan aman
+    fun close() = synchronized(this) {
+        if (!isClosed) {
+            interpreter?.close()
+            interpreter = null
+            isClosed = true
+        }
     }
 }
