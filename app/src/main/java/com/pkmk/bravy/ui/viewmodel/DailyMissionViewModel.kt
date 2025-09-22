@@ -18,43 +18,42 @@ class DailyMissionViewModel @Inject constructor(
     private val repository: AuthRepository
 ) : ViewModel() {
 
-    fun completeSpeakingMission(uid: String, emotion: String, confidence: Int, wordCount: Int) {
-        viewModelScope.launch {
-            val userResult = repository.getUser(uid)
-            if (userResult.isSuccess) {
-                val user = userResult.getOrThrow()
-                val today = Calendar.getInstance()
-                val todayDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+    suspend fun completeSpeakingMission(
+        uid: String,
+        emotion: String,
+        confidence: Int,
+        wordCount: Int
+    ): Result<Unit> = runCatching {
+        val userResult = repository.getUser(uid)
+        if (!userResult.isSuccess) error("getUser failed: ${userResult.exceptionOrNull()?.message}")
 
-                // Cek status misi hari ini
-                val currentStatus = user.dailyMissionStatus?.takeIf { it.date == todayDateString }
-                    ?: DailyMissionStatus(date = todayDateString)
+        val user = userResult.getOrThrow()
 
-                // Cek apakah misi speaking sudah selesai hari ini untuk mencegah streak ganda
-                val wasAlreadyCompleted = currentStatus.completedMissions["SPEAKING"] == true
+        val todayDateString = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val currentStatus = user.dailyMissionStatus?.takeIf { it.date == todayDateString }
+            ?: DailyMissionStatus(date = todayDateString)
 
-                // Update status misi
-                val updatedMissions = currentStatus.completedMissions.toMutableMap()
-                updatedMissions["SPEAKING"] = true
-                val newStatus = currentStatus.copy(completedMissions = updatedMissions)
-
-                // Hitung streak baru
-                val newStreak = if (!wasAlreadyCompleted) {
-                    val lastCheckIn = user.lastSpeakingTimestamp
-                    val lastCheckInCal = Calendar.getInstance().apply { timeInMillis = lastCheckIn }
-
-                    when {
-                        isYesterday(today, lastCheckInCal) -> user.streak + 1
-                        isSameDay(today, lastCheckInCal) -> user.streak
-                        else -> 1
-                    }
-                } else {
-                    user.streak // Streak tidak berubah jika misi sudah selesai hari ini
-                }
-
-                repository.updateUserMissionsAndStreak(uid, newStatus, emotion, System.currentTimeMillis(), newStreak, confidence, wordCount)
-            }
+        val wasAlreadyCompleted = currentStatus.completedMissions["SPEAKING"] == true
+        val updatedMissions = currentStatus.completedMissions.toMutableMap().apply {
+            this["SPEAKING"] = true
         }
+        val newStatus = currentStatus.copy(completedMissions = updatedMissions)
+
+        val newStreak = if (!wasAlreadyCompleted) {
+            val lastCheckIn = user.lastSpeakingTimestamp ?: 0L
+            val lastCheckInCal = Calendar.getInstance().apply { timeInMillis = lastCheckIn }
+            val today = Calendar.getInstance()
+            when {
+                isYesterday(today, lastCheckInCal) -> user.streak + 1
+                isSameDay(today, lastCheckInCal) -> user.streak
+                else -> 1
+            }
+        } else user.streak
+
+        repository.updateUserMissionsAndStreak(
+            uid, newStatus, emotion, System.currentTimeMillis(),
+            newStreak, confidence, wordCount
+        )
     }
 
     private fun isSameDay(cal1: Calendar, cal2: Calendar): Boolean {

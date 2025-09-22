@@ -15,12 +15,13 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.pkmk.bravy.MainActivity
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.ActivityLoginBinding
+import com.pkmk.bravy.ui.view.base.BaseActivity
 import com.pkmk.bravy.ui.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.UUID
 
 @AndroidEntryPoint
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : BaseActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val viewModel: AuthViewModel by viewModels()
 

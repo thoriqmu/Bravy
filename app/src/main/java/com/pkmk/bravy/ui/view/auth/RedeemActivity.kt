@@ -2,20 +2,19 @@ package com.pkmk.bravy.ui.view.auth
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.ActivityRedeemBinding
+import com.pkmk.bravy.ui.view.base.BaseActivity
 import com.pkmk.bravy.ui.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class RedeemActivity : AppCompatActivity() {
+class RedeemActivity : BaseActivity() {
+
     private lateinit var binding: ActivityRedeemBinding
     private val viewModel: AuthViewModel by viewModels()
 
@@ -26,11 +25,10 @@ class RedeemActivity : AppCompatActivity() {
 
         binding.btnRedeem.setOnClickListener {
             val code = binding.codeInput.text.toString().trim()
-            if (code.isEmpty()) {
-                binding.codeInputLayout.error = "Please enter a code"
+            if (code.length < 4) { // Pastikan kode diisi 6 digit
+                Toast.makeText(this, "Please enter a 4-digit code", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            binding.codeInputLayout.error = null
             viewModel.validateRedeemCode(code)
         }
 
@@ -38,6 +36,21 @@ class RedeemActivity : AppCompatActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
+
+        binding.btnShopee.setOnClickListener {
+            val shopeeUrl = "https://shopee.co.id/bravy_id"
+            try {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    data = Uri.parse(shopeeUrl)
+                    setPackage("com.shopee.id") // package Shopee Indonesia
+                }
+                startActivity(intent)
+            } catch (e: Exception) {
+                val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(shopeeUrl))
+                startActivity(browserIntent)
+            }
+        }
+
 
         viewModel.redeemResult.observe(this) { result ->
             result.onSuccess { redeemCode ->
@@ -47,11 +60,14 @@ class RedeemActivity : AppCompatActivity() {
                 }
                 startActivity(intent)
             }.onFailure { exception ->
-                binding.codeInputLayout.error = when (exception.message) {
+                // Tampilkan pesan error dengan Toast atau cara lain
+                val errorMessage = when (exception.message) {
                     "Redeem code has been used" -> "Redeem code has been used"
                     "Invalid redeem code" -> "Invalid redeem code"
                     else -> "Error: ${exception.message}"
                 }
+                Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
+                binding.codeInput.setText("") // Kosongkan input jika salah
             }
         }
     }

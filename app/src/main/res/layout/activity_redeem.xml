@@ -1,110 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_vertical"
+    android:fillViewport="true"
     tools:context=".ui.view.auth.RedeemActivity">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/vector_redeem"
-        android:layout_gravity="center_horizontal"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_bold"
-        android:text="Redeem Code"
-        android:textSize="32sp"
-        android:textColor="@color/onBackground"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="20dp"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/poppins_medium"
-        android:text="Code"
-        android:textSize="16sp"
-        android:textColor="@color/onBackground"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="20dp"/>
-
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/code_input_layout"
+    <RelativeLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        app:hintEnabled="false"
-        app:boxStrokeColor="@color/primary"
-        app:boxCornerRadiusBottomEnd="15dp"
-        app:boxCornerRadiusBottomStart="15dp"
-        app:boxCornerRadiusTopEnd="15dp"
-        app:boxCornerRadiusTopStart="15dp"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/code_input"
+        <ImageView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:inputType="text"
-            android:textColor="@color/primary"
-            android:backgroundTint="@color/white"
-            android:hint="Code"
-            android:textColorHint="@color/primary"/>
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop"
+            android:src="@drawable/bg_gradient" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#40000000" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_redeem"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/primary"
-        android:fontFamily="@font/poppins_medium"
-        android:text="Redeem Code"
-        android:textSize="16sp"
-        android:textColor="@color/onPrimary"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:paddingVertical="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginHorizontal="20dp"
-        app:cornerRadius="10dp"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="5dp">
-
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/header_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Already have an account?"
-            android:textColor="@color/onBackground"
-            android:textSize="12sp" />
+            android:layout_alignParentTop="true"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-        <Space
-            android:layout_width="5dp"
-            android:layout_height="0dp" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:src="@mipmap/ic_launcher_round"
+                app:shapeAppearance="@style/corner_rounded" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/login_page"
-            android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Bravy"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="#SpeakBravy"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_bold"
-            android:text="Log in"
-            android:textColor="@color/primary"
-            android:textSize="12sp" />
+            android:layout_centerInParent="true"
+            android:layout_marginHorizontal="20dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp">
 
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
 
-</LinearLayout>
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Redeem Code"
+                    android:textColor="@color/onBackground"
+                    android:textSize="20sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="Enter your code to get started"
+                    android:textColor="@color/onBackground"
+                    android:textSize="16sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginVertical="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray" />
+
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="80dp"
+                        android:layout_height="10dp"
+                        android:src="@color/primary"
+                        app:shapeAppearance="@style/image_rounded" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1"
+                        android:background="@android:color/darker_gray" />
+
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:scrollbars="none">
+
+                    <com.chaos.view.PinView
+                        android:id="@+id/code_input"
+                        style="@style/PinWidget.PinView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:cursorVisible="true"
+                        android:inputType="text"
+                        android:textColor="@color/onPrimary"
+                        android:itemBackground="@drawable/bg_primary"
+                        app:cursorColor="@color/onPrimary"
+                        app:hideLineWhenFilled="true"
+                        app:itemCount="4"
+                        app:itemHeight="52dp"
+                        app:itemWidth="52dp"
+                        app:itemRadius="10dp"
+                        app:lineColor="@color/primary"
+                        app:lineWidth="2dp" />
+
+                </HorizontalScrollView>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_redeem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:backgroundTint="@color/primary"
+                    android:fontFamily="@font/poppins_bold"
+                    android:paddingVertical="12dp"
+                    android:text="Redeem Code"
+                    android:textAllCaps="false"
+                    android:textColor="@color/onPrimary"
+                    android:textSize="16sp"
+                    app:cornerRadius="10dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account?"
+                        android:textColor="@color/onBackground"
+                        android:textSize="12sp" />
+
+                    <Space
+                        android:layout_width="5dp"
+                        android:layout_height="0dp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/login_page"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Log in"
+                        android:textColor="@color/primary"
+                        android:textSize="12sp" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    android:layout_marginVertical="20dp"
+                    android:background="@android:color/darker_gray" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_shopee"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingVertical="8dp"
+                    android:backgroundTint="@color/secondary"
+                    android:fontFamily="@font/poppins_bold"
+                    android:text="Get Our Module"
+                    android:textAllCaps="false"
+                    android:textColor="@color/onSecondary"
+                    android:textSize="14sp"
+                    app:iconGravity="textStart"
+                    app:icon="@drawable/shopee"
+                    app:iconSize="36dp"
+                    app:iconTintMode="multiply"
+                    app:cornerRadius="10dp" />
+
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+    </RelativeLayout>
+
+</ScrollView>

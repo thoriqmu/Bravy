@@ -25,6 +25,7 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.ActivityDailyMissionBinding
@@ -32,6 +33,7 @@ import com.pkmk.bravy.databinding.DialogMissionResultBinding
 import com.pkmk.bravy.ml.AnxietyClassifier // Menggunakan classifier yang sama seperti AnalysisActivity
 import com.pkmk.bravy.ui.viewmodel.DailyMissionViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -235,12 +237,28 @@ class DailyMissionActivity : AppCompatActivity() {
         dialogBinding.btnCloseDialog.setOnClickListener {
             val uid = FirebaseAuth.getInstance().currentUser?.uid
             if (uid != null) {
-                // Kirim data lengkap ke ViewModel
-                viewModel.completeSpeakingMission(uid, emotion, confidence, wordCount)
+                // TUNGGU di lifecycleScope UI, bukan langsung finish
+                lifecycleScope.launch {
+                    val result = runCatching {
+                        viewModel.completeSpeakingMission(uid, emotion, confidence, wordCount)
+                    }.getOrElse { it } // biar gampang catch nested
+
+//                    if (result is Result<*>) {
+//                        if (result.isSuccess) {
+//                            Toast.makeText(this@DailyMissionActivity, "Mission saved!", Toast.LENGTH_SHORT).show()
+//                        } else {
+//                            Toast.makeText(this@DailyMissionActivity, "Failed to save mission.", Toast.LENGTH_SHORT).show()
+//                        }
+//                    }
+                    dialog.dismiss()
+                    finish()
+                }
+            } else {
+                dialog.dismiss()
+                finish()
             }
-            dialog.dismiss()
-            finish()
         }
+
 
         dialog.show()
 

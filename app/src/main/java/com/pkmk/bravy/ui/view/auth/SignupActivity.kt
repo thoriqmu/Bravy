@@ -14,11 +14,12 @@ import androidx.core.view.WindowInsetsCompat
 import com.pkmk.bravy.R
 import com.pkmk.bravy.databinding.ActivitySignupBinding
 import com.pkmk.bravy.databinding.DialogTermsAndConditionsBinding
+import com.pkmk.bravy.ui.view.base.BaseActivity
 import com.pkmk.bravy.ui.viewmodel.AuthViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SignupActivity : AppCompatActivity() {
+class SignupActivity : BaseActivity() {
     private lateinit var binding: ActivitySignupBinding
     private val viewModel: AuthViewModel by viewModels()
 
@@ -91,6 +92,7 @@ class SignupActivity : AppCompatActivity() {
             val child = scrollView.getChildAt(0)
             // Cek jika sudah scroll sampai bawah (dengan sedikit toleransi)
             if (child.bottom <= (scrollView.height + scrollY + 5)) {
+                dialogBinding.btnAgree.setBackgroundColor(getColor(R.color.primary))
                 dialogBinding.btnAgree.isEnabled = true
             }
         }

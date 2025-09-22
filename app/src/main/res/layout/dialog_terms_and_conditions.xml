@@ -51,13 +51,13 @@
         android:id="@+id/btn_agree"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/primary"
+        android:backgroundTint="@color/shimmer_placeholder_darker"
         android:fontFamily="@font/poppins_bold"
         android:textColor="@color/onPrimary"
         android:text="I agree to the Terms and Conditions and Privacy Policy"
         android:textAllCaps="false"
         android:enabled="false"
         android:layout_alignParentBottom="true"
-        app:cornerRadius="10dp"/>
+        app:cornerRadius="8dp"/>
 
 </RelativeLayout>
