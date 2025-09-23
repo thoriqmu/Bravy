@@ -49,8 +49,7 @@ class ProfileViewModel @Inject constructor(
             } catch (e: Exception) {
                 _userProfile.postValue(Result.failure(e))
             } finally {
-                // Tambahkan delay 2 detik
-                kotlinx.coroutines.delay(2000)
+                delay(1000)
                 _isLoading.postValue(false) // Selesaikan loading
             }
         }

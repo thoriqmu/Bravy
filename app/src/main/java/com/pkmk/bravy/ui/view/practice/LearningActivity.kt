@@ -3,6 +3,7 @@ package com.pkmk.bravy.ui.view.practice
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.speech.RecognitionListener
@@ -16,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
+import com.pkmk.bravy.R
 import com.pkmk.bravy.data.model.LearningScene
 import com.pkmk.bravy.databinding.ActivityLearningBinding
 import com.pkmk.bravy.ui.adapter.LearningPagerAdapter
@@ -36,6 +38,8 @@ class LearningActivity : AppCompatActivity() {
     private var levelId: String? = null
     private var speechRecognizer: SpeechRecognizer? = null
     private var countDownTimer: CountDownTimer? = null
+
+    private var completionSoundPlayer: MediaPlayer? = null
 
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
@@ -94,6 +98,7 @@ class LearningActivity : AppCompatActivity() {
             level?.let {
                 binding.tvLevelTitle.text = it.title
                 binding.tvMaterialTitle.text = it.title
+                binding.tvAboutMaterial.text = "About this material and practice"
                 binding.tvMaterialDescription.text = it.description
             }
         }
@@ -124,6 +129,8 @@ class LearningActivity : AppCompatActivity() {
         }
 
         viewModel.showResultDialog.observe(this) { result ->
+            playSoundEffect()
+
             ResultDialogFragment.newInstance(
                 result.confidenceScore,
                 result.speechScore,
@@ -133,6 +140,23 @@ class LearningActivity : AppCompatActivity() {
                 result.levelTitle
             ).show(supportFragmentManager, ResultDialogFragment.TAG)
         }
+    }
+
+    private fun playSoundEffect() {
+        // Hentikan dan lepaskan player lama jika ada
+        completionSoundPlayer?.release()
+
+        // Buat instance MediaPlayer baru dari file di res/raw
+        completionSoundPlayer = MediaPlayer.create(this, R.raw.level_complete)
+
+        // Atur listener untuk melepaskan resource setelah selesai diputar
+        completionSoundPlayer?.setOnCompletionListener { player ->
+            player.release()
+            completionSoundPlayer = null
+        }
+
+        // Mulai memutar suara
+        completionSoundPlayer?.start()
     }
 
     fun onSectionCompleted(sectionId: String) {
@@ -202,5 +226,7 @@ class LearningActivity : AppCompatActivity() {
         super.onDestroy()
         speechRecognizer?.destroy()
         countDownTimer?.cancel()
+        completionSoundPlayer?.release()
+        completionSoundPlayer = null
     }
 }

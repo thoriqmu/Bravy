@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary"
+    android:background="@color/background"
     tools:context=".ui.view.auth.SplashActivity">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="by BRAVY_ID"
-        android:textColor="@color/onPrimary"
+        android:textColor="@color/primary"
         android:textSize="16sp"
         android:fontFamily="@font/poppins_bold"
         android:layout_marginBottom="20dp"

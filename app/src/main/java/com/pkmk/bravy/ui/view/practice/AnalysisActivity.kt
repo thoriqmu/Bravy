@@ -24,6 +24,8 @@ import com.pkmk.bravy.ml.AnxietyClassifier
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class AnalysisActivity : AppCompatActivity() {
 
@@ -207,12 +209,21 @@ class AnalysisActivity : AppCompatActivity() {
 
         // 1. Hitung skor rata-rata dari analisis wajah (rentang 1-5)
         val averageConfidence = if (analysisFrameCount > 0) {
-            Math.round(totalConfidenceScore.toFloat() / analysisFrameCount)
+            val average = totalConfidenceScore.toFloat() / analysisFrameCount
+            val floorValue = floor(average).toInt()
+
+            if (average > floorValue && floorValue == 4) {
+                5
+            } else if (average > floorValue) {
+                ceil(average).toInt()
+            } else {
+                average.toInt()
+            }
         } else {
-            1 // Skor minimum jika tidak ada frame yang teranalisis
+            1
         }
 
-        // 2. Hitung skor ucapan (rentang 0, 5, 10)
+        // 2. Hitung skor ucapan (rentang 0-10 berdasarkan aturan baru)
         val speechPoints = if (spokenText.isNullOrBlank()) {
             0
         } else {
@@ -248,12 +259,23 @@ class AnalysisActivity : AppCompatActivity() {
             Log.d("AnalysisActivity", "Reference: ${referenceWords.joinToString(" ")}")
             Log.d("AnalysisActivity", "Spoken: ${spokenWords.joinToString(" ")}")
 
-            // Tentukan skor berdasarkan persentase
-            when {
-                accuracy >= 0.9 -> 10 // Sangat tepat
-                accuracy >= 0.5 -> 5  // Cukup tepat
-                else -> 0             // Tidak tepat
+            // --- MULAI PERUBAHAN LOGIKA SKOR AKURASI ---
+            // Tentukan skor berdasarkan persentase (aturan baru: 0-10)
+            val calculatedSpeechScore = if (accuracy == 0.0f) {
+                0 // Jika akurasi persis 0, skor adalah 0
+            } else {
+                // Kalikan dengan 10 (misal, 0.8218 -> 8.218)
+                // Kemudian ambil langit-langitnya (misal, 8.218 -> 9.0)
+                // Konversi ke Int (misal, 9.0 -> 9)
+                val score = ceil(accuracy * 10).toInt()
+                // Pastikan skor tidak melebihi 10 dan minimal 1 jika akurasi > 0
+                // Jika akurasi > 0 dan hasil perhitungan skor 0 (seharusnya tidak terjadi dengan ceil jika accuracy * 10 > 0), jadikan 1.
+                // Jika skor > 10 (seharusnya tidak terjadi jika akurasi maks 1.0), jadikan 10.
+                if (score > 10) 10 else if (score == 0 && accuracy > 0f) 1 else score
             }
+            Log.d("AnalysisActivity", "Calculated Speech Score (0-10): $calculatedSpeechScore")
+            calculatedSpeechScore // Ini adalah nilai speechPoints yang baru
+            // --- AKHIR PERUBAHAN LOGIKA SKOR AKURASI ---
         }
 
         Log.d("AnalysisActivity", "Final Scores -> Confidence: $averageConfidence, Speech: $speechPoints")

@@ -60,6 +60,7 @@ class HomeFragment : Fragment() {
     // Hapus onResume() atau kosongkan isinya
     override fun onResume() {
         super.onResume()
+        viewModel.loadUserProfile()
         viewModel.startDailyMissionCountdown()
     }
 
@@ -170,6 +171,7 @@ class HomeFragment : Fragment() {
             binding.materialCardView.visibility = View.VISIBLE
             binding.tvTitleFeel.visibility = View.VISIBLE
             binding.tvTitleFeel.text = "Your Daily Check-in"
+            binding.tvFeelResult.text = user.lastSpeakingResult
 
             val emotionDrawable = when (user.lastSpeakingResult.lowercase()) {
                 "happy" -> R.drawable.vector_happy

@@ -60,7 +60,7 @@ class ChatViewModel @Inject constructor(
             startListeningForLatestPost()
             startListeningForChatListChanges()
 
-            delay(2000)
+            delay(1000)
             _isLoading.postValue(false) // Selesaikan loading
         }
     }

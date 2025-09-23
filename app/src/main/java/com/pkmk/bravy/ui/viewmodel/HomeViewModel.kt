@@ -81,12 +81,10 @@ class HomeViewModel @Inject constructor(
                 var totalSections = 0
                 var completedSections = 0
 
-                // Hitung total section dari semua level
                 for (levelSnap in levelsSnapshot.children) {
                     totalSections += levelSnap.child("sections").children.count()
                 }
 
-                // Hitung section yang sudah diselesaikan oleh user
                 user.user_progress?.values?.forEach { progress ->
                     completedSections += progress.completed_sections.count { it.value }
                 }
