@@ -252,4 +252,12 @@ class LearningViewModel @Inject constructor(
         totalSpeechScore = 0
         _lastPlayedVideoUri.postValue(null)
     }
+
+    fun addPracticeScore(confidencePoints: Int, speechPoints: Int) {
+        accumulatedScore += (confidencePoints + speechPoints)
+        totalConfidenceScore += confidencePoints
+        totalSpeechScore += speechPoints
+        practiceCount++
+        _analysisResult.postValue(confidencePoints to speechPoints)
+    }
 }

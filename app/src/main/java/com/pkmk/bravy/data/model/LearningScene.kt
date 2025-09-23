@@ -11,5 +11,11 @@ data class LearningScene(
     val duration: Int? = null,
     val responses: Map<String, String>? = null,
     val text: String? = null,
-    val keySentence: String? = null // <- Tambahkan ini
+    val keySentence: String? = null, // <- Tambahkan ini
+
+    val questionVideoUrl: String? = null,
+    val options: List<String>? = null,
+    val expectedAnswer: String? = null,
+    val feedbackCorrectVideoUrl: String? = null,
+    val feedbackIncorrectVideoUrl: String? = null
 ) : Parcelable

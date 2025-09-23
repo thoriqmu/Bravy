@@ -31,6 +31,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Bravy">
         <activity
+            android:name=".ui.view.practice.level2.ReconstructionAnalysisActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.home.DailyMissionActivity"
             android:exported="false" />
         <activity
@@ -82,15 +85,15 @@
         <activity
             android:name=".ui.view.auth.SignupActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.view.auth.RedeemActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.view.auth.LoginActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".MainActivity"
             android:exported="false"

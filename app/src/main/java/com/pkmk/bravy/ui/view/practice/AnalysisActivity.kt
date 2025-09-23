@@ -32,7 +32,11 @@ class AnalysisActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAnalysisBinding
     private lateinit var cameraExecutor: ExecutorService
     private var anxietyClassifier: AnxietyClassifier? = null
-    private var keySentence: String? = null
+
+    private var practiceMode: String? = null
+    private var keySentence: String? = null // Untuk Level 1
+    private var expectedAnswer: String? = null // Untuk Level 2
+    private var options: List<String>? = null // Untuk Level 2
 
     private var totalConfidenceScore = 0
     private var analysisFrameCount = 0
@@ -59,15 +63,17 @@ class AnalysisActivity : AppCompatActivity() {
         binding = ActivityAnalysisBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Ambil data dari Intent untuk menentukan mode
+        practiceMode = intent.getStringExtra("PRACTICE_MODE")
         keySentence = intent.getStringExtra("KEY_SENTENCE")
-        if (keySentence == null) {
-            finishWithResult(0, 0)
-            return
-        }
+        expectedAnswer = intent.getStringExtra("EXPECTED_ANSWER")
+        options = intent.getStringArrayListExtra("OPTIONS")
+        val promptText = intent.getStringExtra("PROMPT_TEXT")
+
+        binding.tvInstruction.text = promptText ?: "Speak now!"
 
         cameraExecutor = Executors.newSingleThreadExecutor()
         anxietyClassifier = AnxietyClassifier(this)
-
         checkCameraPermission()
     }
 
@@ -159,7 +165,6 @@ class AnalysisActivity : AppCompatActivity() {
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
             putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak the sentence now")
             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true)
         }
 
@@ -172,114 +177,83 @@ class AnalysisActivity : AppCompatActivity() {
                 isAnalyzing = false
                 binding.tvInstruction.text = "Processing..."
             }
-
             override fun onError(error: Int) {
-                Log.e("AnalysisActivity", "SpeechRecognizer Error: $error")
                 if (!hasFinished) {
                     hasFinished = true
-                    calculateScores(lastSpokenText) // Gunakan hasil parsial terakhir jika ada error
+                    calculateScores(lastSpokenText)
                 }
             }
-
             override fun onResults(results: Bundle?) {
                 if (!hasFinished) {
                     hasFinished = true
-                    // --- PERBAIKAN KUNCI DI SINI ---
                     val spokenText = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.get(0)
-                    Log.d("AnalysisActivity", "Final Speech Result: $spokenText")
                     calculateScores(spokenText)
                 }
             }
-
             override fun onPartialResults(partialResults: Bundle?) {
-                // --- PERBAIKAN KUNCI DI SINI ---
                 lastSpokenText = partialResults?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)?.get(0)
-                Log.d("AnalysisActivity", "Partial Speech Result: $lastSpokenText")
             }
-
             override fun onEvent(eventType: Int, params: Bundle?) {}
         })
-
         speechRecognizer?.startListening(intent)
     }
 
     private fun calculateScores(spokenText: String?) {
-        // Hentikan proses kamera untuk menghemat daya
         ProcessCameraProvider.getInstance(this).get().unbindAll()
 
-        // 1. Hitung skor rata-rata dari analisis wajah (rentang 1-5)
         val averageConfidence = if (analysisFrameCount > 0) {
-            val average = totalConfidenceScore.toFloat() / analysisFrameCount
-            val floorValue = floor(average).toInt()
+            (totalConfidenceScore.toFloat() / analysisFrameCount).coerceIn(1f, 5f).toInt()
+        } else { 1 }
 
-            if (average > floorValue && floorValue == 4) {
-                5
-            } else if (average > floorValue) {
-                ceil(average).toInt()
-            } else {
-                average.toInt()
-            }
-        } else {
-            1
-        }
-
-        // 2. Hitung skor ucapan (rentang 0-10 berdasarkan aturan baru)
-        val speechPoints = if (spokenText.isNullOrBlank()) {
-            0
-        } else {
-            // --- LOGIKA PERBANDINGAN YANG DIPERBAIKI ---
-
-            // Bersihkan dan pecah kalimat referensi dari database menjadi kata-kata unik
-            val referenceWords = keySentence!!
-                .lowercase(Locale.ROOT)
-                .replace(Regex("[^a-z\\s]"), "") // Hanya sisakan huruf dan spasi
-                .split("\\s+".toRegex()) // Pecah berdasarkan satu atau lebih spasi
-                .filter { it.isNotBlank() } // Hapus elemen kosong
-                .toSet() // Jadikan Set untuk perbandingan unik
-
-            // Bersihkan dan pecah kalimat yang diucapkan pengguna
-            val spokenWords = spokenText
-                .lowercase(Locale.ROOT)
-                .replace(Regex("[^a-z\\s]"), "")
-                .split("\\s+".toRegex())
-                .filter { it.isNotBlank() }
-                .toSet()
-
-            // Hitung berapa banyak kata dari referensi yang ada di ucapan pengguna
-            val matchedWords = referenceWords.intersect(spokenWords).count()
-
-            // Hitung persentase akurasi
-            val accuracy = if (referenceWords.isNotEmpty()) {
-                matchedWords.toFloat() / referenceWords.size.toFloat()
-            } else {
-                0f // Hindari pembagian dengan nol jika kalimat kunci kosong
-            }
-
-            Log.d("AnalysisActivity", "Speech Accuracy: $accuracy ($matchedWords / ${referenceWords.size})")
-            Log.d("AnalysisActivity", "Reference: ${referenceWords.joinToString(" ")}")
-            Log.d("AnalysisActivity", "Spoken: ${spokenWords.joinToString(" ")}")
-
-            // --- MULAI PERUBAHAN LOGIKA SKOR AKURASI ---
-            // Tentukan skor berdasarkan persentase (aturan baru: 0-10)
-            val calculatedSpeechScore = if (accuracy == 0.0f) {
-                0 // Jika akurasi persis 0, skor adalah 0
-            } else {
-                // Kalikan dengan 10 (misal, 0.8218 -> 8.218)
-                // Kemudian ambil langit-langitnya (misal, 8.218 -> 9.0)
-                // Konversi ke Int (misal, 9.0 -> 9)
-                val score = ceil(accuracy * 10).toInt()
-                // Pastikan skor tidak melebihi 10 dan minimal 1 jika akurasi > 0
-                // Jika akurasi > 0 dan hasil perhitungan skor 0 (seharusnya tidak terjadi dengan ceil jika accuracy * 10 > 0), jadikan 1.
-                // Jika skor > 10 (seharusnya tidak terjadi jika akurasi maks 1.0), jadikan 10.
-                if (score > 10) 10 else if (score == 0 && accuracy > 0f) 1 else score
-            }
-            Log.d("AnalysisActivity", "Calculated Speech Score (0-10): $calculatedSpeechScore")
-            calculatedSpeechScore // Ini adalah nilai speechPoints yang baru
-            // --- AKHIR PERUBAHAN LOGIKA SKOR AKURASI ---
+        val speechPoints = when (practiceMode) {
+            "RECONSTRUCTION" -> calculateReconstructionScore(spokenText)
+            else -> calculateShadowingScore(spokenText) // Default ke mode Level 1
         }
 
         Log.d("AnalysisActivity", "Final Scores -> Confidence: $averageConfidence, Speech: $speechPoints")
         finishWithResult(averageConfidence, speechPoints)
+    }
+
+    private fun calculateReconstructionScore(spokenText: String?): Int {
+        if (spokenText.isNullOrBlank() || expectedAnswer.isNullOrBlank() || options.isNullOrEmpty()) {
+            return 0
+        }
+
+        val normalizedSpoken = spokenText.lowercase(Locale.US)
+
+        // 1. Skor Opsi Jawaban (0 atau 5 poin)
+        val correctOption = options?.find { option ->
+            expectedAnswer!!.lowercase(Locale.US).contains(option.lowercase(Locale.US))
+        }
+        val optionScore = if (correctOption != null && normalizedSpoken.contains(correctOption.lowercase(Locale.US))) {
+            5
+        } else {
+            0
+        }
+
+        // 2. Skor Kemiripan Kalimat (0 sampai 5 poin)
+        val similarityScore = calculateSentenceSimilarity(spokenText, expectedAnswer!!)
+
+        Log.d("AnalysisActivity", "Reconstruction -> Option Score: $optionScore, Similarity Score: $similarityScore")
+        return optionScore + similarityScore
+    }
+
+    private fun calculateShadowingScore(spokenText: String?): Int {
+        if (spokenText.isNullOrBlank() || keySentence.isNullOrBlank()) {
+            return 0
+        }
+        val similarity = calculateSentenceSimilarity(spokenText, keySentence!!)
+        return (similarity * 2) // Skala 0-5 menjadi 0-10
+    }
+
+    private fun calculateSentenceSimilarity(spoken: String, reference: String): Int {
+        val referenceWords = reference.lowercase(Locale.US).split("\\s+".toRegex()).toSet()
+        val spokenWords = spoken.lowercase(Locale.US).split("\\s+".toRegex()).toSet()
+        val matchedWords = referenceWords.intersect(spokenWords).count()
+        val accuracy = if (referenceWords.isNotEmpty()) matchedWords.toFloat() / referenceWords.size else 0f
+
+        // Konversi akurasi (0.0 - 1.0) ke skor (0 - 5)
+        return (accuracy * 5).coerceIn(0f, 5f).toInt()
     }
 
     private fun finishWithResult(confidencePoints: Int, speechPoints: Int) {

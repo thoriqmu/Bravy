@@ -168,11 +168,16 @@ class LearningActivity : AppCompatActivity() {
         }
     }
 
-    fun showAnalysisButton(scene: LearningScene) {
+    fun showAnalysisButton(scene: LearningScene, onButtonClicked: (LearningScene) -> Unit) {
+        binding.layoutAnalysisControls.isVisible = true
         binding.btnStartAnalysis.setOnClickListener {
-            val currentFragment = supportFragmentManager.findFragmentByTag("f${binding.viewPagerContent.currentItem}")
-            (currentFragment as? PracticeLevel1Fragment)?.launchAnalysis(scene)
+            hideAnalysisButton() // Sembunyikan tombol setelah diklik
+            onButtonClicked(scene) // Jalankan aksi dari fragment
         }
+    }
+
+    fun hideAnalysisButton() {
+        binding.layoutAnalysisControls.isVisible = false
     }
 
     private fun handleMicClick() {
