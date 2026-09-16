@@ -33,6 +33,7 @@ class DetailPrivateChatActivity : AppCompatActivity() {
     private var selectedImageUri: Uri? = null
     private lateinit var voiceRecorder: VoiceNoteRecorder
     private var recordingStartTime: Long = 0
+    private var currentChatId: String? = null
 
     private val requestAudioPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -86,10 +87,25 @@ class DetailPrivateChatActivity : AppCompatActivity() {
 
         // Langsung berikan objek 'otherUser' ke ViewModel, tidak perlu load lagi
         viewModel.setOtherUser(otherUser)
-        viewModel.listenForMessages(chatId)
+
+        // Percakapan dibuka lagi di onResume agar riwayat tetap segar setelah
+        // layar sempat ditinggalkan.
+        currentChatId = chatId
 
         voiceRecorder = VoiceNoteRecorder(this)
         requestAudioPermission.launch(Manifest.permission.RECORD_AUDIO)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // onConversationOpened bersifat idempoten: menggabungkan soket ke room,
+        // memuat riwayat, lalu berlangganan pesan masuk.
+        currentChatId?.let { viewModel.onConversationOpened(it) }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onConversationClosed()
     }
 
     private fun setupRecyclerView() {

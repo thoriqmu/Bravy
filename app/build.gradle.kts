@@ -70,6 +70,9 @@ dependencies {
     // Lifecycle
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    // ProcessLifecycleOwner: dipakai untuk mendeteksi aplikasi sedang terlihat
+    // atau tidak saat memutuskan menampilkan notifikasi chat.
+    implementation(libs.androidx.lifecycle.process)
 
     //Firebase
     implementation(libs.firebase.database)
@@ -117,6 +120,14 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.androidx.security.crypto)
+
+    // Socket.IO (private chat). org.json bawaan library dikeluarkan agar memakai
+    // implementasi android.jar; OkHttp 3.12.12 bawaan library dikeluarkan agar
+    // tidak bentrok dengan OkHttp 4.12.0 milik Retrofit.
+    implementation(libs.socket.io.client) {
+        exclude(group = "org.json", module = "json")
+        exclude(group = "com.squareup.okhttp3", module = "okhttp")
+    }
 
     // ExoPlayer
     implementation(libs.androidx.media3.exoplayer)

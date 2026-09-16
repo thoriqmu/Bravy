@@ -54,15 +54,27 @@ fun BackendUserSummary.toUser(): User {
  * Backend mengirim tanggal sebagai ISO-8601 UTC (mis. `2026-09-16T12:11:34.383Z`).
  * Nilai yang tidak terbaca menghasilkan 0 agar UI menampilkan "belum ada data"
  * alih-alih tanggal yang salah.
+ *
+ * Detik fraksional bersifat opsional karena tidak semua field backend
+ * menyertakannya.
  */
 internal fun parseIsoTimestamp(value: String?): Long {
     if (value.isNullOrBlank()) return 0L
     return runCatching {
-        val parser = SimpleDateFormat(ISO_PATTERN, Locale.US).apply {
-            timeZone = TimeZone.getTimeZone("UTC")
-        }
-        parser.parse(value)?.time ?: 0L
+        parseWithPattern(value, ISO_PATTERN)
+            ?: parseWithPattern(value, ISO_PATTERN_SECONDS)
+            ?: 0L
     }.getOrDefault(0L)
 }
 
+private fun parseWithPattern(value: String, pattern: String): Long? {
+    val parser = SimpleDateFormat(pattern, Locale.US).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+    return parser.parse(value)?.time
+}
+
 private const val ISO_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+/** Pola cadangan untuk cap waktu tanpa detik fraksional. */
+private const val ISO_PATTERN_SECONDS = "yyyy-MM-dd'T'HH:mm:ss'Z'"

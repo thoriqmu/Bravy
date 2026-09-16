@@ -22,6 +22,14 @@ interface AuthRepository {
     suspend fun loginViaBackend(identifier: String, password: String): Result<BackendUser>
     suspend fun updateFcmToken(fcmToken: String): Result<Unit>
 
+    /**
+     * `true` bila sesi backend (access token) tersedia di perangkat.
+     *
+     * Dipakai pemanggil non-UI seperti service FCM untuk memutuskan apakah
+     * permintaan ke endpoint berautentikasi layak dikirim.
+     */
+    fun hasActiveSession(): Boolean
+
     /** Profil user yang sedang login (`GET /users/profile`). */
     suspend fun getProfileBackend(): Result<User>
 

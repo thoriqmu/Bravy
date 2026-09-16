@@ -4,6 +4,9 @@ import com.pkmk.bravy.data.remote.dto.AvatarResponse
 import com.pkmk.bravy.data.remote.dto.BackendFriend
 import com.pkmk.bravy.data.remote.dto.BackendUser
 import com.pkmk.bravy.data.remote.dto.BackendUserSummary
+import com.pkmk.bravy.data.remote.dto.ChatMessageDto
+import com.pkmk.bravy.data.remote.dto.ConversationDto
+import com.pkmk.bravy.data.remote.dto.CreateConversationRequest
 import com.pkmk.bravy.data.remote.dto.FcmTokenRequest
 import com.pkmk.bravy.data.remote.dto.LoginRequest
 import com.pkmk.bravy.data.remote.dto.LoginResponse
@@ -14,6 +17,7 @@ import com.pkmk.bravy.data.remote.dto.RegisterResponse
 import com.pkmk.bravy.data.remote.dto.ResendVerificationRequest
 import com.pkmk.bravy.data.remote.dto.RespondFriendRequestBody
 import com.pkmk.bravy.data.remote.dto.SendFriendRequestBody
+import com.pkmk.bravy.data.remote.dto.SendMessageRequest
 import com.pkmk.bravy.data.remote.dto.UpdateProfileRequest
 import com.pkmk.bravy.data.remote.dto.UserProfileDto
 import com.pkmk.bravy.data.remote.dto.VerifyEmailRequest
@@ -24,6 +28,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 /**
@@ -85,4 +90,47 @@ interface BravyApiService {
 
     @PATCH("api/v1/users/fcm-token")
     suspend fun updateFcmToken(@Body body: FcmTokenRequest): ApiResponse<Unit>
+
+    // --- Chat privat (`/api/v1/chat`) ---
+
+    /** Seluruh percakapan milik pemilik token, terbaru lebih dulu. */
+    @GET("api/v1/chat")
+    suspend fun getConversations(): ApiResponse<List<ConversationDto>>
+
+    /**
+     * Membuat percakapan dengan [CreateConversationRequest.participantId], atau
+     * mengembalikan yang sudah ada. Backend menolak bila id sama dengan diri sendiri.
+     */
+    @POST("api/v1/chat")
+    suspend fun createConversation(
+        @Body body: CreateConversationRequest
+    ): ApiResponse<ConversationDto>
+
+    /**
+     * Satu halaman pesan (50 per halaman, terbaru lebih dulu). Backend juga
+     * menandai pesan lawan sebagai terbaca setiap kali endpoint ini dipanggil.
+     */
+    @GET("api/v1/chat/{conversationId}/messages")
+    suspend fun getMessages(
+        @Path("conversationId") conversationId: String,
+        @Query("page") page: Int = DEFAULT_MESSAGE_PAGE
+    ): ApiResponse<List<ChatMessageDto>>
+
+    /** Mengirim teks atau media; `clientMessageId` membuat pengiriman idempoten. */
+    @POST("api/v1/chat/{conversationId}/messages")
+    suspend fun sendMessage(
+        @Path("conversationId") conversationId: String,
+        @Body body: SendMessageRequest
+    ): ApiResponse<ChatMessageDto>
+
+    /** Menandai pesan lawan bicara sebagai terbaca. `data` pada respons selalu null. */
+    @PATCH("api/v1/chat/{conversationId}/read")
+    suspend fun markConversationRead(
+        @Path("conversationId") conversationId: String
+    ): ApiResponse<Unit>
+
+    companion object {
+        /** Halaman pertama pesan; backend memakai penomoran mulai dari 1. */
+        const val DEFAULT_MESSAGE_PAGE = 1
+    }
 }

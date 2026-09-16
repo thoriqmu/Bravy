@@ -116,6 +116,8 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun hasActiveSession(): Boolean = tokenStore.isLoggedIn()
+
     override suspend fun getProfileBackend(): Result<User> {
         return try {
             val response = apiService.getProfile()

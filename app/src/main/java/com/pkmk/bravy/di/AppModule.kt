@@ -7,6 +7,8 @@ import com.pkmk.bravy.data.remote.BravyApiService
 import com.pkmk.bravy.data.remote.TokenStore
 import com.pkmk.bravy.data.repository.AuthRepository
 import com.pkmk.bravy.data.repository.AuthRepositoryImpl
+import com.pkmk.bravy.data.repository.ChatRepository
+import com.pkmk.bravy.data.repository.ChatRepositoryImpl
 import com.pkmk.bravy.data.source.FirebaseDataSource
 import dagger.Module
 import dagger.Provides
@@ -53,5 +55,13 @@ object AppModule {
         tokenStore: TokenStore
     ): AuthRepository {
         return AuthRepositoryImpl(dataSource, apiService, tokenStore)
+    }
+
+    @Provides
+    @Singleton
+    fun provideChatRepository(
+        apiService: BravyApiService
+    ): ChatRepository {
+        return ChatRepositoryImpl(apiService)
     }
 }

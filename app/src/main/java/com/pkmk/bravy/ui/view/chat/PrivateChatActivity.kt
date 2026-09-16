@@ -36,6 +36,14 @@ class PrivateChatActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         viewModel.loadInitialData()
+        // Pembaruan waktu nyata (pesan masuk & percakapan yang baru dibuka)
+        // berjalan selama daftar terlihat.
+        viewModel.startRealtimeUpdates()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.stopRealtimeUpdates()
     }
 
     private fun setupRecyclerViews() {
@@ -111,6 +119,10 @@ class PrivateChatActivity : AppCompatActivity() {
                 openDetailChat(chatId, otherUser)
                 viewModel.onNavigationDone() // Reset event
             }
+        }
+
+        viewModel.error.observe(this) { message ->
+            Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
         }
     }
 
