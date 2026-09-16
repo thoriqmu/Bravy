@@ -4,20 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val firebaseAuth: FirebaseAuth
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _isLoading = MutableLiveData<Boolean>()
@@ -39,13 +35,9 @@ class ProfileViewModel @Inject constructor(
         _isLoading.value = true // Mulai loading
         viewModelScope.launch {
             try {
-                val currentUser = firebaseAuth.currentUser
-                if (currentUser != null) {
-                    val result = authRepository.getUser(currentUser.uid)
-                    _userProfile.postValue(result)
-                } else {
-                    _userProfile.postValue(Result.failure(Exception("No user logged in")))
-                }
+                // Profil diambil berdasarkan Bearer token, bukan uid Firebase.
+                val result = authRepository.getProfileBackend()
+                _userProfile.postValue(result)
             } catch (e: Exception) {
                 _userProfile.postValue(Result.failure(e))
             } finally {
@@ -57,49 +49,39 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logout() {
-        try {
-            firebaseAuth.signOut()
-            _logoutResult.postValue(true)
-        } catch (e: Exception) {
-            _logoutResult.postValue(false)
+        viewModelScope.launch {
+            // Sesi ditentukan oleh Bearer token, jadi keluar dilakukan dengan
+            // mencabut token di server, bukan lewat FirebaseAuth.
+            val result = authRepository.logoutBackend()
+            _logoutResult.postValue(result.isSuccess)
         }
     }
 
     fun updateUserProfile(name: String, bio: String) {
         viewModelScope.launch {
-            val currentUser = firebaseAuth.currentUser
-            val currentProfile = _userProfile.value?.getOrNull()
-
-            if (currentUser != null && currentProfile != null) {
-                val updatedUser = currentProfile.copy(
-                    name = name,
-                    bio = bio
-                )
-                val result = authRepository.updateUser(updatedUser)
-                _updateProfileResult.postValue(result)
-                if (result.isSuccess) {
-                    _userProfile.postValue(Result.success(updatedUser))
-                }
-            } else {
+            if (_userProfile.value?.getOrNull() == null) {
                 _updateProfileResult.postValue(Result.failure(Exception("User not found")))
+                return@launch
             }
+
+            // Backend mengembalikan dokumen profil terbaru, jadi LiveData diisi dari
+            // respons alih-alih menyalin state lokal.
+            val result = authRepository.updateProfileBackend(name, bio)
+            _updateProfileResult.postValue(result.map { Unit })
+            result.onSuccess { _userProfile.postValue(Result.success(it)) }
         }
     }
 
     fun uploadProfilePicture(imageFile: File) {
         viewModelScope.launch {
-            val currentUser = firebaseAuth.currentUser
-            if (currentUser == null) {
-                _uploadPictureResult.postValue(Result.failure(Exception("No user logged in")))
-                return@launch
-            }
-
-            // Memanggil fungsi suspend dari repository
-            val result = authRepository.uploadProfilePicture(currentUser.uid, imageFile)
+            // Endpoint menerima berkas mentah dan menyimpannya pada user pemilik
+            // Bearer token, sehingga uid tidak lagi diperlukan sebagai argumen.
+            val result = authRepository.uploadAvatarBackend(imageFile)
 
             // Memproses hasil dari repository
             result.onSuccess { newImageUrl ->
-                // Jika upload gambar sukses, update data user dengan URL gambar baru
+                // Backend sudah menyimpan avatarUrl pada dokumen user saat unggahan
+                // berhasil, jadi tidak ada PATCH profil lanjutan yang dikirim di sini.
                 updateUserImage(newImageUrl)
                 _uploadPictureResult.postValue(Result.success(Unit))
             }.onFailure { exception ->
@@ -109,16 +91,7 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun updateUserImage(newImageUrl: String) {
-        viewModelScope.launch {
-            val currentProfile = _userProfile.value?.getOrNull()
-            if (currentProfile != null) {
-                val updatedUser = currentProfile.copy(image = newImageUrl)
-                val result = authRepository.updateUser(updatedUser)
-                if (result.isSuccess) {
-                    _userProfile.postValue(Result.success(updatedUser))
-                }
-                // Anda bisa menambahkan penanganan error jika update user gagal
-            }
-        }
+        val currentProfile = _userProfile.value?.getOrNull() ?: return
+        _userProfile.postValue(Result.success(currentProfile.copy(image = newImageUrl)))
     }
 }

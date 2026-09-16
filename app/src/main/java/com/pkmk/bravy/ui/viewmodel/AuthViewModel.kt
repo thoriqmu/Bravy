@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.User
 import com.pkmk.bravy.data.model.UserProgress
+import com.pkmk.bravy.data.remote.dto.BackendUser
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -26,6 +27,59 @@ class AuthViewModel @Inject constructor(
 
     private val _loginResult = MutableLiveData<Result<Unit>>()
     val loginResult: LiveData<Result<Unit>> get() = _loginResult
+
+    // --- Hasil dari backend REST Bravy ---
+
+    private val _registerBackendResult = MutableLiveData<Result<BackendUser>>()
+    val registerBackendResult: LiveData<Result<BackendUser>> get() = _registerBackendResult
+
+    private val _verifyEmailResult = MutableLiveData<Result<Unit>>()
+    val verifyEmailResult: LiveData<Result<Unit>> get() = _verifyEmailResult
+
+    private val _resendVerificationResult = MutableLiveData<Result<Unit>>()
+    val resendVerificationResult: LiveData<Result<Unit>> get() = _resendVerificationResult
+
+    private val _loginBackendResult = MutableLiveData<Result<BackendUser>>()
+    val loginBackendResult: LiveData<Result<BackendUser>> get() = _loginBackendResult
+
+    /**
+     * Mendaftarkan akun melalui backend Bravy. Berbeda dari [registerUser] yang
+     * memakai Firebase Auth + RTDB, fungsi ini tidak mengembalikan sesi login:
+     * pengguna masih harus memverifikasi email sebelum dapat masuk.
+     */
+    fun registerBackend(name: String, username: String, email: String, password: String) {
+        viewModelScope.launch {
+            _registerBackendResult.postValue(
+                repository.registerViaBackend(name, username, email, password)
+            )
+        }
+    }
+
+    fun verifyEmail(token: String) {
+        viewModelScope.launch {
+            _verifyEmailResult.postValue(repository.verifyEmail(token))
+        }
+    }
+
+    fun resendVerification(email: String) {
+        viewModelScope.launch {
+            _resendVerificationResult.postValue(repository.resendVerification(email))
+        }
+    }
+
+    /** Login via backend; token akses/refresh disimpan oleh repository. */
+    fun loginBackend(identifier: String, password: String) {
+        viewModelScope.launch {
+            _loginBackendResult.postValue(repository.loginViaBackend(identifier, password))
+        }
+    }
+
+    /** Meneruskan token FCM ke backend memakai access token yang tersimpan. */
+    fun updateFcmToken(fcmToken: String) {
+        viewModelScope.launch {
+            repository.updateFcmToken(fcmToken)
+        }
+    }
 
     fun registerUser(name: String, email: String, password: String, redeemCode: String) {
         viewModelScope.launch {

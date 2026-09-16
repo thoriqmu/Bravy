@@ -73,9 +73,12 @@ class ProfileSettingViewModel @Inject constructor(
                     image = finalImageName
                 )
 
-                // Simpan ke Realtime Database
-                val result = repository.updateUser(updatedUser)
-                _updateStatus.postValue(result)
+                // Hanya nama dan bio yang dikirim ke REST backend. Foto profil masih
+                // memakai Firebase Storage (di atas), dan `loadUserProfile()` sengaja
+                // tetap membaca dari Firebase karena UI memperlakukan `User.image`
+                // sebagai nama objek Storage, bukan URL — lihat catatan di laporan.
+                val result = repository.updateProfileBackend(updatedUser.name, updatedUser.bio.orEmpty())
+                _updateStatus.postValue(result.map { Unit })
 
             } catch (e: Exception) {
                 _updateStatus.postValue(Result.failure(e))

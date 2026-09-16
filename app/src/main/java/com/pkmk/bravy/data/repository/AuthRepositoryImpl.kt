@@ -12,7 +12,26 @@ import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.model.MissionType
 import com.pkmk.bravy.data.model.RedeemCode
 import com.pkmk.bravy.data.model.User
+import com.pkmk.bravy.data.remote.BravyApiService
+import com.pkmk.bravy.data.remote.TokenStore
+import com.pkmk.bravy.data.remote.dto.BackendUser
+import com.pkmk.bravy.data.remote.dto.BackendUserSummary
+import com.pkmk.bravy.data.remote.dto.FcmTokenRequest
+import com.pkmk.bravy.data.remote.dto.LoginRequest
+import com.pkmk.bravy.data.remote.dto.RegisterRequest
+import com.pkmk.bravy.data.remote.dto.ResendVerificationRequest
+import com.pkmk.bravy.data.remote.dto.RespondFriendRequestBody
+import com.pkmk.bravy.data.remote.dto.SendFriendRequestBody
+import com.pkmk.bravy.data.remote.dto.UpdateProfileRequest
+import com.pkmk.bravy.data.remote.dto.VerifyEmailRequest
+import com.pkmk.bravy.data.remote.dto.toUser
+import com.pkmk.bravy.data.remote.toApiFailure
+import com.pkmk.bravy.data.remote.toResult
+import com.pkmk.bravy.data.remote.toUnitResult
 import com.pkmk.bravy.data.source.FirebaseDataSource
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -22,9 +41,226 @@ import java.util.UUID
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val dataSource: FirebaseDataSource
+    private val dataSource: FirebaseDataSource,
+    private val apiService: BravyApiService,
+    private val tokenStore: TokenStore
 ) : AuthRepository {
     private val TAG = "AuthRepositoryImpl"
+
+    override suspend fun registerViaBackend(
+        fullName: String,
+        username: String,
+        email: String,
+        password: String
+    ): Result<BackendUser> {
+        return try {
+            val response = apiService.register(
+                RegisterRequest(
+                    fullName = fullName,
+                    username = username,
+                    email = email,
+                    password = password
+                )
+            )
+            val result = response.data?.let { Result.success(it.user) }
+                ?: Result.failure(Exception(response.message ?: "Registration failed"))
+            result.onSuccess { Log.d(TAG, "Registered via backend: ${it.username}") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error registering via backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun verifyEmail(token: String): Result<Unit> {
+        return try {
+            apiService.verifyEmail(VerifyEmailRequest(token)).toUnitResult()
+                .onSuccess { Log.d(TAG, "Email verified via backend") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error verifying email: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun resendVerification(email: String): Result<Unit> {
+        return try {
+            apiService.resendVerification(ResendVerificationRequest(email)).toUnitResult()
+                .onSuccess { Log.d(TAG, "Verification email resent to $email") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error resending verification to $email: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun loginViaBackend(identifier: String, password: String): Result<BackendUser> {
+        return try {
+            val response = apiService.login(LoginRequest(identifier, password))
+            val data = response.data
+                ?: return Result.failure(Exception(response.message ?: "Login failed"))
+
+            tokenStore.saveTokens(data.accessToken, data.refreshToken)
+            Log.d(TAG, "Logged in via backend: ${data.user.username}")
+            Result.success(data.user)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error logging in via backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun updateFcmToken(fcmToken: String): Result<Unit> {
+        return try {
+            apiService.updateFcmToken(FcmTokenRequest(fcmToken)).toUnitResult()
+                .onSuccess { Log.d(TAG, "FCM token updated on backend") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating FCM token: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun getProfileBackend(): Result<User> {
+        return try {
+            val response = apiService.getProfile()
+            if (!response.success) {
+                return Result.failure(Exception(response.message ?: DEFAULT_PROFILE_ERROR))
+            }
+            val dto = response.data
+                ?: return Result.failure(Exception(response.message ?: DEFAULT_PROFILE_ERROR))
+            Result.success(dto.toUser())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching profile from backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun updateProfileBackend(name: String, bio: String): Result<User> {
+        return try {
+            val response = apiService.updateProfile(UpdateProfileRequest(name = name, bio = bio))
+            if (!response.success) {
+                return Result.failure(Exception(response.message ?: DEFAULT_PROFILE_ERROR))
+            }
+            val dto = response.data
+                ?: return Result.failure(Exception(response.message ?: DEFAULT_PROFILE_ERROR))
+            Log.d(TAG, "Profile updated on backend")
+            Result.success(dto.toUser())
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating profile on backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun uploadAvatarBackend(imageFile: File): Result<String> {
+        return try {
+            val part = MultipartBody.Part.createFormData(
+                "avatar",
+                imageFile.name,
+                imageFile.asRequestBody(AVATAR_MEDIA_TYPE)
+            )
+            val response = apiService.uploadAvatar(part)
+            val avatarUrl = response.data?.avatarUrl
+            if (!response.success || avatarUrl.isNullOrBlank()) {
+                return Result.failure(Exception(response.message ?: "Gagal mengunggah foto profil."))
+            }
+            Log.d(TAG, "Avatar uploaded to backend")
+            Result.success(avatarUrl)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error uploading avatar to backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun getFriendsBackend(): Result<List<FriendInfo>> {
+        return try {
+            val response = apiService.getFriends()
+            if (!response.success) {
+                return Result.failure(Exception(response.message ?: "Gagal memuat daftar teman."))
+            }
+            val friends = response.data.orEmpty()
+            // Backend hanya mengirim uid + status pada endpoint ini, sehingga profil
+            // dilengkapi dari hasil pencarian. Bila pelengkapan gagal, entri tetap
+            // ditampilkan dengan data minimal agar daftar teman tidak kosong.
+            val profiles = searchUserSummaries()
+            val friendInfoList = friends.map { friend ->
+                val profile = profiles[friend.uid]
+                FriendInfo(
+                    user = profile?.toUser() ?: User(uid = friend.uid),
+                    status = friend.status
+                )
+            }
+            Result.success(friendInfoList)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching friends from backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun searchUsersBackend(query: String, limit: Int): Result<List<User>> {
+        return try {
+            val response = apiService.searchUsers(query.ifBlank { MATCH_ALL_QUERY })
+            if (!response.success) {
+                return Result.failure(Exception(response.message ?: "Gagal mencari pengguna."))
+            }
+            Result.success(response.data.orEmpty().take(limit).map { it.toUser() })
+        } catch (e: Exception) {
+            Log.e(TAG, "Error searching users on backend: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun sendFriendRequestBackend(friendId: String): Result<Unit> {
+        return try {
+            apiService.sendFriendRequest(SendFriendRequestBody(friendId)).toUnitResult()
+                .onSuccess { Log.d(TAG, "Friend request sent to $friendId") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending friend request to $friendId: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun respondFriendRequestBackend(friendId: String, action: String): Result<Unit> {
+        return try {
+            apiService.respondFriendRequest(RespondFriendRequestBody(friendId, action)).toUnitResult()
+                .onSuccess { Log.d(TAG, "Friend request from $friendId $action") }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error responding to friend request from $friendId: ${e.message}")
+            e.toApiFailure()
+        }
+    }
+
+    override suspend fun removeFriendBackend(friendId: String): Result<Unit> {
+        // Backend tidak punya DELETE friends/{id}; action=reject melakukan $pull
+        // pada kedua dokumen user sehingga juga menghapus pertemanan yang sudah aktif.
+        return respondFriendRequestBackend(friendId, ACTION_REJECT)
+    }
+
+    override suspend fun logoutBackend(): Result<Unit> {
+        val remoteResult = try {
+            apiService.logout().toUnitResult()
+        } catch (e: Exception) {
+            Log.w(TAG, "Logout backend gagal, token lokal tetap dihapus: ${e.message}")
+            e.toApiFailure<Unit>()
+        }
+        // Token lokal selalu dibersihkan agar pengguna tidak terjebak dalam sesi
+        // yang tidak bisa keluar saat server tidak dapat dijangkau.
+        tokenStore.clear()
+        return remoteResult
+    }
+
+    /**
+     * Mengambil seluruh user selain diri sendiri sebagai peta `uid` → ringkasan profil.
+     * Kegagalan diperlakukan sebagai peta kosong agar pemanggil tetap dapat
+     * menampilkan data minimal.
+     */
+    private suspend fun searchUserSummaries(): Map<String, BackendUserSummary> {
+        return try {
+            val response = apiService.searchUsers(MATCH_ALL_QUERY)
+            response.data.orEmpty()
+                .mapNotNull { summary -> summary.id?.let { it to summary } }
+                .toMap()
+        } catch (e: Exception) {
+            Log.w(TAG, "Gagal melengkapi profil teman dari pencarian: ${e.message}")
+            emptyMap()
+        }
+    }
+
 
     override suspend fun validateRedeemCode(code: String): Result<RedeemCode> {
         return try {
@@ -134,116 +370,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUser(user: User): Result<Unit> {
-        return try {
-            dataSource.updateUser(user)
-            Log.d(TAG, "Successfully updated user ${user.uid}")
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error updating user ${user.uid}: ${e.message}")
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun uploadProfilePicture(uid: String, imageFile: File): Result<String> {
-        return try {
-            val imageName = "profile_$uid.jpg"
-            val downloadUrl = dataSource.uploadProfilePicture(imageFile, imageName)
-            Log.d(TAG, "Successfully uploaded profile picture for $uid: $downloadUrl")
-            Result.success(imageName)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error uploading profile picture for $uid: ${e.message}")
-            Result.failure(e)
-        }
-    }
-
     override suspend fun getLearningLevels(): Result<DataSnapshot> {
         return try {
             val snapshot = dataSource.getLearningLevels()
             Result.success(snapshot)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun getSuggestedFriends(currentUid: String, limit: Int): Result<List<User>> {
-        return try {
-            val allUsersSnapshot = dataSource.getAllUsers()
-            val allUsers = allUsersSnapshot.children.mapNotNull { it.getValue(User::class.java) }
-
-            // Dapatkan data user saat ini
-            val currentUser = allUsers.firstOrNull { it.uid == currentUid }
-
-            // --- PERBAIKAN DI SINI ---
-            // Cek apakah 'friends' null. Jika ya, gunakan set kosong.
-            // Ini mencegah NullPointerException pada pengguna baru.
-            val existingFriendIds = currentUser?.friends?.keys ?: emptySet()
-
-            // Filter: bukan diri sendiri, dan belum ada di daftar teman (termasuk yang sudah dikirim permintaan)
-            val suggested = allUsers.filter { user ->
-                user.uid != currentUid && !existingFriendIds.contains(user.uid)
-            }.shuffled().take(limit) // Ambil 3 secara acak
-
-            Result.success(suggested)
-        } catch (e: Exception) {
-            Log.e(TAG, "Error getting suggested friends: ${e.message}", e) // Tambahkan Log.e untuk debug
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun sendFriendRequest(fromUid: String, toUid: String): Result<Unit> {
-        return try {
-            dataSource.sendFriendRequest(fromUid, toUid)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun cancelFriendRequest(fromUid: String, toUid: String): Result<Unit> {
-        return try {
-            dataSource.removeFriendship(fromUid, toUid) // Menggunakan fungsi yang sama untuk cancel/reject
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun getFriendsData(currentUid: String): Result<List<FriendInfo>> {
-        return try {
-            // 1. Ambil daftar ID teman dan statusnya dari pengguna saat ini
-            val friendsSnapshot = dataSource.getUserFriends(currentUid)
-            val friendIdStatusMap = friendsSnapshot.children.associate {
-                it.key!! to (it.child("status").getValue(String::class.java) ?: "")
-            }
-
-            // 2. Ambil data lengkap untuk setiap teman berdasarkan ID
-            val friendInfoList = mutableListOf<FriendInfo>()
-            for ((friendId, status) in friendIdStatusMap) {
-                val userResult = getUser(friendId) // Menggunakan kembali fungsi getUser yang sudah ada
-                userResult.onSuccess { user ->
-                    friendInfoList.add(FriendInfo(user, status))
-                }
-            }
-            Result.success(friendInfoList)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun acceptFriendRequest(accepterUid: String, senderUid: String): Result<Unit> {
-        return try {
-            dataSource.acceptFriendRequest(accepterUid, senderUid)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    override suspend fun removeFriendship(uid1: String, uid2: String): Result<Unit> {
-        return try {
-            dataSource.removeFriendship(uid1, uid2)
-            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -458,5 +588,12 @@ class AuthRepositoryImpl @Inject constructor(
         val cal2 = Calendar.getInstance().apply { timeInMillis = timestamp2 }
         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                 cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR)
+    }
+
+    companion object {
+        private const val DEFAULT_PROFILE_ERROR = "Gagal memuat profil"
+        private const val MATCH_ALL_QUERY = ""
+        private const val ACTION_REJECT = "reject"
+        private val AVATAR_MEDIA_TYPE = "image/*".toMediaType()
     }
 }

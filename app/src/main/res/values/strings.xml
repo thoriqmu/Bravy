@@ -89,6 +89,17 @@
         \nWe may update this Privacy Policy from time to time. The latest version will be available in the App and/or on our official website. Significant changes will be communicated to users.
 </string>
 
+    <!-- Verifikasi Email -->
+    <string name="verification_subtitle">Enter the verification code we sent to your email.</string>
+    <string name="verification_subtitle_with_email">Enter the verification code we sent to %1$s.</string>
+    <string name="verification_token_required">Please enter your verification code</string>
+    <string name="verification_email_missing">Email address not found. Please register again.</string>
+    <string name="verification_success">Email verified! Please log in.</string>
+    <string name="verification_failed">Verification failed</string>
+    <string name="verification_resent">Verification code sent to your email.</string>
+    <string name="verification_resend_failed">Failed to resend the code</string>
+    <string name="verification_resend_cooldown">You can resend the code in %1$d seconds</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

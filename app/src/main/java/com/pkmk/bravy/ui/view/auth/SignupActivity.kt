@@ -22,38 +22,26 @@ class SignupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignupBinding
     private val viewModel: AuthViewModel by viewModels()
 
+    private val usernamePattern = Regex("^[a-zA-Z0-9_]+$")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val redeemCode = intent.getStringExtra("REDEEM_CODE") ?: ""
-
-        setupListeners(redeemCode) // Pindahkan logika listener ke fungsi terpisah
+        setupListeners()
         setupObservers()
     }
 
-    private fun setupListeners(redeemCode: String) {
+    private fun setupListeners() {
         binding.btnSignup.setOnClickListener {
             val name = binding.nameInput.text.toString().trim()
+            val username = binding.usernameInput.text.toString().trim()
             val email = binding.emailInput.text.toString().trim()
             val password = binding.passwordInput.text.toString().trim()
 
-            when {
-                name.isEmpty() -> binding.nameInputLayout.error = "Please enter your name"
-                email.isEmpty() -> binding.emailInputLayout.error = "Please enter your email"
-                password.isEmpty() -> binding.passwordInputLayout.error = "Please enter a password"
-                password.length < 6 -> binding.passwordInputLayout.error = "Password must be at least 6 characters"
-                !binding.cbAgreement.isChecked -> { // Validasi checkbox
-                    Toast.makeText(this, "You must agree to the terms and conditions", Toast.LENGTH_SHORT).show()
-                }
-                else -> {
-                    // Hapus error jika valid
-                    binding.nameInputLayout.error = null
-                    binding.emailInputLayout.error = null
-                    binding.passwordInputLayout.error = null
-                    viewModel.registerUser(name, email, password, redeemCode)
-                }
+            if (validateInput(name, username, email, password)) {
+                viewModel.registerBackend(name, username, email, password)
             }
         }
 
@@ -62,11 +50,60 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Validasi sisi klien yang mencerminkan aturan backend (registerSchema),
+     * sehingga kesalahan umum tertangkap sebelum request dikirim.
+     */
+    private fun validateInput(name: String, username: String, email: String, password: String): Boolean {
+        binding.nameInputLayout.error = null
+        binding.usernameInputLayout.error = null
+        binding.emailInputLayout.error = null
+        binding.passwordInputLayout.error = null
+
+        return when {
+            name.length < 2 -> {
+                binding.nameInputLayout.error = "Name must be at least 2 characters"
+                false
+            }
+            username.length < 3 -> {
+                binding.usernameInputLayout.error = "Username must be at least 3 characters"
+                false
+            }
+            username.length > 30 -> {
+                binding.usernameInputLayout.error = "Username must be at most 30 characters"
+                false
+            }
+            !usernamePattern.matches(username) -> {
+                binding.usernameInputLayout.error = "Only letters, numbers, and underscores allowed"
+                false
+            }
+            !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
+                binding.emailInputLayout.error = "Please enter a valid email"
+                false
+            }
+            password.length < 6 -> {
+                binding.passwordInputLayout.error = "Password must be at least 6 characters"
+                false
+            }
+            !binding.cbAgreement.isChecked -> {
+                Toast.makeText(this, "You must agree to the terms and conditions", Toast.LENGTH_SHORT).show()
+                false
+            }
+            else -> true
+        }
+    }
+
     private fun setupObservers() {
-        viewModel.registerResult.observe(this) { result ->
-            result.onSuccess {
-                Toast.makeText(this, "Registration successful! Please login.", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, LoginActivity::class.java))
+        viewModel.registerBackendResult.observe(this) { result ->
+            result.onSuccess { user ->
+                // Akun dibuat tetapi belum aktif: pengguna harus memasukkan token
+                // verifikasi yang dikirim ke emailnya.
+                Toast.makeText(this, "Account created! Check your email for the code.", Toast.LENGTH_LONG).show()
+                startActivity(
+                    Intent(this, VerificationActivity::class.java).apply {
+                        putExtra(VerificationActivity.EXTRA_EMAIL, user.email)
+                    }
+                )
                 finish()
             }.onFailure { exception ->
                 Toast.makeText(this, exception.message ?: "Registration failed", Toast.LENGTH_SHORT).show()

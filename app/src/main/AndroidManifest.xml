@@ -84,6 +84,9 @@
             android:name=".ui.view.auth.SignupActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.view.auth.VerificationActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.view.auth.RedeemActivity"
             android:exported="false" />
         <activity

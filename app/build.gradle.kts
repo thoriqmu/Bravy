@@ -23,9 +23,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Nilai default agar semua varian dapat dikompilasi. Varian debug
+        // menimpanya dengan alamat backend lokal.
+        buildConfigField("String", "BRAVY_BASE_URL", "\"http://10.0.2.2:3001/\"")
     }
 
     buildTypes {
+        debug {
+            // Emulator Android memetakan host ke 10.0.2.2, sehingga backend lokal
+            // yang berjalan di http://localhost:3001 dapat dijangkau dari app.
+            buildConfigField("String", "BRAVY_BASE_URL", "\"http://10.0.2.2:3001/\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -101,6 +110,13 @@ dependencies {
     // Dependency Injection
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    // Networking (backend Bravy)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.androidx.security.crypto)
 
     // ExoPlayer
     implementation(libs.androidx.media3.exoplayer)

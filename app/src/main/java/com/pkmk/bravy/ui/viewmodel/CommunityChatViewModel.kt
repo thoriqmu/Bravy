@@ -127,7 +127,8 @@ class CommunityChatViewModel @Inject constructor(
 
             // Setelah mendapatkan semua post, filter untuk teman
             allPostsResult.onSuccess { allPostsList ->
-                val friendsResult = authRepository.getFriendsData(currentUid)
+                // Sesi ditentukan oleh Bearer token, jadi uid tidak lagi dikirim.
+                val friendsResult = authRepository.getFriendsBackend()
                 friendsResult.onSuccess { friendInfoList ->
                     val friendUids = friendInfoList
                         .filter { it.status == "friend" }

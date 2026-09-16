@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
 import com.pkmk.bravy.data.model.FriendInfo
 import com.pkmk.bravy.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,8 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FriendViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val auth: FirebaseAuth
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _allFriends = MutableLiveData<List<FriendInfo>>()
@@ -34,8 +32,8 @@ class FriendViewModel @Inject constructor(
     fun loadFriends() {
         _isLoading.value = true
         viewModelScope.launch {
-            val currentUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.getFriendsData(currentUid)
+            // Sesi ditentukan oleh Bearer token, jadi uid tidak lagi dikirim ke repository.
+            val result = authRepository.getFriendsBackend()
             result.onSuccess { allFriends ->
                 _allFriends.value = allFriends
                 // Filter data untuk setiap tab
@@ -52,8 +50,7 @@ class FriendViewModel @Inject constructor(
 
     fun acceptRequest(senderUid: String) {
         viewModelScope.launch {
-            val accepterUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.acceptFriendRequest(accepterUid, senderUid)
+            val result = authRepository.respondFriendRequestBackend(senderUid, ACTION_ACCEPT)
             result.onSuccess {
                 _actionStatus.value = Result.success("Friend added!")
                 loadFriends() // Muat ulang daftar setelah aksi
@@ -63,13 +60,17 @@ class FriendViewModel @Inject constructor(
 
     fun removeOrRejectFriendship(otherUid: String, isRejecting: Boolean) {
         viewModelScope.launch {
-            val currentUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.removeFriendship(currentUid, otherUid)
+            val result = authRepository.removeFriendBackend(otherUid)
             result.onSuccess {
                 val message = if (isRejecting) "Request rejected" else "Friend removed"
                 _actionStatus.value = Result.success(message)
                 loadFriends() // Muat ulang daftar setelah aksi
             }.onFailure { _actionStatus.value = Result.failure(it) }
         }
+    }
+
+    private companion object {
+        /** `action` untuk `PATCH /users/friends/respond`. */
+        const val ACTION_ACCEPT = "accept"
     }
 }

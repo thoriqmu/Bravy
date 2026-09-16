@@ -65,6 +65,41 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_medium"
+        android:text="Username"
+        android:textSize="16sp"
+        android:textColor="@color/onBackground"
+        android:layout_marginHorizontal="20dp"/>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/username_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        app:hintEnabled="false"
+        app:boxStrokeColor="@color/primary"
+        app:boxCornerRadiusBottomEnd="15dp"
+        app:boxCornerRadiusBottomStart="15dp"
+        app:boxCornerRadiusTopEnd="15dp"
+        app:boxCornerRadiusTopStart="15dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username_input"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inputType="text"
+            android:textColor="@color/primary"
+            android:backgroundTint="@color/white"
+            android:hint="Username"
+            android:textColorHint="@color/primary"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/poppins_medium"
         android:text="Email"
         android:textSize="16sp"
         android:textColor="@color/onBackground"

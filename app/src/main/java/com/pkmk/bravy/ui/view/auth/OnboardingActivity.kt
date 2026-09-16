@@ -42,7 +42,7 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Atur OnClickListener untuk tombol
         binding.btnRedeem.setOnClickListener {
-            val intent = Intent(this, RedeemActivity::class.java)
+            val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent)
             finish()
         }

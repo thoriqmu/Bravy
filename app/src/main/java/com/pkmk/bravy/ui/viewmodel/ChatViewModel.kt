@@ -88,8 +88,9 @@ class ChatViewModel @Inject constructor(
     }
 
     private suspend fun loadSuggestedFriends() {
-        val currentUid = auth.currentUser?.uid ?: return
-        val result = authRepository.getSuggestedFriends(currentUid, 5)
+        // Sesi ditentukan oleh Bearer token; query kosong berarti "semua user
+        // selain diri sendiri" yang dipakai sebagai saran teman.
+        val result = authRepository.searchUsersBackend(query = "", limit = SUGGESTED_FRIENDS_LIMIT)
         _suggestedFriends.postValue(result)
     }
 
@@ -155,16 +156,18 @@ class ChatViewModel @Inject constructor(
 
     fun sendFriendRequest(toUid: String) {
         viewModelScope.launch {
-            val fromUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.sendFriendRequest(fromUid, toUid)
+            // Sesi ditentukan oleh Bearer token, jadi uid pengirim tidak dikirim.
+            val result = authRepository.sendFriendRequestBackend(toUid)
             _friendActionStatus.postValue(result)
         }
     }
 
     fun cancelFriendRequest(toUid: String) {
         viewModelScope.launch {
-            val fromUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.cancelFriendRequest(fromUid, toUid)
+            // TODO(cancel-vs-reject): backend belum punya aksi "cancel" tersendiri,
+            // sehingga pencabutan request yang masih terkirim memakai action=reject.
+            // Pemilik token sudah menentukan sisi "from", jadi uid tidak dikirim.
+            val result = authRepository.respondFriendRequestBackend(toUid, ACTION_REJECT)
             _friendActionStatus.postValue(result)
         }
     }
@@ -193,5 +196,13 @@ class ChatViewModel @Inject constructor(
                 _latestCommunityPost.postValue(Result.success(updatedDetails))
             }
         }
+    }
+
+    private companion object {
+        /** `action` untuk `PATCH /users/friends/respond`. */
+        const val ACTION_REJECT = "reject"
+
+        /** Jumlah saran teman yang diminta untuk daftar di layar chat. */
+        const val SUGGESTED_FRIENDS_LIMIT = 5
     }
 }

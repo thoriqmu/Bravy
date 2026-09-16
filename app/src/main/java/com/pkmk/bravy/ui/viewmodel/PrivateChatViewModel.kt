@@ -64,8 +64,8 @@ class PrivateChatViewModel @Inject constructor(
 
     private fun loadFriends() {
         viewModelScope.launch {
-            val currentUid = auth.currentUser?.uid ?: return@launch
-            val result = authRepository.getFriendsData(currentUid)
+            // Sesi ditentukan oleh Bearer token, jadi uid tidak lagi dikirim.
+            val result = authRepository.getFriendsBackend()
             result.onSuccess { friendInfoList ->
                 // Filter hanya yang statusnya "friend" dan ambil data User-nya
                 val friendUsers = friendInfoList
